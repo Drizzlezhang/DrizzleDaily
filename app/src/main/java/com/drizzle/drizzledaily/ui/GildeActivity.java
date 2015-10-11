@@ -15,6 +15,10 @@ import com.drizzle.drizzledaily.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+/**
+ * 引导页
+ */
+
 public class GildeActivity extends AppCompatActivity {
     @Bind(R.id.start_img)
     ImageView startImg;

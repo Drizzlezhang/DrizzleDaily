@@ -5,7 +5,11 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
+import com.drizzle.drizzledaily.R;
 
 /**
  * 使用SparseArray类，用键值对存储item控件，比Map更效率，但是键只能用Integer类
@@ -14,10 +18,12 @@ public class ViewHolder {
     private final SparseArray<View> mViews;
     private View mConvertView;
     private int position;
+    private Context context;
 
     private ViewHolder(Context context, ViewGroup parent, int layoutId, int position) {
         this.position = position;
         this.mViews = new SparseArray<View>();
+        this.context = context;
         mConvertView = LayoutInflater.from(context).inflate(layoutId, parent, false);
         mConvertView.setTag(this);
     }
@@ -67,6 +73,18 @@ public class ViewHolder {
         TextView view = getView(viewId);
         view.setText(text);
         return this;
+    }
+
+    public ViewHolder setImg(int viewId, String url) {
+        ImageView imageView = getView(viewId);
+        Glide.with(context)
+                .load(url)
+                .centerCrop()
+                .error(R.mipmap.default_pic)
+                .crossFade()
+                .into(imageView);
+        return this;
+
     }
 
 }

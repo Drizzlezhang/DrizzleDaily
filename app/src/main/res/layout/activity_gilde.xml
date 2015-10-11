@@ -1,32 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.drizzle.drizzledaily.ui.GildeActivity">
+
     <ImageView
+        android:id="@+id/start_img"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/start_img"
-        android:src="@mipmap/start_img"
-        android:scaleType="centerCrop"/>
+        android:scaleType="centerCrop"
+        android:src="@mipmap/start_img" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="80dp"
-        android:textSize="30sp"
-        android:text="Zhihu Daily"
-        android:textColor="@color/white"/>
+        android:text="知乎日报"
+        android:textColor="@color/white"
+        android:textSize="30sp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginBottom="55dp"
-        android:textSize="16sp"
         android:text="Prowered By Drizzlezhang"
-        android:textColor="@color/white"/>
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 </RelativeLayout>
