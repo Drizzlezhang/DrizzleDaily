@@ -215,7 +215,7 @@ public class OkHttpClientManager {
      * @param destFileDir 本地文件存储的文件夹
      * @param callback
      */
-    private void _downloadAsyn(final String url, final String destFileDir, final StringCallback callback) {
+    private void _downloadAsyn(final String url, final String destFileDir, final String targetFileName,final StringCallback callback) {
         final Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -234,7 +234,7 @@ public class OkHttpClientManager {
                 FileOutputStream fos = null;
                 try {
                     is = response.body().byteStream();
-                    File file = new File(destFileDir, getFileName(url));
+                    File file = new File(destFileDir, targetFileName);
                     fos = new FileOutputStream(file);
                     while ((len = is.read(buf)) != -1) {
                         fos.write(buf, 0, len);
@@ -402,8 +402,8 @@ public class OkHttpClientManager {
         getInstance()._displayImage(view, url, -1);
     }
 
-    public static void downloadAsyn(String url, String destDir, StringCallback callback) {
-        getInstance()._downloadAsyn(url, destDir, callback);
+    public static void downloadAsyn(String url, String destDir, String fileName,StringCallback callback) {
+        getInstance()._downloadAsyn(url, destDir,fileName, callback);
     }
 
     //****************************

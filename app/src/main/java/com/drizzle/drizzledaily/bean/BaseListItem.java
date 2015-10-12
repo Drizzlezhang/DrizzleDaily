@@ -1,33 +1,51 @@
 package com.drizzle.drizzledaily.bean;
 
 /**
- * 列表项bean，包括文章id，标题，图片地址,是否已经被点击
+ * 列表项bean，包括文章id，标题，图片地址,是否已经被点击,文章日期，描述
  */
 public class BaseListItem {
     private int id;
     private String title;
     private String imgUrl;
     private boolean isClicked;
-    private boolean isPics;
+    private String date;
+    private String describe;
 
     public BaseListItem() {
     }
 
-    public BaseListItem(int id, String title, String imgUrl, boolean isClicked,boolean isPics) {
+    public BaseListItem(int id, String title, String imgUrl, boolean isClicked, String date) {
         this.id = id;
         this.title = title;
         this.imgUrl = imgUrl;
         this.isClicked = isClicked;
-        this.isPics=isPics;
+        this.date = date;
+    }
+    public BaseListItem(int id, String title, String imgUrl, boolean isClicked, String date,String describe) {
+        this.id = id;
+        this.describe=describe;
+        this.title = title;
+        this.imgUrl = imgUrl;
+        this.isClicked = isClicked;
+        this.date = date;
     }
 
-    public boolean isPics() {
-        return isPics;
+    public String getDescribe() {
+        return describe;
     }
 
-    public void setIsPics(boolean isPics) {
-        this.isPics = isPics;
+    public void setDescribe(String describe) {
+        this.describe = describe;
     }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
+
 
     public int getId() {
         return id;

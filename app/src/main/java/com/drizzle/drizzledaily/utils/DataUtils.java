@@ -57,22 +57,34 @@ public class DataUtils {
      */
     public static String printCalendar(Calendar cl) {
         String tday = "";
-        String tmonth="";
-        String tyear="";
+        String tmonth = "";
+        String tyear = "";
         int year = cl.get(Calendar.YEAR);
         int month = cl.get(Calendar.MONTH) + 1;
         int day = cl.get(Calendar.DATE);
         if (day > 9) {
-            tday =  "" + day;
+            tday = "" + day;
         } else {
-            tday = 0 +"" + day;
+            tday = 0 + "" + day;
         }
         if (month > 9) {
-            tmonth =  "" + month;
+            tmonth = "" + month;
         } else {
-            tmonth = 0 +"" + month;
+            tmonth = 0 + "" + month;
         }
-        tyear=""+year;
+        tyear = "" + year;
         return tyear + tmonth + tday;
+    }
+
+    /**
+     * 打印时间
+     *
+     * @param cl
+     */
+    public static String printDate(Calendar cl) {
+        int year = cl.get(Calendar.YEAR);
+        int month = cl.get(Calendar.MONTH) + 1;
+        int day = cl.get(Calendar.DATE);
+        return year + "年" + month + "月" + day + "日";
     }
 }

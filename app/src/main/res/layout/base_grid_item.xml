@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_margin="15dp"
+    app:cardCornerRadius="4dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardElevation="10dp"
+    android:layout_height="240dp">
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:id="@+id/grid_item_img"
+        android:scaleType="centerCrop"
+        android:src="@mipmap/item_default_pic"
+        android:layout_margin="10dp"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/grid_item_title"
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="70dp"
+        android:layout_marginRight="20dp"
+        android:textSize="18sp"
+        android:layout_marginLeft="20dp"
+        android:textColor="@color/white"
+        android:text="好奇心日报"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textgrey"
+        android:textSize="15sp"
+        android:id="@+id/grid_item_describe"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="10dp"
+        android:text="了解自己和别人，了解彼此的欲望和局限。"/>
+</android.support.v7.widget.CardView>

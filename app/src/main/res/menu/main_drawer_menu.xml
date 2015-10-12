@@ -34,6 +34,10 @@
                 android:id="@+id/drawer_menu_settings"
                 android:icon="@mipmap/settings"
                 android:title="个人设置"/>
+            <item
+                android:id="@+id/drawer_menu_drizzle"
+                android:icon="@mipmap/settings"
+                android:title="关于作者"/>
         </menu>
     </item>
 

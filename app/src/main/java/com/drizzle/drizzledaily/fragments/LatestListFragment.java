@@ -1,16 +1,20 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.fragments;
 
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
-import android.widget.ListAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.drizzle.drizzledaily.R;
@@ -23,7 +27,6 @@ import com.drizzle.drizzledaily.utils.DataUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
-import org.apache.http.conn.scheme.HostNameResolver;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -37,7 +40,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by drizzle on 2015/10/10.
+ * 首页列表fragment，包括一个viewpager和一个listview
  */
 public class LatestListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     @Bind(R.id.latest_list_refresh)
@@ -46,9 +49,13 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     @Bind(R.id.latest_list)
     ListView mListView;
 
+    private ViewPager mViewPager;
+
     private Calendar mCalendar;
     private List<BaseListItem> baseListItems = new ArrayList<>();
+    private List<BaseListItem> headpagerItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
+    private FragmentStatePagerAdapter fragmentStatePagerAdapter;
 
     public LatestListFragment() {
     }
@@ -63,10 +70,24 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                         public void convert(ViewHolder helper, BaseListItem item) {
                             helper.setText(R.id.base_item_title, item.getTitle());
                             helper.setImg(R.id.base_item_img, item.getImgUrl());
+                            helper.setText(R.id.base_item_date, item.getDate());
                         }
                     };
                     mListView.setAdapter(adapter);
-                    setListViewHeightBasedOnChildren(mListView);
+                    FragmentManager manager = getFragmentManager();
+                    fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
+                        @Override
+                        public Fragment getItem(int position) {
+                            BaseListItem baseListItem = headpagerItems.get(position);
+                            return HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(), baseListItem.getId());
+                        }
+
+                        @Override
+                        public int getCount() {
+                            return headpagerItems.size();
+                        }
+                    };
+                    mViewPager.setAdapter(fragmentStatePagerAdapter);
                     mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:
@@ -82,8 +103,11 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.latest_list_frg, container, false);
+        View view = inflater.inflate(R.layout.latest_list_fragment, container, false);
         ButterKnife.bind(this, view);
+        View headview = inflater.inflate(R.layout.head_viewpager, null, true);
+        mViewPager = (ViewPager) headview.findViewById(R.id.head_viewpager);
+        mListView.addHeaderView(headview);
         initViews();
         getLists(Config.LATEST_NEWS);
         return view;
@@ -92,6 +116,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     private void initViews() {
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
+        mRefreshLayout.setRefreshing(true);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -99,18 +124,30 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                     if (view.getLastVisiblePosition() == view.getCount() - 1) {
                         String time = DataUtils.printCalendar(mCalendar);
                         getLists(Config.BEFORE_NEWS + time);
-                        TUtils.showShort(getActivity(), time);
                     }
                 }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                TUtils.showShort(getActivity(), baseListItems.get(position).getTitle());
             }
         });
     }
 
+    /**
+     * 请求数据并存入list
+     *
+     * @param listUrl
+     */
     private void getLists(final String listUrl) {
+        Log.d("get", "list");
         mRefreshLayout.setRefreshing(true);
         OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
             @Override
@@ -121,30 +158,53 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
             @Override
             public void onResponse(String response) {
-                if (listUrl.equals(Config.LATEST_NEWS)) {
-                    baseListItems.clear();
-                }
+                String data = "";
                 try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray stories = jsonObject.getJSONArray("stories");
-                    for (int i = 0; i < stories.length(); i++) {
-                        JSONObject story = stories.getJSONObject(i);
-                        int id = story.getInt("id");
-                        String title = story.getString("title");
-                        String imgUrl = story.getJSONArray("images").getString(0);
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, false);
-                        baseListItems.add(baseListItem);
-                    }
                     if (listUrl.equals(Config.LATEST_NEWS)) {
-                        handler.sendEmptyMessage(0);
+                        baseListItems.clear();
+                        headpagerItems.clear();
                         mCalendar = Calendar.getInstance();
+                        data = DataUtils.printDate(mCalendar);
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray stories = jsonObject.getJSONArray("stories");
+                        for (int i = 0; i < stories.length(); i++) {
+                            JSONObject story = stories.getJSONObject(i);
+                            int id = story.getInt("id");
+                            String title = story.getString("title");
+                            String imgUrl = story.getJSONArray("images").getString(0);
+                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, data);
+                            baseListItems.add(baseListItem);
+                        }
+                        JSONArray topstories = jsonObject.getJSONArray("top_stories");
+                        for (int i = 0; i < topstories.length(); i++) {
+                            JSONObject headstory = topstories.getJSONObject(i);
+                            int headid = headstory.getInt("id");
+                            String headtitle = headstory.getString("title");
+                            String headimgUrl = headstory.getString("image");
+                            BaseListItem headbaseListItem = new BaseListItem(headid, headtitle, headimgUrl, false, "");
+                            headpagerItems.add(headbaseListItem);
+                        }
+                        Log.d("json", topstories.length() + "");
+                        handler.sendEmptyMessage(0);
                     } else {
+                        data = DataUtils.printDate(DataUtils.getBeforeDay(mCalendar));
+                        mCalendar = DataUtils.getAfterDay(mCalendar);
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray stories = jsonObject.getJSONArray("stories");
+                        for (int i = 0; i < stories.length(); i++) {
+                            JSONObject story = stories.getJSONObject(i);
+                            int id = story.getInt("id");
+                            String title = story.getString("title");
+                            String imgUrl = story.getJSONArray("images").getString(0);
+                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, data);
+                            baseListItems.add(baseListItem);
+                        }
                         handler.sendEmptyMessage(1);
                         mCalendar = DataUtils.getBeforeDay(mCalendar);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    TUtils.showShort(getActivity(), "服务器出问题了");
+                    TUtils.showShort(getActivity(), "Json数据解析错误");
                     mRefreshLayout.setRefreshing(false);
                 }
             }
@@ -156,28 +216,5 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         getLists(Config.LATEST_NEWS);
     }
 
-    public void setListViewHeightBasedOnChildren(ListView listView) {
-        // 获取ListView对应的Adapter
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            return;
-        }
-
-        int totalHeight = 0;
-        for (int i = 0, len = listAdapter.getCount(); i < len; i++) {
-            // listAdapter.getCount()返回数据项的数目
-            View listItem = listAdapter.getView(i, null, listView);
-            // 计算子项View 的宽高
-            listItem.measure(0, 0);
-            // 统计所有子项的总高度
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        // listView.getDividerHeight()获取子项间分隔符占用的高度
-        // params.height最后得到整个ListView完整显示需要的高度
-        listView.setLayoutParams(params);
-    }
 
 }

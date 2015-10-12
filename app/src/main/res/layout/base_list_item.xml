@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_margin="15dp"
     app:cardCornerRadius="8dp"
-    app:cardBackgroundColor="@color/white"
-    android:elevation="10dp"
+   app:cardBackgroundColor="@color/white"
+    app:cardElevation="10dp"
     android:layout_height="90dp">
     <ImageView
         android:layout_width="70dp"
@@ -26,4 +26,13 @@
         android:maxLines="3"
         android:textColor="@color/textblack"
         android:text="清朝皇帝上朝的时候说的是满语还是汉语？"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/textgrey"
+        android:textSize="12sp"
+        android:id="@+id/base_item_date"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="8dp"
+        android:text="2012年9月25日"/>
 </android.support.v7.widget.CardView>
