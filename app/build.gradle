@@ -31,10 +31,7 @@ dependencies {
     compile 'com.squareup.okio:okio:1.5.0'
     compile 'com.github.bumptech.glide:glide:3.6.0'
     compile 'com.bm.photoview:library:2.0.7'
-    compile 'com.github.allan1st:JellyRefreshLayout:1.0.0'
 }
-repositories {
-    maven {
-        url "https://jitpack.io"
-    }
-}
+
+
+

@@ -1,5 +1,6 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +20,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.ThemeListActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -89,6 +91,9 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TUtils.showShort(getActivity(),themeItems.get(position).getDescribe());
+                Intent intent=new Intent(getActivity(), ThemeListActivity.class);
+                intent.putExtra("themeid",themeItems.get(position).getId());
+                startActivity(intent);
             }
         });
     }

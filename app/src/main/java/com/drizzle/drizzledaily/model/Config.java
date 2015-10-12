@@ -45,6 +45,9 @@ public class Config {
      */
     public static final String THEME_LIST = "http://news-at.zhihu.com/api/4/themes";
 
+    public static final String THEME_LIST_EVERY = "http://news-at.zhihu.com/api/4/theme/";
+
+
     /**
      * 知乎日报栏目列表
      * http://news-at.zhihu.com/api/3/sections
