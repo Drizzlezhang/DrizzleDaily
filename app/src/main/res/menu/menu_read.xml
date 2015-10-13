@@ -4,7 +4,7 @@
       xmlns:tools="http://schemas.android.com/tools">
      <item android:id="@+id/action_collect"
            android:title="收藏"
-           android:icon="@mipmap/mine"
+           android:icon="@mipmap/mine_white"
            android:orderInCategory="100"
            app:showAsAction="always"/>
 </menu>

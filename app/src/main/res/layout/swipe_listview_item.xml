@@ -27,6 +27,7 @@
             android:layout_weight="4"
             android:background="@color/white"
             android:text="Yes"
+            android:drawableLeft="@mipmap/delete"
             android:textColor="@color/colorAccent" />
     </LinearLayout>
     <LinearLayout

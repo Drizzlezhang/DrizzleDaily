@@ -40,8 +40,16 @@ public class CollectListFragment extends android.support.v4.app.Fragment {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
+                    collectBeanList.clear();
                     collectBeanList = collectDB.findCollects();
                     adapter = new SwipeAdapter(getActivity(), collectBeanList);
+                    adapter.setOnDeleteClick(new SwipeAdapter.CallDeleteBack() {
+                        @Override
+                        public void onDeleteBtnclick(int pageid) {
+                            collectDB.deleteCollect(pageid);
+                            handler.sendEmptyMessage(1);
+                        }
+                    });
                     listView.setAdapter(adapter);
                     break;
                 default:
@@ -64,31 +72,23 @@ public class CollectListFragment extends android.support.v4.app.Fragment {
         ButterKnife.bind(this, view);
         collectDB = CollectDB.getInstance(getActivity());
         collectBeanList = collectDB.findCollects();
-        adapter = new SwipeAdapter(getActivity(), collectBeanList);
-        listView.setAdapter(adapter);
+        handler.sendEmptyMessage(1);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                CollectBean bean=collectBeanList.get(position);
-                int type=bean.getType();
-                if (type==1){
-                    Intent intent=new Intent(getActivity(), ReadActivity.class);
-                    intent.putExtra("readid",bean.getId());
+                CollectBean bean = collectBeanList.get(position);
+                int type = bean.getType();
+                if (type == 1) {
+                    Intent intent = new Intent(getActivity(), ReadActivity.class);
+                    intent.putExtra("readid", bean.getId());
                     startActivity(intent);
-                }else if (type==2){
-                    Intent intent=new Intent(getActivity(), SectionReadActivity.class);
-                    intent.putExtra("readid",bean.getId());
+                } else if (type == 2) {
+                    Intent intent = new Intent(getActivity(), SectionReadActivity.class);
+                    intent.putExtra("readid", bean.getId());
                     startActivity(intent);
-                }else{
-                    TUtils.showShort(getActivity(),"error");
+                } else {
+                    TUtils.showShort(getActivity(), "error");
                 }
-            }
-        });
-        adapter.setOnDeleteClick(new SwipeAdapter.CallDeleteBack() {
-            @Override
-            public void onDeleteBtnclick(int pageid) {
-                collectDB.deleteCollect(pageid);
-                handler.sendEmptyMessage(1);
             }
         });
         return view;

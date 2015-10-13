@@ -13,8 +13,6 @@
         android:scrollbars="none"
         android:padding="10dp"
         android:id="@+id/theme_grid"
-        android:verticalSpacing="15dp"
-        android:horizontalSpacing="15dp"
         ></GridView>
     </android.support.v4.widget.SwipeRefreshLayout>
 

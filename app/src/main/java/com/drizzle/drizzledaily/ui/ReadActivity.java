@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -68,7 +69,7 @@ public class ReadActivity extends AppCompatActivity {
                             .error(R.mipmap.default_pic)
                             .crossFade()
                             .into(headImg);
-                    String css = "<link rel=\"stylesheet\" href=\""+ cssadd + "type=\"text/css\">";
+                    String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
                     String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
                     html = html.replace("<div class=\"img-place-holder\">", "");
                     readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
@@ -85,7 +86,7 @@ public class ReadActivity extends AppCompatActivity {
         setContentView(R.layout.activity_read);
         ButterKnife.bind(this);
         initViews();
-        collectDB=CollectDB.getInstance(this);
+        collectDB = CollectDB.getInstance(this);
         Intent intent = getIntent();
         readid = intent.getIntExtra("readid", -1);
         OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
@@ -100,11 +101,11 @@ public class ReadActivity extends AppCompatActivity {
                     JSONObject jsonObject = new JSONObject(response);
                     String name = jsonObject.getString("title");
                     readTitle.setText(name);
-                    pagetltle=name;
-                    ImgUrl= jsonObject.getString("image");
-                    body=jsonObject.getString("body");
+                    pagetltle = name;
+                    ImgUrl = jsonObject.getString("image");
+                    body = jsonObject.getString("body");
                     readImgres.setText(jsonObject.getString("image_source"));
-                    cssadd=jsonObject.getJSONArray("css").getString(0);
+                    cssadd = jsonObject.getJSONArray("css").getString(0);
                     handler.sendEmptyMessage(0);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -130,9 +131,8 @@ public class ReadActivity extends AppCompatActivity {
 
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        switch (id){
+        switch (id) {
             case android.R.id.home:
-
                 finish();
                 break;
             case R.id.action_collect:
@@ -144,9 +144,9 @@ public class ReadActivity extends AppCompatActivity {
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                CollectBean bean=new CollectBean(readid,pagetltle,1);
+                                CollectBean bean = new CollectBean(readid, pagetltle, 1);
                                 collectDB.saveCollect(bean);
-                                TUtils.showShort(ReadActivity.this,"已收藏");
+                                TUtils.showShort(ReadActivity.this, "已收藏");
                             }
 
                             @Override

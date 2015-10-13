@@ -44,9 +44,6 @@ public class SectionReadActivity extends AppCompatActivity {
     @Bind(R.id.section_read_webview)
     WebView sectionWeb;
 
-    @Bind(R.id.from_section_btn)
-    Button fromSection;
-
     private String body;
     private int readid;
     private int themeid;
@@ -97,7 +94,6 @@ public class SectionReadActivity extends AppCompatActivity {
                     JSONObject theme = jsonObject.getJSONObject("theme");
                     themeid = theme.getInt("id");
                     themename = theme.getString("name");
-                    fromSection.setText("来自：" + themename);
                     cssadd=jsonObject.getJSONArray("css").getString(0);
                     handler.sendEmptyMessage(0);
                 } catch (JSONException e) {
@@ -113,14 +109,6 @@ public class SectionReadActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         sectionWeb.getSettings().setJavaScriptEnabled(true);
-        fromSection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SectionReadActivity.this, ThemeListActivity.class);
-                intent.putExtra("themeid", themeid);
-                startActivity(intent);
-            }
-        });
     }
 
     @Override

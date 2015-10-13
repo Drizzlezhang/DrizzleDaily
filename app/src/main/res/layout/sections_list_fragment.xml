@@ -11,10 +11,7 @@
             android:layout_height="match_parent"
             android:numColumns="2"
             android:scrollbars="none"
-            android:padding="10dp"
             android:id="@+id/sections_grid"
-            android:verticalSpacing="15dp"
-            android:horizontalSpacing="15dp"
             ></GridView>
     </android.support.v4.widget.SwipeRefreshLayout>
 </FrameLayout>

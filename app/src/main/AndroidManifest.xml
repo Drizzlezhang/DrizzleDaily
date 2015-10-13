@@ -14,15 +14,16 @@
         <activity
             android:name=".ui.MainActivity"
             android:theme="@style/AppTheme" >
+
+        </activity>
+        <activity
+            android:name=".ui.GildeActivity"
+            android:theme="@style/StartTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".ui.GildeActivity"
-            android:theme="@style/StartTheme" >
         </activity>
         <activity
             android:name=".ui.PhotoActivity"
