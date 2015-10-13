@@ -1,8 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:src="@mipmap/head_img"
-    android:scaleType="center"
-    android:layout_height="160dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="220dp"
+              android:background="@mipmap/head_img"
+              android:gravity="bottom"
+              android:orientation="vertical">
 
-</ImageView>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:text="知乎日报"
+        android:textColor="@color/white"
+        android:textSize="40sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="30dp"
+        android:text="By drizzlezhang"
+        android:textColor="@color/white"
+        android:textSize="18sp"/>
+
+</LinearLayout>

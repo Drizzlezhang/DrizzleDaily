@@ -90,7 +90,6 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TUtils.showShort(getActivity(),themeItems.get(position).getDescribe());
                 Intent intent=new Intent(getActivity(), ThemeListActivity.class);
                 intent.putExtra("themeid",themeItems.get(position).getId());
                 startActivity(intent);

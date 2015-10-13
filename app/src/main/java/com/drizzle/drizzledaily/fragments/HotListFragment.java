@@ -1,5 +1,6 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.drizzle.drizzledaily.R;
@@ -18,6 +20,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -85,6 +88,15 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setRefreshing(true);
+        mListView.setDivider(null);
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), ReadActivity.class);
+                intent.putExtra("readid", hotListItems.get(position).getId());
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

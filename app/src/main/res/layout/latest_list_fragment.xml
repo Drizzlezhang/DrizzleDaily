@@ -12,8 +12,7 @@
         android:id="@+id/latest_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="10dp"
-        android:dividerHeight="10dp"
+        android:layout_margin="5dp"
         android:scrollbars="none"></ListView>
     </android.support.v4.widget.SwipeRefreshLayout>
 

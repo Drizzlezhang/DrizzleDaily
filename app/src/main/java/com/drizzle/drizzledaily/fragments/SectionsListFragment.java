@@ -1,5 +1,6 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,6 +20,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.SectionListActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -88,7 +90,9 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TUtils.showShort(getActivity(), sectionsItems.get(position).getDescribe());
+                Intent intent=new Intent(getActivity(), SectionListActivity.class);
+                intent.putExtra("sectionid",sectionsItems.get(position).getId());
+                startActivity(intent);
             }
         });
     }

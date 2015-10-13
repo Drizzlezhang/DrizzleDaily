@@ -55,6 +55,8 @@ public class Config {
      */
     public static final String SECTION_LIST = "http://news-at.zhihu.com/api/3/sections";
 
+    public static final String SECTION_LIST_EVERY = "http://news-at.zhihu.com/api/3/section/";
+
     /**
      * 热门消息列表
      * http://news-at.zhihu.com/api/3/news/hot

@@ -1,5 +1,6 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,7 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.utils.TUtils;
+import com.drizzle.drizzledaily.ui.ReadActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -76,7 +77,9 @@ public class HeadPagerFragment extends Fragment{
         headImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TUtils.showShort(getActivity(),id+"");
+                Intent intent = new Intent(getActivity(), ReadActivity.class);
+                intent.putExtra("readid", id);
+                startActivity(intent);
             }
         });
         return view;

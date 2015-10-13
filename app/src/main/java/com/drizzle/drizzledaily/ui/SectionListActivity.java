@@ -9,14 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
@@ -36,50 +31,37 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-/*
-主题日报列表activity
+
+/**
+ * 专栏列表activity
  */
-public class ThemeListActivity extends AppCompatActivity {
+public class SectionListActivity extends AppCompatActivity {
 
-    private Toolbar mToolbar;
-
-    @Bind(R.id.theme_list)
-    ListView mListView;
-
-    @Bind(R.id.theme_list_headimg)
-    ImageView mImageView;
-
-    @Bind(R.id.theme_list_title)
-    TextView mTextView;
-
-    @Bind(R.id.theme_list_des)
-    TextView themeDes;
-
-    private int themeId;
-    private String imgUrl;
-    private List<BaseListItem> themeList = new ArrayList<>();
+    private int sectionid;
+    private List<BaseListItem> sectionList=new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
+
+    @Bind(R.id.section_list_toolbar)
+    Toolbar mToolbar;
+
+    @Bind(R.id.section_list_listview)
+    ListView mListView;
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    Glide.with(ThemeListActivity.this)
-                            .load(imgUrl)
-                            .centerCrop()
-                            .error(R.mipmap.default_pic)
-                            .crossFade()
-                            .into(mImageView);
-                    adapter = new CommonAdapter<BaseListItem>(ThemeListActivity.this, themeList, R.layout.simple_list_item) {
+                    adapter = new CommonAdapter<BaseListItem>(SectionListActivity.this, sectionList, R.layout.base_list_item) {
                         @Override
                         public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.simple_item_title, item.getTitle());
+                            helper.setText(R.id.base_item_title, item.getTitle());
+                            helper.setImg(R.id.base_item_img, item.getImgUrl());
+                            helper.setText(R.id.base_item_date, item.getDate());
                         }
                     };
                     mListView.setAdapter(adapter);
-                    setListViewHeightBasedOnChildren(mListView);
-                    break;
+                   break;
                 default:
                     break;
             }
@@ -89,15 +71,15 @@ public class ThemeListActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_theme);
+        setContentView(R.layout.activity_section_list);
         ButterKnife.bind(this);
         initViews();
-        Intent intent = getIntent();
-        themeId = intent.getIntExtra("themeid", -1);
-        OkHttpClientManager.getAsyn(Config.THEME_LIST_EVERY + themeId, new OkHttpClientManager.StringCallback() {
+        Intent intent=getIntent();
+        sectionid=intent.getIntExtra("sectionid",-1);
+        OkHttpClientManager.getAsyn(Config.SECTION_LIST_EVERY + sectionid, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
-                TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
+                TUtils.showShort(SectionListActivity.this, "服务器出问题了");
             }
 
             @Override
@@ -105,28 +87,28 @@ public class ThemeListActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     String name = jsonObject.getString("name");
-                    mTextView.setText(name);
-                    imgUrl = jsonObject.getString("background");
-                    themeDes.setText(jsonObject.getString("description"));
+                    mToolbar.setTitle(name);
                     JSONArray stories = jsonObject.getJSONArray("stories");
                     for (int i = 0; i < stories.length(); i++) {
                         JSONObject story = stories.getJSONObject(i);
                         int id = story.getInt("id");
                         String title = story.getString("title");
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-                        themeList.add(baseListItem);
+                        String imgUrl = story.getJSONArray("images").getString(0);
+                        String date=story.getString("display_date");
+                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, date);
+                        sectionList.add(baseListItem);
                     }
                     handler.sendEmptyMessage(0);
                 } catch (JSONException e) {
                     e.printStackTrace();
-                    TUtils.showShort(ThemeListActivity.this, "json error");
+                    TUtils.showShort(SectionListActivity.this, "json error");
                 }
             }
         });
     }
 
-    private void initViews() {
-        mToolbar = (Toolbar) findViewById(R.id.theme_list_toolbar);
+    private void initViews(){
+        mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -134,35 +116,11 @@ public class ThemeListActivity extends AppCompatActivity {
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(ThemeListActivity.this, SectionReadActivity.class);
-                intent.putExtra("readid", themeList.get(position).getId());
+                Intent intent = new Intent(SectionListActivity.this, ReadActivity.class);
+                intent.putExtra("readid", sectionList.get(position).getId());
                 startActivity(intent);
             }
         });
-    }
-
-    /**
-     * 测量listview高度，解决和scrollview冲突问题
-     *
-     * @param listView
-     */
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
-        }
-
-        int totalHeight = 0;
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
     }
 
     @Override
@@ -180,5 +138,4 @@ public class ThemeListActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
 }

@@ -1,5 +1,6 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +24,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.DataUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
@@ -136,9 +138,12 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TUtils.showShort(getActivity(), baseListItems.get(position).getTitle());
+                Intent intent = new Intent(getActivity(), ReadActivity.class);
+                intent.putExtra("readid", baseListItems.get(position-1).getId());
+                startActivity(intent);
             }
         });
+        mListView.setDivider(null);
     }
 
     /**

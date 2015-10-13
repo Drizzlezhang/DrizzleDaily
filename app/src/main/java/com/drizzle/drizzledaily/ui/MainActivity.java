@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.fragments.CollectListFragment;
 import com.drizzle.drizzledaily.fragments.HotListFragment;
 import com.drizzle.drizzledaily.fragments.LatestListFragment;
 import com.drizzle.drizzledaily.fragments.SectionsListFragment;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private HotListFragment hotListFragment;
     private ThemeListFragment themeListFragment;
     private SectionsListFragment sectionsListFragment;
+    private CollectListFragment collectListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,7 +111,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 fragmentID = 4;
                 break;
             case R.id.drawer_menu_like:
-
+                if (collectListFragment == null) {
+                    collectListFragment = new CollectListFragment();
+                }
+                fragmentManager.beginTransaction().replace(R.id.main_frg_container, collectListFragment).commit();
+                mToolbar.setTitle("我的收藏");
+                fragmentID = 5;
                 break;
             case R.id.drawer_menu_settings:
 
