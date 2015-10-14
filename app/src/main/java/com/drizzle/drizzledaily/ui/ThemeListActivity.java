@@ -72,7 +72,7 @@ public class ThemeListActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    Glide.with(ThemeListActivity.this)
+                    Glide.with(getApplicationContext())
                             .load(imgUrl)
                             .centerCrop()
                             .error(R.mipmap.default_pic)
@@ -102,8 +102,11 @@ public class ThemeListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_theme);
         ButterKnife.bind(this);
         initViews();
-        Intent intent = getIntent();
-        themeId = intent.getIntExtra("themeid", -1);
+        if (savedInstanceState!=null){
+            themeId=savedInstanceState.getInt("themeid");
+        }else{
+            themeId = getIntent().getIntExtra("themeid", -1);
+        }
         OkHttpClientManager.getAsyn(Config.THEME_LIST_EVERY + themeId, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -152,6 +155,12 @@ public class ThemeListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("themeid", themeId);
+        super.onSaveInstanceState(outState);
     }
 
     /**

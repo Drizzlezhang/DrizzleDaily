@@ -46,7 +46,7 @@ public class SearchFragment extends android.support.v4.app.Fragment {
 
     private CommonAdapter<BaseListItem> adapter;
     private String id;
-    private List<BaseListItem> baseListItems=new ArrayList<>();
+    private List<BaseListItem> baseListItems = new ArrayList<>();
 
     private Handler handler = new Handler() {
         @Override
@@ -81,16 +81,26 @@ public class SearchFragment extends android.support.v4.app.Fragment {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString("timeid", id);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        id = getArguments().getString("timeid");
+        if (savedInstanceState != null) {
+            id = savedInstanceState.getString("timeid");
+        } else {
+            id = getArguments().getString("timeid");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.bind(this,view);
+        ButterKnife.bind(this, view);
         Log.d("url", Config.BEFORE_NEWS + id);
         OkHttpClientManager.getAsyn(Config.BEFORE_NEWS + id, new OkHttpClientManager.StringCallback() {
             @Override

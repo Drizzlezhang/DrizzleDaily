@@ -171,12 +171,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.drawer_menu_home:
-                if (latestListFragment == null) {
+                if (fragmentID == 1) {
+                     //TODO
+                } else {
                     latestListFragment = new LatestListFragment();
+                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, latestListFragment).commit();
+                    mToolbar.setTitle("知乎日报");
+                    fragmentID = 1;
                 }
-                fragmentManager.beginTransaction().replace(R.id.main_frg_container, latestListFragment).commit();
-                fragmentID = 1;
-                mToolbar.setTitle("知乎日报");
                 break;
             case R.id.drawer_menu_hot:
                 if (hotListFragment == null) {
@@ -221,7 +223,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.drawer_menu_drizzle:
                 //在需要分享的地方添加代码：
-
                 wechatShare(1);//分享到微信朋友圈
                 break;
             default:

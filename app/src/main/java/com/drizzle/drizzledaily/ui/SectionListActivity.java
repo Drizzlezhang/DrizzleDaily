@@ -42,7 +42,7 @@ import butterknife.ButterKnife;
 public class SectionListActivity extends AppCompatActivity {
 
     private int sectionid;
-    private List<BaseListItem> sectionList=new ArrayList<>();
+    private List<BaseListItem> sectionList = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
     @Bind(R.id.section_list_toolbar)
@@ -68,7 +68,7 @@ public class SectionListActivity extends AppCompatActivity {
                         }
                     };
                     mListView.setAdapter(adapter);
-                   break;
+                    break;
                 default:
                     break;
             }
@@ -77,15 +77,18 @@ public class SectionListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
         ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_list);
         ButterKnife.bind(this);
         initViews();
-        Intent intent=getIntent();
-        sectionid=intent.getIntExtra("sectionid",-1);
+        if (savedInstanceState != null) {
+            sectionid = savedInstanceState.getInt("sectionid");
+        } else {
+            sectionid = getIntent().getIntExtra("sectionid", -1);
+        }
         OkHttpClientManager.getAsyn(Config.SECTION_LIST_EVERY + sectionid, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -105,7 +108,7 @@ public class SectionListActivity extends AppCompatActivity {
                         int id = story.getInt("id");
                         String title = story.getString("title");
                         String imgUrl = story.getJSONArray("images").getString(0);
-                        String date=story.getString("display_date");
+                        String date = story.getString("display_date");
                         BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, date);
                         sectionList.add(baseListItem);
                     }
@@ -120,7 +123,7 @@ public class SectionListActivity extends AppCompatActivity {
         });
     }
 
-    private void initViews(){
+    private void initViews() {
         mToolbar.setTitle("");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -150,5 +153,11 @@ public class SectionListActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("sectionid", sectionid);
+        super.onSaveInstanceState(outState);
     }
 }

@@ -20,10 +20,10 @@ import butterknife.ButterKnife;
 /**
  * 顶部viewpager嵌套的fragment
  */
-public class HeadPagerFragment extends Fragment{
-    private static String IMGKEY="imgkey";
-    private static String TITLEKEY="titlekey";
-    private static String IDKEY="idkey";
+public class HeadPagerFragment extends Fragment {
+    private static String IMGKEY = "imgkey";
+    private static String TITLEKEY = "titlekey";
+    private static String IDKEY = "idkey";
     @Bind(R.id.head_fragment_img)
     ImageView headImg;
 
@@ -39,17 +39,18 @@ public class HeadPagerFragment extends Fragment{
 
     /**
      * 获取单个fargment的标题，图片地址，文章id
+     *
      * @param imageurl
      * @param text
      * @param pagerid
      * @return
      */
-    public static HeadPagerFragment newInstance(String imageurl,String text,int pagerid){
-        Bundle args=new Bundle();
-        args.putString(IMGKEY,imageurl);
+    public static HeadPagerFragment newInstance(String imageurl, String text, int pagerid) {
+        Bundle args = new Bundle();
+        args.putString(IMGKEY, imageurl);
         args.putString(TITLEKEY, text);
-        args.putInt(IDKEY,pagerid);
-        HeadPagerFragment headPagerFragment=new HeadPagerFragment();
+        args.putInt(IDKEY, pagerid);
+        HeadPagerFragment headPagerFragment = new HeadPagerFragment();
         headPagerFragment.setArguments(args);
         return headPagerFragment;
     }
@@ -57,16 +58,22 @@ public class HeadPagerFragment extends Fragment{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        imgUrl=getArguments().getString(IMGKEY);
-        titleText=getArguments().getString(TITLEKEY);
-        id=getArguments().getInt(IDKEY);
+        if (savedInstanceState != null) {
+            imgUrl = savedInstanceState.getString(IMGKEY);
+            titleText = savedInstanceState.getString(TITLEKEY);
+            id = savedInstanceState.getInt(IDKEY);
+        } else {
+            imgUrl = getArguments().getString(IMGKEY);
+            titleText = getArguments().getString(TITLEKEY);
+            id = getArguments().getInt(IDKEY);
+        }
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view=inflater.inflate(R.layout.header_pager_fragment,container,false);
-        ButterKnife.bind(this,view);
+        View view = inflater.inflate(R.layout.header_pager_fragment, container, false);
+        ButterKnife.bind(this, view);
         headTitle.setText(titleText);
         Glide.with(getActivity())
                 .load(imgUrl)
@@ -83,5 +90,13 @@ public class HeadPagerFragment extends Fragment{
             }
         });
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(IMGKEY, imgUrl);
+        outState.putString(TITLEKEY, titleText);
+        outState.putInt(IDKEY, id);
+        super.onSaveInstanceState(outState);
     }
 }

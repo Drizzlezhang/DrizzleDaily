@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -98,8 +99,12 @@ public class ReadActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initViews();
         collectDB = CollectDB.getInstance(this);
-        Intent intent = getIntent();
-        readid = intent.getIntExtra("readid", -1);
+        if (savedInstanceState!=null){
+            readid=savedInstanceState.getInt("readid");
+        }else{
+            Intent intent = getIntent();
+            readid = intent.getIntExtra("readid", -1);
+        }
         OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -134,6 +139,12 @@ public class ReadActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         readWeb.getSettings().setJavaScriptEnabled(true);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("readid",readid);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

@@ -60,7 +60,7 @@ public class SectionReadActivity extends AppCompatActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    String css = "<link rel=\"stylesheet\" href=\""+ cssadd + "type=\"text/css\">";
+                    String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
                     String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
                     html = html.replace("<div class=\"img-place-holder\">", "");
                     sectionWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
@@ -73,16 +73,19 @@ public class SectionReadActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-        int thid=preferences.getInt(Config.SKIN_NUMBER,0);
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int thid = preferences.getInt(Config.SKIN_NUMBER, 0);
         ThemeUtils.onActivityCreateSetTheme(this, thid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_read);
         ButterKnife.bind(this);
         initViews();
         collectDB = CollectDB.getInstance(this);
-        Intent intent = getIntent();
-        readid = intent.getIntExtra("readid", -1);
+        if (savedInstanceState != null) {
+            readid = savedInstanceState.getInt("readid");
+        } else {
+            readid = getIntent().getIntExtra("readid", -1);
+        }
         OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -101,7 +104,7 @@ public class SectionReadActivity extends AppCompatActivity {
                     JSONObject theme = jsonObject.getJSONObject("theme");
                     themeid = theme.getInt("id");
                     themename = theme.getString("name");
-                    cssadd=jsonObject.getJSONArray("css").getString(0);
+                    cssadd = jsonObject.getJSONArray("css").getString(0);
                     handler.sendEmptyMessage(0);
                     mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
@@ -122,6 +125,13 @@ public class SectionReadActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt("readid", readid);
+        super.onSaveInstanceState(outState);
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_read, menu);
@@ -132,7 +142,6 @@ public class SectionReadActivity extends AppCompatActivity {
         int id = item.getItemId();
         switch (id) {
             case android.R.id.home:
-
                 finish();
                 break;
             case R.id.action_collect:

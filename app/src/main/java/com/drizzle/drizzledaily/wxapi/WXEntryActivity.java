@@ -24,8 +24,8 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
         ThemeUtils.onActivityCreateSetTheme(this, themeid);
         api = WXAPIFactory.createWXAPI(this, "wxcdfd8ea3dceaf767", false);
         api.handleIntent(getIntent(), this);
@@ -40,15 +40,20 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
     public void onResp(BaseResp resp) {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
-                TUtils.showShort(this,"success");
+                TUtils.showShort(this, "success");
+                finish();
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-                TUtils.showShort(this,"cancel");
+                TUtils.showShort(this, "cancel");
                 //分享取消
+                finish();
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                TUtils.showShort(this,"refuse");
+                TUtils.showShort(this, "refuse");
                 //分享拒绝
+                finish();
+                break;
+            default:
                 break;
         }
     }
