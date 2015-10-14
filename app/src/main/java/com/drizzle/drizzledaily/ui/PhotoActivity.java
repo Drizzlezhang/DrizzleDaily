@@ -1,5 +1,7 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -8,6 +10,8 @@ import android.view.MenuItem;
 
 import com.bm.library.PhotoView;
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.utils.ThemeUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -24,6 +28,9 @@ public class PhotoActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);

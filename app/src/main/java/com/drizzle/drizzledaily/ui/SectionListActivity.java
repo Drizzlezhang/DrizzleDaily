@@ -1,6 +1,8 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -19,6 +22,7 @@ import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.squareup.okhttp.Request;
 
 import org.json.JSONArray;
@@ -47,12 +51,15 @@ public class SectionListActivity extends AppCompatActivity {
     @Bind(R.id.section_list_listview)
     ListView mListView;
 
+    @Bind(R.id.section_list_progress)
+    ProgressBar mProgressBar;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    adapter = new CommonAdapter<BaseListItem>(SectionListActivity.this, sectionList, R.layout.base_list_item) {
+                    adapter = new CommonAdapter<BaseListItem>(getApplicationContext(), sectionList, R.layout.base_list_item) {
                         @Override
                         public void convert(ViewHolder helper, BaseListItem item) {
                             helper.setText(R.id.base_item_title, item.getTitle());
@@ -70,6 +77,9 @@ public class SectionListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_list);
         ButterKnife.bind(this);
@@ -80,6 +90,7 @@ public class SectionListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(SectionListActivity.this, "服务器出问题了");
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -99,9 +110,11 @@ public class SectionListActivity extends AppCompatActivity {
                         sectionList.add(baseListItem);
                     }
                     handler.sendEmptyMessage(0);
+                    mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(SectionListActivity.this, "json error");
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by user on 2015/10/13.
+ * 收藏夹列表适配器，设置了删除按钮回调
  */
 public class SwipeAdapter extends BaseSwipeAdapter {
 
@@ -54,7 +54,7 @@ public class SwipeAdapter extends BaseSwipeAdapter {
         v.findViewById(R.id.delete_collect_item).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                 callDeleteBack.onDeleteBtnclick(collectBeanList.get(position).getId());
+                callDeleteBack.onDeleteBtnclick(collectBeanList.get(position).getId());
             }
         });
         return v;

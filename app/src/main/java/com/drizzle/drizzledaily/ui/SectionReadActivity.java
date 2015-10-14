@@ -1,25 +1,28 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ProgressBar;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.drizzle.drizzledaily.utils.ThemeUtils;
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.squareup.okhttp.Request;
 
 import org.json.JSONException;
@@ -38,11 +41,11 @@ public class SectionReadActivity extends AppCompatActivity {
     @Bind(R.id.section_read_toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.section_read_title)
-    TextView sectionTitle;
-
     @Bind(R.id.section_read_webview)
     WebView sectionWeb;
+
+    @Bind(R.id.section_read_progress)
+    ProgressBar mProgressBar;
 
     private String body;
     private int readid;
@@ -70,6 +73,9 @@ public class SectionReadActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int thid=preferences.getInt(Config.SKIN_NUMBER,0);
+        ThemeUtils.onActivityCreateSetTheme(this, thid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_read);
         ButterKnife.bind(this);
@@ -81,6 +87,7 @@ public class SectionReadActivity extends AppCompatActivity {
             @Override
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -88,7 +95,7 @@ public class SectionReadActivity extends AppCompatActivity {
                 try {
                     JSONObject jsonObject = new JSONObject(response);
                     String name = jsonObject.getString("title");
-                    sectionTitle.setText(name);
+                    mToolbar.setTitle(name);
                     pagetitle = name;
                     body = jsonObject.getString("body");
                     JSONObject theme = jsonObject.getJSONObject("theme");
@@ -96,15 +103,18 @@ public class SectionReadActivity extends AppCompatActivity {
                     themename = theme.getString("name");
                     cssadd=jsonObject.getJSONArray("css").getString(0);
                     handler.sendEmptyMessage(0);
+                    mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(SectionReadActivity.this, "json error");
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });
     }
 
     private void initViews() {
+        mToolbar.setTitle("载入中");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -126,25 +136,25 @@ public class SectionReadActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_collect:
-                new MaterialDialog.Builder(SectionReadActivity.this)
-                        .title("收藏")
-                        .content("将这篇文章添加到本地收藏夹。")
-                        .positiveText("确定")
-                        .negativeText("取消")
-                        .callback(new MaterialDialog.ButtonCallback() {
+                CollectBean bean = new CollectBean(readid, pagetitle, 2);
+                collectDB.deleteCollect(readid);
+                collectDB.saveCollect(bean);
+                new SnackBar.Builder(this)
+                        .withOnClickListener(new SnackBar.OnMessageClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                CollectBean bean = new CollectBean(readid, pagetitle, 2);
-                                collectDB.saveCollect(bean);
-                                TUtils.showShort(SectionReadActivity.this, "已收藏");
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                super.onNegative(dialog);
+                            public void onMessageClick(Parcelable token) {
+                                collectDB.deleteCollect(readid);
+                                TUtils.showShort(SectionReadActivity.this, "已取消收藏");
                             }
                         })
+                        .withMessage("已收藏到本地文件夹。")
+                        .withActionMessage("取消")
+                        .withTextColorId(R.color.colorAccent)
+                        .withDuration(SnackBar.LONG_SNACK)
                         .show();
+                break;
+            case R.id.action_share:
+
                 break;
             default:
                 break;

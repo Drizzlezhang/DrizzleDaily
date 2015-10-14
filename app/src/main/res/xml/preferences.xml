@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="个人设置"
+    >
+    <PreferenceCategory
+        android:title="阅读设置"
+        android:summary="设置阅读方式和界面"
+        >
+        <CheckBoxPreference
+            android:title="是否阅读"
+            android:key="check"
+            android:summaryOn="yes"
+            android:summaryOff="no"
+            android:defaultValue="true"
+            >
+        </CheckBoxPreference>
+    </PreferenceCategory>
+    <Preference
+        android:title="clicktest"
+        android:key="click"
+        android:summary="click"
+        >
+    </Preference>
+</PreferenceScreen>

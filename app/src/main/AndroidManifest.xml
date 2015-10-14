@@ -1,48 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.drizzle.drizzledaily" >
+<manifest
+    package="com.drizzle.drizzledaily"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--微信分享签名-->
+    <!--7a078a92b08e93c4b88d761a97457aaf-->
+
+    <!--AppID：wxcdfd8ea3dceaf767-->
+
+    <!--AppSecret：ecec4e070dbc08e808835e45b3ff2727-->
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/labal_icon"
         android:label="@string/app_name"
-        android:supportsRtl="true" >
+        android:supportsRtl="true"
+        android:theme="@style/TealAppTheme">
         <activity
             android:name=".ui.MainActivity"
-            android:theme="@style/AppTheme" >
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
 
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".wxapi.WXEntryActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
         </activity>
         <activity
             android:name=".ui.GildeActivity"
-            android:theme="@style/StartTheme" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:screenOrientation="portrait"
+            android:theme="@style/StartTheme.NoActionBar">
         </activity>
         <activity
             android:name=".ui.PhotoActivity"
-            android:theme="@style/AppTheme" >
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.ThemeListActivity"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.SectionListActivity"
-            android:theme="@style/AppTheme" >
+            android:screenOrientation="portrait">
         </activity>
         <activity
             android:name=".ui.ReadActivity"
-            android:theme="@style/AppTheme" >
+            android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ui.SectionReadActivity"
-                  android:theme="@style/AppTheme" >
+        <activity
+            android:name=".ui.SectionReadActivity"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:screenOrientation="portrait">
         </activity>
     </application>
 

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -44,6 +45,10 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
 
     @Bind(R.id.sections_grid)
     GridView mGridView;
+
+    @Bind(R.id.sections_progress)
+    ProgressBar mProgressBar;
+
 
     private List<BaseListItem> sectionsItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
@@ -115,6 +120,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(getActivity(), "服务器出问题了");
                 mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -131,12 +137,14 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
                         String describe = story.getString("description");
                         BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
                         sectionsItems.add(baseListItem);
+                        mProgressBar.setVisibility(View.GONE);
                     }
                     handler.sendEmptyMessage(0);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(getActivity(), "Json数据解析错误");
                     mRefreshLayout.setRefreshing(false);
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });

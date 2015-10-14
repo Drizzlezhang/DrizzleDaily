@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -36,7 +37,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- *主题日报列表
+ * 主题日报列表
  */
 public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
     @Bind(R.id.theme_grid_refresh)
@@ -44,6 +45,10 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
 
     @Bind(R.id.theme_grid)
     GridView mGridView;
+
+    @Bind(R.id.theme_list_frg_progress)
+    ProgressBar mProgressBar;
+
 
     private List<BaseListItem> themeItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
@@ -90,8 +95,8 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(getActivity(), ThemeListActivity.class);
-                intent.putExtra("themeid",themeItems.get(position).getId());
+                Intent intent = new Intent(getActivity(), ThemeListActivity.class);
+                intent.putExtra("themeid", themeItems.get(position).getId());
                 startActivity(intent);
             }
         });
@@ -115,6 +120,7 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(getActivity(), "服务器出问题了");
                 mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -132,11 +138,13 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
                         BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
                         themeItems.add(baseListItem);
                     }
+                    mProgressBar.setVisibility(View.GONE);
                     handler.sendEmptyMessage(0);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(getActivity(), "Json数据解析错误");
                     mRefreshLayout.setRefreshing(false);
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });

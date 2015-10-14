@@ -22,22 +22,22 @@
             android:id="@+id/drawer_menu_like"
             android:icon="@mipmap/mine"
             android:title="我的收藏"/>
+        <item
+            android:id="@+id/drawer_menu_choose"
+            android:icon="@mipmap/choose"
+            android:title="寻找日报"/>
     </group>
 
     <item android:title="设置">
         <menu>
-            <item
-                android:id="@+id/drawer_menu_night"
-                android:icon="@mipmap/night"
-                android:title="夜间模式"/>
             <item
                 android:id="@+id/drawer_menu_settings"
                 android:icon="@mipmap/settings"
                 android:title="个人设置"/>
             <item
                 android:id="@+id/drawer_menu_drizzle"
-                android:icon="@mipmap/settings"
-                android:title="关于作者"/>
+                android:icon="@mipmap/ic_android"
+                android:title="关于本应用"/>
         </menu>
     </item>
 

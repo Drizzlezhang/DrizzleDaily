@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -50,6 +51,9 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
     @Bind(R.id.latest_list)
     ListView mListView;
+
+    @Bind(R.id.latest_progress)
+    ProgressBar mProgressBar;
 
     private ViewPager mViewPager;
 
@@ -159,6 +163,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(getActivity(), "服务器出问题了");
                 mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -190,6 +195,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                             headpagerItems.add(headbaseListItem);
                         }
                         Log.d("json", topstories.length() + "");
+                        mProgressBar.setVisibility(View.GONE);
                         handler.sendEmptyMessage(0);
                     } else {
                         data = DataUtils.printDate(DataUtils.getBeforeDay(mCalendar));
@@ -205,12 +211,14 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                             baseListItems.add(baseListItem);
                         }
                         handler.sendEmptyMessage(1);
+                        mProgressBar.setVisibility(View.GONE);
                         mCalendar = DataUtils.getBeforeDay(mCalendar);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(getActivity(), "Json数据解析错误");
                     mRefreshLayout.setRefreshing(false);
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });

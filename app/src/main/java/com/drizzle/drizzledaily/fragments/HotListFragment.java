@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -45,6 +46,10 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     @Bind(R.id.hot_list)
     ListView mListView;
+
+    @Bind(R.id.hot_progress)
+    ProgressBar mProgressBar;
+
 
     private List<BaseListItem> hotListItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
@@ -117,6 +122,7 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(getActivity(), "服务器出问题了");
                 mRefreshLayout.setRefreshing(false);
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -134,10 +140,12 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
                         hotListItems.add(baseListItem);
                     }
                     handler.sendEmptyMessage(0);
+                    mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(getActivity(), "Json数据解析错误");
                     mRefreshLayout.setRefreshing(false);
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });

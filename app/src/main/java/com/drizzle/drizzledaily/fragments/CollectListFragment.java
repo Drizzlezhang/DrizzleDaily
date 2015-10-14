@@ -5,12 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.SwipeAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
@@ -30,6 +33,12 @@ import butterknife.ButterKnife;
 public class CollectListFragment extends android.support.v4.app.Fragment {
     @Bind(R.id.collect_listview)
     ListView listView;
+
+    @Bind(R.id.collect_fab)
+    FloatingActionButton floatingActionButton;
+
+    @Bind(R.id.collect_center_text)
+    TextView centerText;
 
     private CollectDB collectDB;
     private List<CollectBean> collectBeanList;
@@ -51,6 +60,7 @@ public class CollectListFragment extends android.support.v4.app.Fragment {
                         }
                     });
                     listView.setAdapter(adapter);
+                    isTextVisible();
                     break;
                 default:
                     break;
@@ -91,6 +101,38 @@ public class CollectListFragment extends android.support.v4.app.Fragment {
                 }
             }
         });
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new MaterialDialog.Builder(getActivity())
+                        .title("删除整个收藏夹？")
+                        .content("点击确定将将删除您收藏的所有文章。")
+                        .positiveText("确定")
+                        .negativeText("取消")
+                        .callback(new MaterialDialog.ButtonCallback() {
+                            @Override
+                            public void onPositive(MaterialDialog dialog) {
+                                collectDB.wipeCollect();
+                                handler.sendEmptyMessage(1);
+                            }
+
+                            @Override
+                            public void onNegative(MaterialDialog dialog) {
+                                super.onNegative(dialog);
+                            }
+                        })
+                        .show();
+            }
+        });
         return view;
+    }
+
+    private void isTextVisible() {
+        int size = collectBeanList.size();
+        if (size == 0) {
+            centerText.setVisibility(View.VISIBLE);
+        } else {
+            centerText.setVisibility(View.GONE);
+        }
     }
 }

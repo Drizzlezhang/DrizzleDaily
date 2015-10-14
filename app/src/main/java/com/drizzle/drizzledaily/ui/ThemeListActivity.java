@@ -1,6 +1,8 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -24,6 +27,7 @@ import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.squareup.okhttp.Request;
 
 import org.json.JSONArray;
@@ -54,6 +58,9 @@ public class ThemeListActivity extends AppCompatActivity {
 
     @Bind(R.id.theme_list_des)
     TextView themeDes;
+
+    @Bind(R.id.theme_list_progress)
+    ProgressBar mProgressBar;
 
     private int themeId;
     private String imgUrl;
@@ -88,6 +95,9 @@ public class ThemeListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_theme);
         ButterKnife.bind(this);
@@ -98,6 +108,7 @@ public class ThemeListActivity extends AppCompatActivity {
             @Override
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -117,9 +128,11 @@ public class ThemeListActivity extends AppCompatActivity {
                         themeList.add(baseListItem);
                     }
                     handler.sendEmptyMessage(0);
+                    mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(ThemeListActivity.this, "json error");
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });

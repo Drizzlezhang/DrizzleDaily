@@ -1,12 +1,64 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!--TEAL主题 原色-->
+    <style name="TealAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/colorPrimary</item>
     </style>
+    <!--red主题 火焰红-->
+    <style name="RedAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+    <!-- Customize your theme here. -->
+    <item name="colorPrimary">@color/redcolorPrimary</item>
+    <item name="colorPrimaryDark">@color/redcolorPrimaryDark</item>
+    <item name="colorAccent">@color/redcolorPrimary</item>
+    </style>
+    <!--blue主题 冷酷蓝-->
+    <style name="BlueAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/bluecolorPrimary</item>
+        <item name="colorPrimaryDark">@color/bluecolorPrimaryDark</item>
+        <item name="colorAccent">@color/bluecolorPrimary</item>
+    </style>
+    <!--black主题 高级黑-->
+    <style name="BlackAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/blackcolorPrimary</item>
+        <item name="colorPrimaryDark">@color/blackcolorPrimaryDark</item>
+        <item name="colorAccent">@color/blackcolorPrimary</item>
+    </style>
+    <!--orange主题 热烈橙-->
+    <style name="OrangeAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/orangecolorPrimary</item>
+        <item name="colorPrimaryDark">@color/orangecolorPrimaryDark</item>
+        <item name="colorAccent">@color/orangecolorPrimary</item>
+    </style>
+    <!--green主题 生命绿-->
+    <style name="GreenAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/greencolorPrimary</item>
+        <item name="colorPrimaryDark">@color/greencolorPrimaryDark</item>
+        <item name="colorAccent">@color/greencolorPrimary</item>
+    </style>
+    <!--purple主题 高贵紫-->
+    <style name="PurpleAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/purplecolorPrimary</item>
+        <item name="colorPrimaryDark">@color/purplecolorPrimaryDark</item>
+        <item name="colorAccent">@color/purplecolorPrimary</item>
+    </style>
+    <!--yellow主题 香蕉黄-->
+    <style name="YellowAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/yellowcolorPrimary</item>
+        <item name="colorPrimaryDark">@color/yellowcolorPrimaryDark</item>
+        <item name="colorAccent">@color/yellowcolorPrimary</item>
+    </style>
+
+
     <!--导航页theme-->
     <style name="StartTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
@@ -14,12 +66,11 @@
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/black</item>
     </style>
-
-    <style name="AppTheme.NoActionBar">
+    <style name="StartTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
 
 </resources>

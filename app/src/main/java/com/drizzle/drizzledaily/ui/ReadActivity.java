@@ -1,19 +1,22 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.Snackbar;
+import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.CollectBean;
@@ -21,6 +24,8 @@ import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.drizzle.drizzledaily.utils.ThemeUtils;
+import com.github.mrengineer13.snackbar.SnackBar;
 import com.squareup.okhttp.Request;
 
 import org.json.JSONException;
@@ -58,12 +63,15 @@ public class ReadActivity extends AppCompatActivity {
     @Bind(R.id.read_webview)
     WebView readWeb;
 
+    @Bind(R.id.read_progress)
+    ProgressBar mProgressBar;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    Glide.with(ReadActivity.this)
+                    Glide.with(getApplicationContext())
                             .load(ImgUrl)
                             .centerCrop()
                             .error(R.mipmap.default_pic)
@@ -82,6 +90,9 @@ public class ReadActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
         ButterKnife.bind(this);
@@ -93,6 +104,7 @@ public class ReadActivity extends AppCompatActivity {
             @Override
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(ReadActivity.this, "服务器出问题了");
+                mProgressBar.setVisibility(View.GONE);
             }
 
             @Override
@@ -107,9 +119,11 @@ public class ReadActivity extends AppCompatActivity {
                     readImgres.setText(jsonObject.getString("image_source"));
                     cssadd = jsonObject.getJSONArray("css").getString(0);
                     handler.sendEmptyMessage(0);
+                    mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(ReadActivity.this, "json error");
+                    mProgressBar.setVisibility(View.GONE);
                 }
             }
         });
@@ -136,25 +150,25 @@ public class ReadActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.action_collect:
-                new MaterialDialog.Builder(ReadActivity.this)
-                        .title("收藏")
-                        .content("将这篇文章添加到本地收藏夹。")
-                        .positiveText("确定")
-                        .negativeText("取消")
-                        .callback(new MaterialDialog.ButtonCallback() {
+                CollectBean bean = new CollectBean(readid, pagetltle, 1);
+                collectDB.deleteCollect(readid);
+                collectDB.saveCollect(bean);
+                new SnackBar.Builder(this)
+                        .withOnClickListener(new SnackBar.OnMessageClickListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                CollectBean bean = new CollectBean(readid, pagetltle, 1);
-                                collectDB.saveCollect(bean);
-                                TUtils.showShort(ReadActivity.this, "已收藏");
-                            }
-
-                            @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                super.onNegative(dialog);
+                            public void onMessageClick(Parcelable token) {
+                                collectDB.deleteCollect(readid);
+                                TUtils.showShort(ReadActivity.this, "已取消收藏");
                             }
                         })
+                        .withMessage("已收藏到本地文件夹。")
+                        .withActionMessage("取消") // OR
+                        .withTextColorId(R.color.colorAccent)
+                        .withDuration(SnackBar.LONG_SNACK)
                         .show();
+                break;
+            case R.id.action_share:
+
                 break;
             default:
                 break;
