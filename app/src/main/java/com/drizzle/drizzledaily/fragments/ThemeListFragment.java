@@ -49,11 +49,6 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
 
     @Bind(R.id.theme_grid)
     GridView mGridView;
-
-    @Bind(R.id.theme_list_frg_progress)
-    ProgressBar mProgressBar;
-
-
     private List<BaseListItem> themeItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
@@ -108,7 +103,6 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
-        mRefreshLayout.setRefreshing(true);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -130,15 +124,18 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        Log.d("get", "list");
-        mRefreshLayout.setRefreshing(true);
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+            }
+        });
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
-                    mProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -171,13 +168,11 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
                 BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
                 themeItems.add(baseListItem);
             }
-            mProgressBar.setVisibility(View.GONE);
             handler.sendEmptyMessage(0);
         } catch (JSONException e) {
             e.printStackTrace();
             TUtils.showShort(getActivity(), "Json数据解析错误");
             mRefreshLayout.setRefreshing(false);
-            mProgressBar.setVisibility(View.GONE);
         }
     }
 }

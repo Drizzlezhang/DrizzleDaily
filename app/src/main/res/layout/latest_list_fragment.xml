@@ -1,29 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v4.widget.SwipeRefreshLayout
-    android:id="@+id/latest_list_refresh"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/latest_list_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <FrameLayout
+    <ListView
+        android:id="@+id/latest_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_margin="5dp"
+        android:scrollbars="none"></ListView>
 
-        <ListView
-            android:id="@+id/latest_list"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:scrollbars="none"></ListView>
 
-        <ProgressBar
-            android:id="@+id/latest_progress"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            />
-    </FrameLayout>
 </android.support.v4.widget.SwipeRefreshLayout>
 
 

@@ -50,10 +50,6 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Bind(R.id.hot_list)
     ListView mListView;
 
-    @Bind(R.id.hot_progress)
-    ProgressBar mProgressBar;
-
-
     private List<BaseListItem> hotListItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
@@ -103,7 +99,6 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
         ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
-        mRefreshLayout.setRefreshing(true);
         mListView.setDivider(null);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -131,14 +126,18 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        mRefreshLayout.setRefreshing(true);
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+            }
+        });
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
-                    mProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -174,12 +173,10 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 hotListItems.add(baseListItem);
             }
             handler.sendEmptyMessage(0);
-            mProgressBar.setVisibility(View.GONE);
         } catch (JSONException e) {
             e.printStackTrace();
             TUtils.showShort(getActivity(), "Json数据解析错误");
             mRefreshLayout.setRefreshing(false);
-            mProgressBar.setVisibility(View.GONE);
         }
     }
 }

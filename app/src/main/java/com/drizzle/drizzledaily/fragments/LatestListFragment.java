@@ -54,10 +54,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
     @Bind(R.id.latest_list)
     ListView mListView;
-
-    @Bind(R.id.latest_progress)
-    ProgressBar mProgressBar;
-
     private ViewPager mViewPager;
 
     private Calendar mCalendar;
@@ -145,7 +141,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
-        mRefreshLayout.setRefreshing(true);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -182,14 +177,18 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        mRefreshLayout.setRefreshing(true);
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                mRefreshLayout.setRefreshing(true);
+            }
+        });
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
-                    mProgressBar.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -222,7 +221,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                         e.printStackTrace();
                         TUtils.showShort(getActivity(), "Json数据解析错误");
                         mRefreshLayout.setRefreshing(false);
-                        mProgressBar.setVisibility(View.GONE);
                     }
                 }
             });
@@ -272,7 +270,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                 BaseListItem headbaseListItem = new BaseListItem(headid, headtitle, headimgUrl, false, "");
                 headpagerItems.add(headbaseListItem);
             }
-            mProgressBar.setVisibility(View.GONE);
             handler.sendEmptyMessage(0);
         } catch (JSONException e) {
             e.printStackTrace();
