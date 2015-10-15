@@ -1,8 +1,9 @@
 package com.drizzle.drizzledaily.ui;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,19 +17,32 @@ import android.webkit.WebView;
 import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.adapter.CommonAdapter;
+import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.CollectBean;
+import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.orhanobut.dialogplus.DialogPlus;
+import com.orhanobut.dialogplus.OnBackPressListener;
+import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.okhttp.Request;
+import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
+import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
+import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
+import com.tencent.mm.sdk.openapi.IWXAPI;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -54,6 +68,12 @@ public class SectionReadActivity extends AppCompatActivity {
     private String pagetitle;
     private CollectDB collectDB;
     private String cssadd;
+    private String pageUrl;
+
+    private DialogPlus dialogPlus;
+    private CommonAdapter<ShareBean> adapter;
+    private List<ShareBean> shareBeanList = new ArrayList<>();
+    private IWXAPI wxApi;
 
     private Handler handler = new Handler() {
         @Override
@@ -79,6 +99,7 @@ public class SectionReadActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_read);
         ButterKnife.bind(this);
+        initData();
         initViews();
         collectDB = CollectDB.getInstance(this);
         if (savedInstanceState != null) {
@@ -86,6 +107,8 @@ public class SectionReadActivity extends AppCompatActivity {
         } else {
             readid = getIntent().getIntExtra("readid", -1);
         }
+        wxApi = WXAPIFactory.createWXAPI(this, "wxcdfd8ea3dceaf767");
+        wxApi.registerApp("wxcdfd8ea3dceaf767");
         OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -105,6 +128,7 @@ public class SectionReadActivity extends AppCompatActivity {
                     themeid = theme.getInt("id");
                     themename = theme.getString("name");
                     cssadd = jsonObject.getJSONArray("css").getString(0);
+                    pageUrl = jsonObject.getString("share_url");
                     handler.sendEmptyMessage(0);
                     mProgressBar.setVisibility(View.GONE);
                 } catch (JSONException e) {
@@ -116,12 +140,71 @@ public class SectionReadActivity extends AppCompatActivity {
         });
     }
 
+    private void initData() {
+        ShareBean bean1 = new ShareBean(R.mipmap.frends, "分享到朋友圈");
+        ShareBean bean2 = new ShareBean(R.mipmap.weixin, "分享给微信好友");
+        shareBeanList.add(bean1);
+        shareBeanList.add(bean2);
+        adapter = new CommonAdapter<ShareBean>(this, shareBeanList, R.layout.share_list_item) {
+            @Override
+            public void convert(ViewHolder helper, ShareBean item) {
+                helper.setText(R.id.share_item_text, item.getText());
+                helper.setImgByid(R.id.share_item_img, item.getImgId());
+            }
+        };
+    }
+
     private void initViews() {
         mToolbar.setTitle("载入中");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
         sectionWeb.getSettings().setJavaScriptEnabled(true);
+        dialogPlus = DialogPlus.newDialog(SectionReadActivity.this)
+                .setAdapter(adapter)
+                .setOnBackPressListener(new OnBackPressListener() {
+                    @Override
+                    public void onBackPressed(DialogPlus dialogPlus) {
+                        dialogPlus.dismiss();
+                    }
+                })
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        if (position == 0) {
+                            //分享到朋友圈
+                            wechatShare(1, pagetitle, pageUrl);
+                        } else if (position == 1) {
+                            //分享给微信好友
+                            wechatShare(0, pagetitle, pageUrl);
+                        }
+                        dialogPlus.dismiss();
+                    }
+                })
+                .setCancelable(true)
+                .setPadding(20, 30, 20, 20)
+                .create();
+    }
+
+    /**
+     * 微信分享 （这里仅提供一个分享网页的示例，其它请参看官网示例代码）
+     *
+     * @param flag(0:分享到微信好友，1：分享到微信朋友圈)
+     */
+    private void wechatShare(int flag, String shareTitle, String shareUrl) {
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = shareUrl;
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = shareTitle;
+        msg.description = "来自Drizzle的应用";
+        //这里替换一张自己工程里的图片资源
+        Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
+        msg.setThumbImage(thumb);
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = String.valueOf(System.currentTimeMillis());
+        req.message = msg;
+        req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
+        wxApi.sendReq(req);
     }
 
     @Override
@@ -163,7 +246,7 @@ public class SectionReadActivity extends AppCompatActivity {
                         .show();
                 break;
             case R.id.action_share:
-
+                dialogPlus.show();
                 break;
             default:
                 break;

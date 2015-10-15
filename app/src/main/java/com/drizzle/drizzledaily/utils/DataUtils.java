@@ -3,7 +3,7 @@ package com.drizzle.drizzledaily.utils;
 import java.util.Calendar;
 
 /**
- * Created by drizzle on 2015/10/11.
+ * 处理日期工具类
  */
 public class DataUtils {
     /**

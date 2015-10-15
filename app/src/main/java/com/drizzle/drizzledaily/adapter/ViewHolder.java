@@ -80,11 +80,17 @@ public class ViewHolder {
         Glide.with(context)
                 .load(url)
                 .centerCrop()
-                .error(R.mipmap.default_pic)
+                .error(R.mipmap.place_img)
                 .crossFade()
                 .into(imageView);
         return this;
 
+    }
+
+    public ViewHolder setImgByid(int viewId, int imgid) {
+        ImageView imageView = getView(viewId);
+        imageView.setImageResource(imgid);
+        return this;
     }
 
 }

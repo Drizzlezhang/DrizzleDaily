@@ -16,10 +16,4 @@
             >
         </CheckBoxPreference>
     </PreferenceCategory>
-    <Preference
-        android:title="clicktest"
-        android:key="click"
-        android:summary="click"
-        >
-    </Preference>
 </PreferenceScreen>

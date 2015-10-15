@@ -17,7 +17,10 @@ public class Config {
      * 存放皮肤代号的sharedperference文件地址
      */
     public static final String SKIN_NUMBER = "skinnumber";
-
+    /**
+     * 存放缓存数据的sharedperference文件地址
+     */
+    public static final String CACHE_DATA = "cachedata";
     /**
      * 引导页图片,四个分辨率
      * http://news-at.zhihu.com/api/4/start-image/（1080*1776/320*432/480*728/720*1184)

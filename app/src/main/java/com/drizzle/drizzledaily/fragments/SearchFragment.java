@@ -19,6 +19,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
@@ -35,9 +36,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * 用于显示根据
+ * 用于显示根据日期查找到的日报数据
  */
-public class SearchFragment extends android.support.v4.app.Fragment {
+public class SearchFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener {
     @Bind(R.id.search_list)
     ListView mListView;
 
@@ -102,6 +103,7 @@ public class SearchFragment extends android.support.v4.app.Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
         Log.d("url", Config.BEFORE_NEWS + id);
+        ((MainActivity)getActivity()).setToolbarClick(this);
         OkHttpClientManager.getAsyn(Config.BEFORE_NEWS + id, new OkHttpClientManager.StringCallback() {
             @Override
             public void onFailure(Request request, IOException e) {
@@ -142,5 +144,8 @@ public class SearchFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-
+    @Override
+    public void onClickToolbar() {
+        mListView.smoothScrollToPosition(0);
+    }
 }

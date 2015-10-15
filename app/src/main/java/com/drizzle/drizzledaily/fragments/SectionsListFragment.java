@@ -1,6 +1,8 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,7 +23,9 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.SectionListActivity;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -37,9 +41,9 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * Created by user on 2015/10/12.
+ * 专栏列表
  */
-public class SectionsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class SectionsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
     @Bind(R.id.sections_grid_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -84,19 +88,32 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
         View view = inflater.inflate(R.layout.sections_list_fragment, container, false);
         ButterKnife.bind(this, view);
         initViews();
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        String sectioncachejson = sharedPreferences.getString("sectionlistcache", "");
+        if (sectioncachejson.equals("")) {
+            //TODO
+        } else {
+            manageSectionList(sectioncachejson);
+        }
         getLists(Config.SECTION_LIST);
         return view;
     }
 
+    @Override
+    public void onClickToolbar() {
+        mGridView.smoothScrollToPosition(0);
+    }
+
     private void initViews() {
+        ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setRefreshing(true);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent=new Intent(getActivity(), SectionListActivity.class);
-                intent.putExtra("sectionid",sectionsItems.get(position).getId());
+                Intent intent = new Intent(getActivity(), SectionListActivity.class);
+                intent.putExtra("sectionid", sectionsItems.get(position).getId());
                 startActivity(intent);
             }
         });
@@ -107,6 +124,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     public void onRefresh() {
         getLists(Config.SECTION_LIST);
     }
+
     /**
      * 请求数据并存入list
      *
@@ -115,39 +133,52 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     private void getLists(final String listUrl) {
         Log.d("get", "list");
         mRefreshLayout.setRefreshing(true);
-        OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(getActivity(), "服务器出问题了");
-                mRefreshLayout.setRefreshing(false);
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                try {
-                    sectionsItems.clear();
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray data = jsonObject.getJSONArray("data");
-                    for (int i = 0; i < data.length(); i++) {
-                        JSONObject story = data.getJSONObject(i);
-                        int id = story.getInt("id");
-                        String title = story.getString("name");
-                        String imgUrl = story.getString("thumbnail");
-                        String describe = story.getString("description");
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
-                        sectionsItems.add(baseListItem);
-                        mProgressBar.setVisibility(View.GONE);
-                    }
-                    handler.sendEmptyMessage(0);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(getActivity(), "Json数据解析错误");
+        if (NetUtils.isConnected(getActivity())) {
+            OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
                     mProgressBar.setVisibility(View.GONE);
                 }
+
+                @Override
+                public void onResponse(String response) {
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("sectionlistcache", response);
+                    editor.commit();
+                    manageSectionList(response);
+                }
+            });
+        } else {
+            mRefreshLayout.setRefreshing(false);
+            TUtils.showShort(getActivity(), "网络未连接");
+        }
+    }
+
+    private void manageSectionList(String sectionsJson) {
+        try {
+            sectionsItems.clear();
+            JSONObject jsonObject = new JSONObject(sectionsJson);
+            JSONArray data = jsonObject.getJSONArray("data");
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject story = data.getJSONObject(i);
+                int id = story.getInt("id");
+                String title = story.getString("name");
+                String imgUrl = story.getString("thumbnail");
+                String describe = story.getString("description");
+                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
+                sectionsItems.add(baseListItem);
+                mProgressBar.setVisibility(View.GONE);
             }
-        });
+            handler.sendEmptyMessage(0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            TUtils.showShort(getActivity(), "Json数据解析错误");
+            mRefreshLayout.setRefreshing(false);
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 }
 

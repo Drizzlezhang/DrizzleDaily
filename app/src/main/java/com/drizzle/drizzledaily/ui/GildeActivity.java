@@ -102,6 +102,7 @@ public class GildeActivity extends AppCompatActivity {
             Glide.with(this)
                     .load(file)
                     .centerCrop()
+                    .placeholder(R.mipmap.start_img)
                     .error(R.mipmap.start_img)
                     .crossFade()
                     .into(startImg);

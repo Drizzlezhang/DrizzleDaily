@@ -18,6 +18,7 @@ import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.SwipeAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.db.CollectDB;
+import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.ui.SectionReadActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -30,7 +31,7 @@ import butterknife.ButterKnife;
 /**
  * 收藏夹列表
  */
-public class CollectListFragment extends android.support.v4.app.Fragment {
+public class CollectListFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener{
     @Bind(R.id.collect_listview)
     ListView listView;
 
@@ -83,6 +84,7 @@ public class CollectListFragment extends android.support.v4.app.Fragment {
         collectDB = CollectDB.getInstance(getActivity());
         collectBeanList = collectDB.findCollects();
         handler.sendEmptyMessage(1);
+        ((MainActivity)getActivity()).setToolbarClick(this);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -125,6 +127,11 @@ public class CollectListFragment extends android.support.v4.app.Fragment {
             }
         });
         return view;
+    }
+
+    @Override
+    public void onClickToolbar() {
+        listView.smoothScrollToPosition(0);
     }
 
     private void isTextVisible() {

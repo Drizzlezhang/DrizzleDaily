@@ -1,6 +1,8 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -10,7 +12,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,8 +26,10 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.DataUtils;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -45,7 +48,7 @@ import butterknife.ButterKnife;
 /**
  * 首页列表fragment，包括一个viewpager和一个listview
  */
-public class LatestListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class LatestListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
     @Bind(R.id.latest_list_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -106,6 +109,12 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         }
     };
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -114,36 +123,53 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         View headview = inflater.inflate(R.layout.head_viewpager, null, true);
         mViewPager = (ViewPager) headview.findViewById(R.id.head_viewpager);
         mListView.addHeaderView(headview);
+        mCalendar = Calendar.getInstance();
         initViews();
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        String latestcache = sharedPreferences.getString("latestcache", "");
+        if (latestcache.equals("")) {
+            //TODO
+        } else {
+            manageLatestJson(latestcache);
+        }
         getLists(Config.LATEST_NEWS);
         return view;
     }
 
+    @Override
+    public void onClickToolbar() {
+        mListView.smoothScrollToPosition(0);
+    }
+
     private void initViews() {
+        ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setRefreshing(true);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
-                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    if (view.getLastVisiblePosition() == view.getCount() - 1) {
-                        String time = DataUtils.printCalendar(mCalendar);
-                        getLists(Config.BEFORE_NEWS + time);
-                    }
+                switch (scrollState) {
+                    case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
+                        if (view.getLastVisiblePosition() == view.getCount() - 1) {
+                            String time = DataUtils.printCalendar(mCalendar);
+                            getLists(Config.BEFORE_NEWS + time);
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-
             }
         });
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra("readid", baseListItems.get(position-1).getId());
+                intent.putExtra("readid", baseListItems.get(position - 1).getId());
                 startActivity(intent);
             }
         });
@@ -151,82 +177,107 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     /**
-     * 请求数据并存入list
+     * 请求数据并存入list，先判断有没有网，有网就用
      *
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        Log.d("get", "list");
         mRefreshLayout.setRefreshing(true);
-        OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(getActivity(), "服务器出问题了");
-                mRefreshLayout.setRefreshing(false);
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                String data = "";
-                try {
-                    if (listUrl.equals(Config.LATEST_NEWS)) {
-                        baseListItems.clear();
-                        headpagerItems.clear();
-                        mCalendar = Calendar.getInstance();
-                        data = DataUtils.printDate(mCalendar);
-                        JSONObject jsonObject = new JSONObject(response);
-                        JSONArray stories = jsonObject.getJSONArray("stories");
-                        for (int i = 0; i < stories.length(); i++) {
-                            JSONObject story = stories.getJSONObject(i);
-                            int id = story.getInt("id");
-                            String title = story.getString("title");
-                            String imgUrl = story.getJSONArray("images").getString(0);
-                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, data);
-                            baseListItems.add(baseListItem);
-                        }
-                        JSONArray topstories = jsonObject.getJSONArray("top_stories");
-                        for (int i = 0; i < topstories.length(); i++) {
-                            JSONObject headstory = topstories.getJSONObject(i);
-                            int headid = headstory.getInt("id");
-                            String headtitle = headstory.getString("title");
-                            String headimgUrl = headstory.getString("image");
-                            BaseListItem headbaseListItem = new BaseListItem(headid, headtitle, headimgUrl, false, "");
-                            headpagerItems.add(headbaseListItem);
-                        }
-                        Log.d("json", topstories.length() + "");
-                        mProgressBar.setVisibility(View.GONE);
-                        handler.sendEmptyMessage(0);
-                    } else {
-                        data = DataUtils.printDate(DataUtils.getBeforeDay(mCalendar));
-                        mCalendar = DataUtils.getAfterDay(mCalendar);
-                        JSONObject jsonObject = new JSONObject(response);
-                        JSONArray stories = jsonObject.getJSONArray("stories");
-                        for (int i = 0; i < stories.length(); i++) {
-                            JSONObject story = stories.getJSONObject(i);
-                            int id = story.getInt("id");
-                            String title = story.getString("title");
-                            String imgUrl = story.getJSONArray("images").getString(0);
-                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, data);
-                            baseListItems.add(baseListItem);
-                        }
-                        handler.sendEmptyMessage(1);
-                        mProgressBar.setVisibility(View.GONE);
-                        mCalendar = DataUtils.getBeforeDay(mCalendar);
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(getActivity(), "Json数据解析错误");
+        if (NetUtils.isConnected(getActivity())) {
+            OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
                     mProgressBar.setVisibility(View.GONE);
                 }
+
+                @Override
+                public void onResponse(String response) {
+                    String data = "";
+                    try {
+                        if (listUrl.equals(Config.LATEST_NEWS)) {
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString("latestcache", response);
+                            editor.commit();
+                            manageLatestJson(response);
+                        } else {
+                            data = DataUtils.printDate(DataUtils.getBeforeDay(mCalendar));
+                            mCalendar = DataUtils.getAfterDay(mCalendar);
+                            JSONObject jsonObject = new JSONObject(response);
+                            JSONArray stories = jsonObject.getJSONArray("stories");
+                            for (int i = 0; i < stories.length(); i++) {
+                                JSONObject story = stories.getJSONObject(i);
+                                int id = story.getInt("id");
+                                String title = story.getString("title");
+                                String imgUrl = story.getJSONArray("images").getString(0);
+                                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, data);
+                                baseListItems.add(baseListItem);
+                            }
+                            handler.sendEmptyMessage(1);
+                            mCalendar = DataUtils.getBeforeDay(mCalendar);
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        TUtils.showShort(getActivity(), "Json数据解析错误");
+                        mRefreshLayout.setRefreshing(false);
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                }
+            });
+        } else {
+            if (listUrl.equals(Config.LATEST_NEWS)) {
+                TUtils.showShort(getActivity(), "网络未连接");
+                mRefreshLayout.setRefreshing(false);
+            } else {
+                TUtils.showShort(getActivity(), "网络未连接");
+                mRefreshLayout.setRefreshing(false);
             }
-        });
+        }
+
     }
 
     @Override
     public void onRefresh() {
         getLists(Config.LATEST_NEWS);
+    }
+
+    /**
+     * 处理请求到和或者缓存的最新数据
+     *
+     * @param jsonResponse
+     */
+    private void manageLatestJson(String jsonResponse) {
+        try {
+            baseListItems.clear();
+            headpagerItems.clear();
+            String date = DataUtils.printDate(mCalendar);
+            JSONObject jsonObject = new JSONObject(jsonResponse);
+            JSONArray stories = jsonObject.getJSONArray("stories");
+            for (int i = 0; i < stories.length(); i++) {
+                JSONObject story = stories.getJSONObject(i);
+                int id = story.getInt("id");
+                String title = story.getString("title");
+                String imgUrl = story.getJSONArray("images").getString(0);
+                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, date);
+                baseListItems.add(baseListItem);
+            }
+            JSONArray topstories = jsonObject.getJSONArray("top_stories");
+            for (int i = 0; i < topstories.length(); i++) {
+                JSONObject headstory = topstories.getJSONObject(i);
+                int headid = headstory.getInt("id");
+                String headtitle = headstory.getString("title");
+                String headimgUrl = headstory.getString("image");
+                BaseListItem headbaseListItem = new BaseListItem(headid, headtitle, headimgUrl, false, "");
+                headpagerItems.add(headbaseListItem);
+            }
+            mProgressBar.setVisibility(View.GONE);
+            handler.sendEmptyMessage(0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            TUtils.showShort(getActivity(), "json error");
+        }
     }
 
 

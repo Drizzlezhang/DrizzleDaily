@@ -78,7 +78,7 @@ public class HeadPagerFragment extends Fragment {
         Glide.with(getActivity())
                 .load(imgUrl)
                 .centerCrop()
-                .error(R.mipmap.default_pic)
+                .error(R.mipmap.place_img)
                 .crossFade()
                 .into(headImg);
         headImg.setOnClickListener(new View.OnClickListener() {

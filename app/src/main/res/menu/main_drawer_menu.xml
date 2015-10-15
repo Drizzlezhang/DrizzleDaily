@@ -37,7 +37,7 @@
             <item
                 android:id="@+id/drawer_menu_drizzle"
                 android:icon="@mipmap/ic_android"
-                android:title="关于本应用"/>
+                android:title="关于应用"/>
         </menu>
     </item>
 

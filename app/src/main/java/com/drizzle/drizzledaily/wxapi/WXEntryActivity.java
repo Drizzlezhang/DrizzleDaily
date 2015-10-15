@@ -15,7 +15,7 @@ import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 
 /**
- * Created by user on 2015/10/14.
+ * 调用微信activity
  */
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
 
@@ -40,16 +40,17 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
     public void onResp(BaseResp resp) {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
-                TUtils.showShort(this, "success");
+                //分享成功
+                TUtils.showShort(this, "分享成功");
                 finish();
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-                TUtils.showShort(this, "cancel");
+                TUtils.showShort(this, "分享取消");
                 //分享取消
                 finish();
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                TUtils.showShort(this, "refuse");
+                TUtils.showShort(this, "分享被拒绝");
                 //分享拒绝
                 finish();
                 break;

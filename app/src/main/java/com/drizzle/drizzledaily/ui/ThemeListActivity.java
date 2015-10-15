@@ -40,7 +40,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-/*
+/**
 主题日报列表activity
  */
 public class ThemeListActivity extends AppCompatActivity {
@@ -75,7 +75,7 @@ public class ThemeListActivity extends AppCompatActivity {
                     Glide.with(getApplicationContext())
                             .load(imgUrl)
                             .centerCrop()
-                            .error(R.mipmap.default_pic)
+                            .error(R.mipmap.place_img)
                             .crossFade()
                             .into(mImageView);
                     adapter = new CommonAdapter<BaseListItem>(ThemeListActivity.this, themeList, R.layout.simple_list_item) {

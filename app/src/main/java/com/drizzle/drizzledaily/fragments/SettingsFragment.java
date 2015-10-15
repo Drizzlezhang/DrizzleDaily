@@ -27,10 +27,6 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, Preference preference) {
         switch (preference.getKey()) {
-            case "click":
-                TUtils.showShort(getActivity(), "click");
-                getActivity().finish();
-                break;
             case "check":
                 CheckBoxPreference checkBoxPreference = (CheckBoxPreference) findPreference("check");
                 TUtils.showShort(getActivity(), checkBoxPreference.isChecked() + "");

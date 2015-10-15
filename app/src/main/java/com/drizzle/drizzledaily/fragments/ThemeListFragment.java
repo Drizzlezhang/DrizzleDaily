@@ -1,6 +1,8 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -21,7 +23,9 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ThemeListActivity;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -39,7 +43,7 @@ import butterknife.ButterKnife;
 /**
  * 主题日报列表
  */
-public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
+public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
     @Bind(R.id.theme_grid_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -84,11 +88,24 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         View view = inflater.inflate(R.layout.theme_list_fragment, container, false);
         ButterKnife.bind(this, view);
         initViews();
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        String themecachejson = sharedPreferences.getString("themelistcache", "");
+        if (themecachejson.equals("")) {
+           //TODO
+        } else {
+            manageThemeJson(themecachejson);
+        }
         getLists(Config.THEME_LIST);
         return view;
     }
 
+    @Override
+    public void onClickToolbar() {
+        mGridView.smoothScrollToPosition(0);
+    }
+
     private void initViews() {
+        ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mRefreshLayout.setRefreshing(true);
@@ -115,38 +132,52 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
     private void getLists(final String listUrl) {
         Log.d("get", "list");
         mRefreshLayout.setRefreshing(true);
-        OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(getActivity(), "服务器出问题了");
-                mRefreshLayout.setRefreshing(false);
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                try {
-                    themeItems.clear();
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray others = jsonObject.getJSONArray("others");
-                    for (int i = 0; i < others.length(); i++) {
-                        JSONObject story = others.getJSONObject(i);
-                        int id = story.getInt("id");
-                        String title = story.getString("name");
-                        String imgUrl = story.getString("thumbnail");
-                        String describe = story.getString("description");
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
-                        themeItems.add(baseListItem);
-                    }
-                    mProgressBar.setVisibility(View.GONE);
-                    handler.sendEmptyMessage(0);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(getActivity(), "Json数据解析错误");
+        if (NetUtils.isConnected(getActivity())) {
+            OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
                     mProgressBar.setVisibility(View.GONE);
                 }
+
+                @Override
+                public void onResponse(String response) {
+                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("themelistcache", response);
+                    editor.commit();
+                    manageThemeJson(response);
+                }
+            });
+        } else {
+            TUtils.showShort(getActivity(), "网络未连接");
+            mRefreshLayout.setRefreshing(false);
+        }
+    }
+
+
+    private void manageThemeJson(String themeJson) {
+        try {
+            themeItems.clear();
+            JSONObject jsonObject = new JSONObject(themeJson);
+            JSONArray others = jsonObject.getJSONArray("others");
+            for (int i = 0; i < others.length(); i++) {
+                JSONObject story = others.getJSONObject(i);
+                int id = story.getInt("id");
+                String title = story.getString("name");
+                String imgUrl = story.getString("thumbnail");
+                String describe = story.getString("description");
+                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
+                themeItems.add(baseListItem);
             }
-        });
+            mProgressBar.setVisibility(View.GONE);
+            handler.sendEmptyMessage(0);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            TUtils.showShort(getActivity(), "Json数据解析错误");
+            mRefreshLayout.setRefreshing(false);
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 }
