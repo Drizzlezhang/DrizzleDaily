@@ -39,7 +39,6 @@ public class CollectDB {
             values.put("collect_type", collect.getType());
             db.insert("Collect", null, values);
         }
-
     }
 
     public void wipeCollect() {

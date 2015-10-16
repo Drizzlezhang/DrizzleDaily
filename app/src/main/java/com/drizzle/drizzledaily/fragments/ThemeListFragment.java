@@ -84,7 +84,7 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
         String themecachejson = sharedPreferences.getString("themelistcache", "");
         if (themecachejson.equals("")) {
-           //TODO
+            //TODO
         } else {
             manageThemeJson(themecachejson);
         }
@@ -117,7 +117,19 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
     }
 
     /**
+     * 在销毁视图的时候停止刷新，避免视图重叠
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mRefreshLayout.isRefreshing()) {
+            swipeRefresh(false);
+        }
+    }
+
+    /**
      * swiperefresh在主线程中无法消失，需要新开线程
+     *
      * @param refresh
      */
     private void swipeRefresh(final boolean refresh) {
@@ -139,7 +151,7 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-       swipeRefresh(true);
+        swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
@@ -159,12 +171,13 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
             });
         } else {
             TUtils.showShort(getActivity(), "网络未连接");
-           swipeRefresh(false);
+            swipeRefresh(false);
         }
     }
 
     /**
      * 处理json数据
+     *
      * @param themeJson
      */
     private void manageThemeJson(String themeJson) {

@@ -49,7 +49,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     private CommonAdapter<BaseListItem> adapter;
     private String id;
     private List<BaseListItem> baseListItems = new ArrayList<>();
-    private static final  String TIMEID="timeid";
+    private static final String TIMEID = "timeid";
 
     private Handler handler = new Handler() {
         @Override
@@ -84,12 +84,6 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     }
 
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putString(TIMEID, id);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
@@ -104,8 +98,8 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
-        ((MainActivity)getActivity()).setToolbarClick(this);
-        if (NetUtils.isConnected(getActivity())){
+        ((MainActivity) getActivity()).setToolbarClick(this);
+        if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(Config.BEFORE_NEWS + id, new OkHttpClientManager.StringCallback() {
                 @Override
                 public void onFailure(Request request, IOException e) {
@@ -135,7 +129,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
                     }
                 }
             });
-        }else{
+        } else {
             TUtils.showShort(getActivity(), "网络未连接");
             mProgressBar.setVisibility(View.GONE);
         }
@@ -149,6 +143,12 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
             }
         });
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putString(TIMEID, id);
+        super.onSaveInstanceState(outState);
     }
 
     @Override

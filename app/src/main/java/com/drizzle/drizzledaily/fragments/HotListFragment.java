@@ -116,6 +116,17 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     /**
+     * 在销毁视图的时候停止刷新，避免视图重叠
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mRefreshLayout.isRefreshing()) {
+            swipeRefresh(false);
+        }
+    }
+
+    /**
      * swiperefresh在主线程中无法消失，需要新开线程
      *
      * @param refresh

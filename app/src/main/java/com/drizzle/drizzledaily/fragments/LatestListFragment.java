@@ -241,20 +241,32 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     /**
+     * 在销毁视图的时候强制停止刷新，避免视图重叠
+     */
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (mRefreshLayout.isRefreshing()) {
+            swipeRefresh(false);
+        }
+    }
+
+    /**
      * swiperefresh在主线程中无法消失，需要新开线程
+     *
      * @param refresh
      */
     private void swipeRefresh(final boolean refresh) {
-            mRefreshLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (refresh) {
-                        mRefreshLayout.setRefreshing(true);
-                    }else{
-                        mRefreshLayout.setRefreshing(false);
-                    }
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (refresh) {
+                    mRefreshLayout.setRefreshing(true);
+                } else {
+                    mRefreshLayout.setRefreshing(false);
                 }
-            });
+            }
+        });
     }
 
     /**
@@ -292,4 +304,12 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             TUtils.showShort(getActivity(), "json error");
         }
     }
+
+//    @Override
+//    public void setMenuVisibility(boolean menuVisible) {
+//        super.setMenuVisibility(menuVisible);
+//        if (this.getView() != null) {
+//            this.getView().setVisibility(menuVisible ? View.VISIBLE : View.GONE);
+//        }
+//    }
 }
