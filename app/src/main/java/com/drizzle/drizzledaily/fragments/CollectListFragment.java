@@ -18,6 +18,7 @@ import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.SwipeAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.db.CollectDB;
+import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.ui.SectionReadActivity;
@@ -84,7 +85,14 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         collectDB = CollectDB.getInstance(getActivity());
         collectBeanList = collectDB.findCollects();
         handler.sendEmptyMessage(1);
+        initViews();
+        return view;
+    }
+
+
+    private void initViews(){
         ((MainActivity)getActivity()).setToolbarClick(this);
+        //根据收藏文章的type决定跳转的阅读页面activity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -92,11 +100,11 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
                 int type = bean.getType();
                 if (type == 1) {
                     Intent intent = new Intent(getActivity(), ReadActivity.class);
-                    intent.putExtra("readid", bean.getId());
+                    intent.putExtra(Config.READID, bean.getId());
                     startActivity(intent);
                 } else if (type == 2) {
                     Intent intent = new Intent(getActivity(), SectionReadActivity.class);
-                    intent.putExtra("readid", bean.getId());
+                    intent.putExtra(Config.READID, bean.getId());
                     startActivity(intent);
                 } else {
                     TUtils.showShort(getActivity(), "error");
@@ -107,10 +115,8 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
             @Override
             public void onClick(View v) {
                 new MaterialDialog.Builder(getActivity())
-                        .title("删除整个收藏夹？")
-                        .content("点击确定将将删除您收藏的所有文章。")
-                        .positiveText("确定")
-                        .negativeText("取消")
+                        .title("删除整个收藏夹？").content("点击确定将将删除您收藏的所有文章。")
+                        .positiveText("确定").negativeText("取消")
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
@@ -126,7 +132,6 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
                         .show();
             }
         });
-        return view;
     }
 
     @Override
@@ -134,6 +139,9 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         listView.smoothScrollToPosition(0);
     }
 
+    /**
+     * 根据现有收藏列表长度判断是否显示背景上的字
+     */
     private void isTextVisible() {
         int size = collectBeanList.size();
         if (size == 0) {

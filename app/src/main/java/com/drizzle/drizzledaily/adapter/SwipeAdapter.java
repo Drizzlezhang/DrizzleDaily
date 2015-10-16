@@ -24,7 +24,7 @@ public class SwipeAdapter extends BaseSwipeAdapter {
     CallDeleteBack callDeleteBack = null;
 
     public interface CallDeleteBack {
-        public void onDeleteBtnclick(int pageid);
+        void onDeleteBtnclick(int pageid);
     }
 
     public void setOnDeleteClick(CallDeleteBack deleteClick) {

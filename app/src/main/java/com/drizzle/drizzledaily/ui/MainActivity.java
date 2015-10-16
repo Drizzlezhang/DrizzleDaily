@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     //主activity的fragmentid，默认为首页，1
     private int fragmentID = 1;
     private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
     private LatestListFragment latestListFragment;
     private HotListFragment hotListFragment;
     private ThemeListFragment themeListFragment;
@@ -96,35 +98,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         initData();
         initViews();
-        wxApi = WXAPIFactory.createWXAPI(this, "wxcdfd8ea3dceaf767");
-        wxApi.registerApp("wxcdfd8ea3dceaf767");
+        wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
+        wxApi.registerApp(Config.WXAPPID);
         instance = this;
         calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
         if (latestListFragment == null) {
             latestListFragment = new LatestListFragment();
-            fragmentManager.beginTransaction().replace(R.id.main_frg_container, latestListFragment).commit();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frg_container, latestListFragment).commit();
         }
 
     }
-
-    /**
-     * 设置Mainactivity的Toolbar点击回调
-     */
-    OnToolbarCilckListener cilckListener;
-
-    public interface OnToolbarCilckListener {
-        public void onClickToolbar();
-    }
-
-    public void setToolbarClick(OnToolbarCilckListener listener) {
-        this.cilckListener = listener;
-    }
-
     private void initData() {
         strings = new String[]{"原装色", "火焰红", "冷酷蓝", "高级黑", "热烈橙", "生命绿", "高贵紫", "香蕉黄"};
-        ShareBean bean1 = new ShareBean(R.mipmap.frends, "分享到朋友圈");
-        ShareBean bean2 = new ShareBean(R.mipmap.weixin, "分享给微信好友");
+        ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
+        ShareBean bean2 = new ShareBean(R.mipmap.weixin, "微信好友");
         shareBeanList.add(bean1);
         shareBeanList.add(bean2);
         adapter = new CommonAdapter<ShareBean>(this, shareBeanList, R.layout.share_list_item) {
@@ -151,23 +140,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggle.syncState();
         navigationView.setNavigationItemSelectedListener(this);
         dialogPlus = DialogPlus.newDialog(MainActivity.this)
-                .setAdapter(adapter)
+                .setAdapter(adapter).setHeader(R.layout.share_head)
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        if (position == 0) {
-                            //分享到朋友圈
-                            wechatShare(1);
-                        } else if (position == 1) {
-                            //分享给微信好友
-                            wechatShare(0);
+                        if (position == 1) {
+                            wechatShare(1);//分享到朋友圈
+                        } else if (position == 2) {
+                            wechatShare(0); //分享给微信好友
                         }
                         dialogPlus.dismiss();
                     }
                 })
-                .setCancelable(true)
-                .setPadding(20, 30, 20, 20)
-                .create();
+                .setCancelable(true).setPadding(20, 30, 20, 20).create();
     }
 
     @Override
@@ -220,8 +205,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         WXWebpageObject webpage = new WXWebpageObject();
         webpage.webpageUrl = "http://fir.im/w7g1";
         WXMediaMessage msg = new WXMediaMessage(webpage);
-        msg.title = "知乎日报By Drizzle from fir.im";
-        msg.description = "来自Drizzle的应用";
+        msg.title = "知乎日报By Drizzle";
+        msg.description = "from fir.im";
         //这里替换一张自己工程里的图片资源
         Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
         msg.setThumbImage(thumb);
@@ -240,7 +225,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TODO
                 } else {
                     latestListFragment = new LatestListFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, latestListFragment).commit();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, latestListFragment).commit();
                     mToolbar.setTitle("知乎日报");
                     fragmentID = 1;
                 }
@@ -250,7 +236,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TODO
                 } else {
                     hotListFragment = new HotListFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, hotListFragment).commit();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, hotListFragment).commit();
                     mToolbar.setTitle("大家都在看");
                     fragmentID = 2;
                 }
@@ -260,7 +247,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TODO
                 } else {
                     themeListFragment = new ThemeListFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, themeListFragment).commit();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, themeListFragment).commit();
                     mToolbar.setTitle("主题日报");
                     fragmentID = 3;
                 }
@@ -270,7 +258,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TODO
                 } else {
                     sectionsListFragment = new SectionsListFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, sectionsListFragment).commit();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, sectionsListFragment).commit();
                     mToolbar.setTitle("专栏");
                     fragmentID = 4;
                 }
@@ -280,7 +269,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TODO
                 } else {
                     collectListFragment = new CollectListFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, collectListFragment).commit();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, collectListFragment).commit();
                     mToolbar.setTitle("我的收藏");
                     fragmentID = 5;
                 }
@@ -299,7 +289,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     //TODO
                 } else {
                     developerFragment = new AboutDeveloperFragment();
-                    fragmentManager.beginTransaction().replace(R.id.main_frg_container, developerFragment).commit();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, developerFragment).commit();
                     mToolbar.setTitle("关于开发者");
                     fragmentID = 7;
                 }
@@ -310,6 +301,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
+    /**
+     * 设置Mainactivity的Toolbar点击回调
+     */
+    OnToolbarCilckListener cilckListener;
+
+    public interface OnToolbarCilckListener {
+        void onClickToolbar();
+    }
+
+    public void setToolbarClick(OnToolbarCilckListener listener) {
+        this.cilckListener = listener;
+    }
+
 
     /**
      * 根据选择的日期获取当天的日报内容
@@ -322,7 +326,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             c = DataUtils.getAfterDay(c);
             String time = DataUtils.printCalendar(c);
             searchFragment = SearchFragment.newInstance(time);
-            fragmentManager.beginTransaction().replace(R.id.main_frg_container, searchFragment).commit();
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frg_container, searchFragment).commit();
             mToolbar.setTitle(titleTime);
             fragmentID = 6;
         }

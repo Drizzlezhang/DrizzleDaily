@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +20,7 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 
@@ -39,6 +39,7 @@ import butterknife.ButterKnife;
  * 用于显示根据日期查找到的日报数据
  */
 public class SearchFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener {
+
     @Bind(R.id.search_list)
     ListView mListView;
 
@@ -48,6 +49,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     private CommonAdapter<BaseListItem> adapter;
     private String id;
     private List<BaseListItem> baseListItems = new ArrayList<>();
+    private static final  String TIMEID="timeid";
 
     private Handler handler = new Handler() {
         @Override
@@ -75,7 +77,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
 
     public static SearchFragment newInstance(String timeid) {
         Bundle args = new Bundle();
-        args.putString("timeid", timeid);
+        args.putString(TIMEID, timeid);
         SearchFragment searchFragment = new SearchFragment();
         searchFragment.setArguments(args);
         return searchFragment;
@@ -83,7 +85,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putString("timeid", id);
+        outState.putString(TIMEID, id);
         super.onSaveInstanceState(outState);
     }
 
@@ -91,9 +93,9 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            id = savedInstanceState.getString("timeid");
+            id = savedInstanceState.getString(TIMEID);
         } else {
-            id = getArguments().getString("timeid");
+            id = getArguments().getString(TIMEID);
         }
     }
 
@@ -102,42 +104,47 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
-        Log.d("url", Config.BEFORE_NEWS + id);
         ((MainActivity)getActivity()).setToolbarClick(this);
-        OkHttpClientManager.getAsyn(Config.BEFORE_NEWS + id, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(getActivity(), "服务器出问题了");
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    JSONArray stories = jsonObject.getJSONArray("stories");
-                    for (int i = 0; i < stories.length(); i++) {
-                        JSONObject story = stories.getJSONObject(i);
-                        int id = story.getInt("id");
-                        String title = story.getString("title");
-                        String imgUrl = story.getJSONArray("images").getString(0);
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-                        baseListItems.add(baseListItem);
-                    }
-                    mProgressBar.setVisibility(View.GONE);
-                    handler.sendEmptyMessage(1);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(getActivity(), "Json数据解析错误");
+        if (NetUtils.isConnected(getActivity())){
+            OkHttpClientManager.getAsyn(Config.BEFORE_NEWS + id, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(getActivity(), "服务器出问题了");
                     mProgressBar.setVisibility(View.GONE);
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        JSONArray stories = jsonObject.getJSONArray("stories");
+                        for (int i = 0; i < stories.length(); i++) {
+                            JSONObject story = stories.getJSONObject(i);
+                            int id = story.getInt("id");
+                            String title = story.getString("title");
+                            String imgUrl = story.getJSONArray("images").getString(0);
+                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
+                            baseListItems.add(baseListItem);
+                        }
+                        mProgressBar.setVisibility(View.GONE);
+                        handler.sendEmptyMessage(1);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        TUtils.showShort(getActivity(), "json error");
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                }
+            });
+        }else{
+            TUtils.showShort(getActivity(), "网络未连接");
+            mProgressBar.setVisibility(View.GONE);
+        }
+
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra("readid", baseListItems.get(position).getId());
+                intent.putExtra(Config.READID, baseListItems.get(position).getId());
                 startActivity(intent);
             }
         });

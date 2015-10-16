@@ -77,12 +77,9 @@ public class ViewHolder {
 
     public ViewHolder setImg(int viewId, String url) {
         ImageView imageView = getView(viewId);
-        Glide.with(context)
-                .load(url)
-                .centerCrop()
-                .error(R.mipmap.place_img)
-                .crossFade()
-                .into(imageView);
+        Glide.with(context).load(url)
+                .centerCrop().error(R.mipmap.place_img)
+                .crossFade().into(imageView);
         return this;
 
     }

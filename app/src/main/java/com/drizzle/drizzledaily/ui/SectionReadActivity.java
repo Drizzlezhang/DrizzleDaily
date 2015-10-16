@@ -24,6 +24,7 @@ import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -103,46 +104,52 @@ public class SectionReadActivity extends AppCompatActivity {
         initViews();
         collectDB = CollectDB.getInstance(this);
         if (savedInstanceState != null) {
-            readid = savedInstanceState.getInt("readid");
+            readid = savedInstanceState.getInt(Config.READID);
         } else {
-            readid = getIntent().getIntExtra("readid", -1);
+            readid = getIntent().getIntExtra(Config.READID, -1);
         }
-        wxApi = WXAPIFactory.createWXAPI(this, "wxcdfd8ea3dceaf767");
-        wxApi.registerApp("wxcdfd8ea3dceaf767");
-        OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String name = jsonObject.getString("title");
-                    mToolbar.setTitle(name);
-                    pagetitle = name;
-                    body = jsonObject.getString("body");
-                    JSONObject theme = jsonObject.getJSONObject("theme");
-                    themeid = theme.getInt("id");
-                    themename = theme.getString("name");
-                    cssadd = jsonObject.getJSONArray("css").getString(0);
-                    pageUrl = jsonObject.getString("share_url");
-                    handler.sendEmptyMessage(0);
-                    mProgressBar.setVisibility(View.GONE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(SectionReadActivity.this, "json error");
+        wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
+        wxApi.registerApp(Config.WXAPPID);
+        if (NetUtils.isConnected(SectionReadActivity.this)) {
+            OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
                     mProgressBar.setVisibility(View.GONE);
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String name = jsonObject.getString("title");
+                        mToolbar.setTitle(name);
+                        pagetitle = name;
+                        body = jsonObject.getString("body");
+                        JSONObject theme = jsonObject.getJSONObject("theme");
+                        themeid = theme.getInt("id");
+                        themename = theme.getString("name");
+                        cssadd = jsonObject.getJSONArray("css").getString(0);
+                        pageUrl = jsonObject.getString("share_url");
+                        handler.sendEmptyMessage(0);
+                        mProgressBar.setVisibility(View.GONE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        TUtils.showShort(SectionReadActivity.this, "json error");
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                }
+            });
+        } else {
+            TUtils.showShort(SectionReadActivity.this, "网络未连接");
+            mProgressBar.setVisibility(View.GONE);
+        }
+
     }
 
     private void initData() {
-        ShareBean bean1 = new ShareBean(R.mipmap.frends, "分享到朋友圈");
-        ShareBean bean2 = new ShareBean(R.mipmap.weixin, "分享给微信好友");
+        ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
+        ShareBean bean2 = new ShareBean(R.mipmap.weixin, "微信好友");
         shareBeanList.add(bean1);
         shareBeanList.add(bean2);
         adapter = new CommonAdapter<ShareBean>(this, shareBeanList, R.layout.share_list_item) {
@@ -161,7 +168,7 @@ public class SectionReadActivity extends AppCompatActivity {
         getSupportActionBar().setHomeButtonEnabled(true);
         sectionWeb.getSettings().setJavaScriptEnabled(true);
         dialogPlus = DialogPlus.newDialog(SectionReadActivity.this)
-                .setAdapter(adapter)
+                .setAdapter(adapter).setHeader(R.layout.share_head)
                 .setOnBackPressListener(new OnBackPressListener() {
                     @Override
                     public void onBackPressed(DialogPlus dialogPlus) {
@@ -171,19 +178,15 @@ public class SectionReadActivity extends AppCompatActivity {
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
-                        if (position == 0) {
-                            //分享到朋友圈
-                            wechatShare(1, pagetitle, pageUrl);
-                        } else if (position == 1) {
-                            //分享给微信好友
-                            wechatShare(0, pagetitle, pageUrl);
+                        if (position == 1) {
+                            wechatShare(1, pagetitle, pageUrl); //分享到朋友圈
+                        } else if (position == 2) {
+                            wechatShare(0, pagetitle, pageUrl);//分享给微信好友
                         }
                         dialogPlus.dismiss();
                     }
                 })
-                .setCancelable(true)
-                .setPadding(20, 30, 20, 20)
-                .create();
+                .setCancelable(true).setPadding(20, 30, 20, 20).create();
     }
 
     /**
@@ -196,7 +199,7 @@ public class SectionReadActivity extends AppCompatActivity {
         webpage.webpageUrl = shareUrl;
         WXMediaMessage msg = new WXMediaMessage(webpage);
         msg.title = shareTitle;
-        msg.description = "来自Drizzle的应用";
+        msg.description = "来自知乎日报 By Drizzle";
         //这里替换一张自己工程里的图片资源
         Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
         msg.setThumbImage(thumb);
@@ -209,7 +212,7 @@ public class SectionReadActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("readid", readid);
+        outState.putInt(Config.READID, readid);
         super.onSaveInstanceState(outState);
     }
 

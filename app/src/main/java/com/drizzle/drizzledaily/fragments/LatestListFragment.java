@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -44,6 +42,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 
 /**
  * 首页列表fragment，包括一个viewpager和一个listview
@@ -52,15 +51,17 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     @Bind(R.id.latest_list_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
+    //自动轮播viewpager
     @Bind(R.id.latest_list)
     ListView mListView;
-    private ViewPager mViewPager;
+    private AutoScrollViewPager mViewPager;
 
     private Calendar mCalendar;
     private List<BaseListItem> baseListItems = new ArrayList<>();
     private List<BaseListItem> headpagerItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
     private FragmentStatePagerAdapter fragmentStatePagerAdapter;
+    private static final String LATESTCACHENAME = "latestcache";
 
     public LatestListFragment() {
     }
@@ -92,7 +93,10 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                             return headpagerItems.size();
                         }
                     };
+                    mViewPager.setInterval(1500);
+                    mViewPager.setStopScrollWhenTouch(true);
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
+                    mViewPager.startAutoScroll(2500);
                     mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:
@@ -117,12 +121,12 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         View view = inflater.inflate(R.layout.latest_list_fragment, container, false);
         ButterKnife.bind(this, view);
         View headview = inflater.inflate(R.layout.head_viewpager, null, true);
-        mViewPager = (ViewPager) headview.findViewById(R.id.head_viewpager);
+        mViewPager = (AutoScrollViewPager) headview.findViewById(R.id.head_viewpager);
         mListView.addHeaderView(headview);
         mCalendar = Calendar.getInstance();
         initViews();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-        String latestcache = sharedPreferences.getString("latestcache", "");
+        String latestcache = sharedPreferences.getString(LATESTCACHENAME, "");
         if (latestcache.equals("")) {
             //TODO
         } else {
@@ -164,7 +168,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra("readid", baseListItems.get(position - 1).getId());
+                intent.putExtra(Config.READID, baseListItems.get(position - 1).getId());
                 startActivity(intent);
             }
         });
@@ -177,12 +181,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        mRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mRefreshLayout.setRefreshing(true);
-            }
-        });
+        swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
@@ -198,7 +197,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                         if (listUrl.equals(Config.LATEST_NEWS)) {
                             SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString("latestcache", response);
+                            editor.putString(LATESTCACHENAME, response);
                             editor.commit();
                             manageLatestJson(response);
                         } else {
@@ -227,10 +226,10 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         } else {
             if (listUrl.equals(Config.LATEST_NEWS)) {
                 TUtils.showShort(getActivity(), "网络未连接");
-                mRefreshLayout.setRefreshing(false);
+                swipeRefresh(false);
             } else {
                 TUtils.showShort(getActivity(), "网络未连接");
-                mRefreshLayout.setRefreshing(false);
+                swipeRefresh(false);
             }
         }
 
@@ -239,6 +238,23 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     @Override
     public void onRefresh() {
         getLists(Config.LATEST_NEWS);
+    }
+
+    /**
+     * swiperefresh在主线程中无法消失，需要新开线程
+     * @param refresh
+     */
+    private void swipeRefresh(final boolean refresh) {
+            mRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (refresh) {
+                        mRefreshLayout.setRefreshing(true);
+                    }else{
+                        mRefreshLayout.setRefreshing(false);
+                    }
+                }
+            });
     }
 
     /**
@@ -276,6 +292,4 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             TUtils.showShort(getActivity(), "json error");
         }
     }
-
-
 }

@@ -8,8 +8,8 @@ android {
         applicationId "com.drizzle.drizzledaily"
         minSdkVersion 14
         targetSdkVersion 22
-        versionCode 2
-        versionName "1.0.1"
+        versionCode 4
+        versionName "1.1.0"
     }
     buildTypes {
         release {
@@ -35,7 +35,12 @@ dependencies {
     compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.github.mrengineer13:snackbar:1.2.0'
     compile 'com.orhanobut:dialogplus:1.10@aar'
+    compile('cn.trinea.android.view.autoscrollviewpager:android-auto-scroll-view-pager:1.1.2') {
+        exclude module: 'support-v4'
+    }
     compile files('libs/libammsdk.jar')
+    compile files('libs/Bughd_android_sdk_v1.3.3.jar')
+
 }
 
 

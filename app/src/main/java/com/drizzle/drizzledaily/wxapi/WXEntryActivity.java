@@ -40,18 +40,15 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
     public void onResp(BaseResp resp) {
         switch (resp.errCode) {
             case BaseResp.ErrCode.ERR_OK:
-                //分享成功
-                TUtils.showShort(this, "分享成功");
+                TUtils.showShort(this, "分享成功"); //分享成功
                 finish();
                 break;
             case BaseResp.ErrCode.ERR_USER_CANCEL:
-                TUtils.showShort(this, "分享取消");
-                //分享取消
+                TUtils.showShort(this, "分享取消"); //分享取消
                 finish();
                 break;
             case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                TUtils.showShort(this, "分享被拒绝");
-                //分享拒绝
+                TUtils.showShort(this, "分享被拒绝");//分享拒绝
                 finish();
                 break;
             default:

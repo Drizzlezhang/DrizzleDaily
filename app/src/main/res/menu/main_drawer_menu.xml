@@ -24,7 +24,7 @@
             android:title="我的收藏"/>
         <item
             android:id="@+id/drawer_menu_choose"
-            android:icon="@mipmap/choose"
+            android:icon="@mipmap/choose_grey"
             android:title="寻找日报"/>
     </group>
 

@@ -19,7 +19,6 @@ public class CollectDB {
     private static CollectDB collectDB;
     private SQLiteDatabase db;
 
-
     private CollectDB(Context context) {
         CollectOpenHelper dbHelper = new CollectOpenHelper(context, COLLECT_DB_NAME, null, COLLECT_VERSION);
         db = dbHelper.getWritableDatabase();
@@ -28,7 +27,6 @@ public class CollectDB {
     public synchronized static CollectDB getInstance(Context context) {
         if (collectDB == null) {
             collectDB = new CollectDB(context);
-
         }
         return collectDB;
     }
@@ -36,38 +34,38 @@ public class CollectDB {
     public void saveCollect(CollectBean collect) {
         if (collect != null) {
             ContentValues values = new ContentValues();
-            values.put("collect_id",collect.getId());
-            values.put("collect_title",collect.getTitle());
+            values.put("collect_id", collect.getId());
+            values.put("collect_title", collect.getTitle());
             values.put("collect_type", collect.getType());
             db.insert("Collect", null, values);
         }
 
     }
 
-    public void wipeCollect(){
+    public void wipeCollect() {
         db.execSQL("DELETE FROM Collect");
     }
 
-    public void deleteCollect(int collectid){
-        db.delete("Collect","collect_id=?",new String[]{collectid+""});
+    public void deleteCollect(int collectid) {
+        db.delete("Collect", "collect_id=?", new String[]{collectid + ""});
     }
 
-    public List<CollectBean> findCollects(){
-        List<CollectBean> list=new ArrayList<CollectBean>() ;
-        Cursor cursor=db.query("Collect",null,null,null,null,null,null);
-        if(cursor.moveToFirst()){
-            do{
-                CollectBean collect=new CollectBean();
+    public List<CollectBean> findCollects() {
+        List<CollectBean> list = new ArrayList<CollectBean>();
+        Cursor cursor = db.query("Collect", null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                CollectBean collect = new CollectBean();
                 collect.setId(cursor.getInt(cursor.getColumnIndex("collect_id")));
                 collect.setTitle(cursor.getString(cursor.getColumnIndex("collect_title")));
                 collect.setType(cursor.getInt(cursor.getColumnIndex("collect_type")));
                 list.add(collect);
-            }while (cursor.moveToNext());
+            } while (cursor.moveToNext());
         }
-        if(cursor!=null){
+        if (cursor != null) {
             cursor.close();
         }
-        return  list;
+        return list;
     }
 
 }

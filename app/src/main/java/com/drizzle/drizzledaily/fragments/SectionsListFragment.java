@@ -9,13 +9,11 @@ import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -122,17 +120,30 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     }
 
     /**
+     * swiperefresh在主线程中无法消失，需要新开线程
+     *
+     * @param refresh
+     */
+    private void swipeRefresh(final boolean refresh) {
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (refresh) {
+                    mRefreshLayout.setRefreshing(true);
+                } else {
+                    mRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
+    }
+
+    /**
      * 请求数据并存入list
      *
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        mRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mRefreshLayout.setRefreshing(true);
-            }
-        });
+      swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
@@ -151,7 +162,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
                 }
             });
         } else {
-            mRefreshLayout.setRefreshing(false);
+          swipeRefresh(false);
             TUtils.showShort(getActivity(), "网络未连接");
         }
     }

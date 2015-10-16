@@ -21,6 +21,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.squareup.okhttp.Request;
@@ -42,6 +43,7 @@ import butterknife.ButterKnife;
 public class SectionListActivity extends AppCompatActivity {
 
     private int sectionid;
+    private static final String SECTIONID="sectionid";
     private List<BaseListItem> sectionList = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
@@ -85,42 +87,47 @@ public class SectionListActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         initViews();
         if (savedInstanceState != null) {
-            sectionid = savedInstanceState.getInt("sectionid");
+            sectionid = savedInstanceState.getInt(SECTIONID);
         } else {
-            sectionid = getIntent().getIntExtra("sectionid", -1);
+            sectionid = getIntent().getIntExtra(SECTIONID, -1);
         }
-        OkHttpClientManager.getAsyn(Config.SECTION_LIST_EVERY + sectionid, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(SectionListActivity.this, "服务器出问题了");
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String name = jsonObject.getString("name");
-                    mToolbar.setTitle(name);
-                    JSONArray stories = jsonObject.getJSONArray("stories");
-                    for (int i = 0; i < stories.length(); i++) {
-                        JSONObject story = stories.getJSONObject(i);
-                        int id = story.getInt("id");
-                        String title = story.getString("title");
-                        String imgUrl = story.getJSONArray("images").getString(0);
-                        String date = story.getString("display_date");
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, date);
-                        sectionList.add(baseListItem);
-                    }
-                    handler.sendEmptyMessage(0);
-                    mProgressBar.setVisibility(View.GONE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(SectionListActivity.this, "json error");
+        if (NetUtils.isConnected(SectionListActivity.this)) {
+            OkHttpClientManager.getAsyn(Config.SECTION_LIST_EVERY + sectionid, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(SectionListActivity.this, "服务器出问题了");
                     mProgressBar.setVisibility(View.GONE);
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String name = jsonObject.getString("name");
+                        mToolbar.setTitle(name);
+                        JSONArray stories = jsonObject.getJSONArray("stories");
+                        for (int i = 0; i < stories.length(); i++) {
+                            JSONObject story = stories.getJSONObject(i);
+                            int id = story.getInt("id");
+                            String title = story.getString("title");
+                            String imgUrl = story.getJSONArray("images").getString(0);
+                            String date = story.getString("display_date");
+                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, date);
+                            sectionList.add(baseListItem);
+                        }
+                        handler.sendEmptyMessage(0);
+                        mProgressBar.setVisibility(View.GONE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        TUtils.showShort(SectionListActivity.this, "json error");
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                }
+            });
+        } else {
+            TUtils.showShort(SectionListActivity.this, "网络未连接");
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
     private void initViews() {
@@ -128,12 +135,18 @@ public class SectionListActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        mToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListView.smoothScrollToPosition(0);
+            }
+        });
         mListView.setDivider(null);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(SectionListActivity.this, ReadActivity.class);
-                intent.putExtra("readid", sectionList.get(position).getId());
+                intent.putExtra(Config.READID, sectionList.get(position).getId());
                 startActivity(intent);
             }
         });
@@ -157,7 +170,7 @@ public class SectionListActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("sectionid", sectionid);
+        outState.putInt(SECTIONID, sectionid);
         super.onSaveInstanceState(outState);
     }
 }

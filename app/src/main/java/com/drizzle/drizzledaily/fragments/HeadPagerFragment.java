@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 
 import butterknife.Bind;
@@ -75,17 +76,14 @@ public class HeadPagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.header_pager_fragment, container, false);
         ButterKnife.bind(this, view);
         headTitle.setText(titleText);
-        Glide.with(getActivity())
-                .load(imgUrl)
-                .centerCrop()
-                .error(R.mipmap.place_img)
-                .crossFade()
-                .into(headImg);
+        Glide.with(getActivity()).load(imgUrl)
+                .centerCrop().error(R.mipmap.place_img)
+                .crossFade().into(headImg);
         headImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra("readid", id);
+                intent.putExtra(Config.READID, id);
                 startActivity(intent);
             }
         });

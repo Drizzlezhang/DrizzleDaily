@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -26,6 +27,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
+import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.squareup.okhttp.Request;
@@ -40,8 +42,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+
 /**
-主题日报列表activity
+ * 主题日报列表activity
  */
 public class ThemeListActivity extends AppCompatActivity {
 
@@ -62,22 +65,23 @@ public class ThemeListActivity extends AppCompatActivity {
     @Bind(R.id.theme_list_progress)
     ProgressBar mProgressBar;
 
+    @Bind(R.id.theme_list_scroll)
+    NestedScrollView mNestedScrollView;
+
     private int themeId;
     private String imgUrl;
     private List<BaseListItem> themeList = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
+    private static final String THEMEID="themeid";
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    Glide.with(getApplicationContext())
-                            .load(imgUrl)
-                            .centerCrop()
-                            .error(R.mipmap.place_img)
-                            .crossFade()
-                            .into(mImageView);
+                    Glide.with(getApplicationContext()).load(imgUrl)
+                            .centerCrop().error(R.mipmap.place_img)
+                            .crossFade().into(mImageView);
                     adapter = new CommonAdapter<BaseListItem>(ThemeListActivity.this, themeList, R.layout.simple_list_item) {
                         @Override
                         public void convert(ViewHolder helper, BaseListItem item) {
@@ -95,50 +99,55 @@ public class ThemeListActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
         ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_theme);
         ButterKnife.bind(this);
         initViews();
-        if (savedInstanceState!=null){
-            themeId=savedInstanceState.getInt("themeid");
-        }else{
-            themeId = getIntent().getIntExtra("themeid", -1);
+        if (savedInstanceState != null) {
+            themeId = savedInstanceState.getInt(THEMEID);
+        } else {
+            themeId = getIntent().getIntExtra(THEMEID, -1);
         }
-        OkHttpClientManager.getAsyn(Config.THEME_LIST_EVERY + themeId, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
-                TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
-                mProgressBar.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonObject = new JSONObject(response);
-                    String name = jsonObject.getString("name");
-                    mTextView.setText(name);
-                    imgUrl = jsonObject.getString("background");
-                    themeDes.setText(jsonObject.getString("description"));
-                    JSONArray stories = jsonObject.getJSONArray("stories");
-                    for (int i = 0; i < stories.length(); i++) {
-                        JSONObject story = stories.getJSONObject(i);
-                        int id = story.getInt("id");
-                        String title = story.getString("title");
-                        BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-                        themeList.add(baseListItem);
-                    }
-                    handler.sendEmptyMessage(0);
-                    mProgressBar.setVisibility(View.GONE);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    TUtils.showShort(ThemeListActivity.this, "json error");
+        if (NetUtils.isConnected(ThemeListActivity.this)) {
+            OkHttpClientManager.getAsyn(Config.THEME_LIST_EVERY + themeId, new OkHttpClientManager.StringCallback() {
+                @Override
+                public void onFailure(Request request, IOException e) {
+                    TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
                     mProgressBar.setVisibility(View.GONE);
                 }
-            }
-        });
+
+                @Override
+                public void onResponse(String response) {
+                    try {
+                        JSONObject jsonObject = new JSONObject(response);
+                        String name = jsonObject.getString("name");
+                        mTextView.setText(name);
+                        imgUrl = jsonObject.getString("background");
+                        themeDes.setText(jsonObject.getString("description"));
+                        JSONArray stories = jsonObject.getJSONArray("stories");
+                        for (int i = 0; i < stories.length(); i++) {
+                            JSONObject story = stories.getJSONObject(i);
+                            int id = story.getInt("id");
+                            String title = story.getString("title");
+                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
+                            themeList.add(baseListItem);
+                        }
+                        handler.sendEmptyMessage(0);
+                        mProgressBar.setVisibility(View.GONE);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                        TUtils.showShort(ThemeListActivity.this, "json error");
+                        mProgressBar.setVisibility(View.GONE);
+                    }
+                }
+            });
+        } else {
+            TUtils.showShort(ThemeListActivity.this, "网络未连接");
+            mProgressBar.setVisibility(View.GONE);
+        }
     }
 
     private void initViews() {
@@ -146,6 +155,12 @@ public class ThemeListActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        mToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNestedScrollView.smoothScrollTo(0, 0);
+            }
+        });
         mListView.setDivider(null);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -159,7 +174,7 @@ public class ThemeListActivity extends AppCompatActivity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt("themeid", themeId);
+        outState.putInt(THEMEID, themeId);
         super.onSaveInstanceState(outState);
     }
 
@@ -174,14 +189,12 @@ public class ThemeListActivity extends AppCompatActivity {
             // pre-condition
             return;
         }
-
         int totalHeight = 0;
         for (int i = 0; i < listAdapter.getCount(); i++) {
             View listItem = listAdapter.getView(i, null, listView);
             listItem.measure(0, 0);
             totalHeight += listItem.getMeasuredHeight();
         }
-
         ViewGroup.LayoutParams params = listView.getLayoutParams();
         params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
         listView.setLayoutParams(params);

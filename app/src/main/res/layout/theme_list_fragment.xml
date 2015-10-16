@@ -9,8 +9,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:numColumns="2"
-        android:padding="10dp"
-        android:scrollbars="none"
         ></GridView>
 </android.support.v4.widget.SwipeRefreshLayout>
 

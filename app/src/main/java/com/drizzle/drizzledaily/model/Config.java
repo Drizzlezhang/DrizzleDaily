@@ -9,6 +9,16 @@ import java.io.File;
  */
 public class Config {
     /**
+     * 存放的文章唯一id
+     */
+    public static final String READID = "readid";
+    /**
+     * 申请到的微信id,fir token,bugtestid
+     */
+    public static final String WXAPPID = "wxcdfd8ea3dceaf767";
+    public static final String FIRTOKEN = "0907463c4425f95f233aa8ed32d7880f";
+    public static final String BUGTESTID = "73e619a25cafd56c1119b8800ddc7697";
+    /**
      * 存放图片地址
      */
     public static final String PHOTO_FOLDER = new File(Environment.getExternalStorageDirectory(), "").getPath() + "/drizzledaily/pics";
@@ -18,7 +28,7 @@ public class Config {
      */
     public static final String SKIN_NUMBER = "skinnumber";
     /**
-     * 存放缓存数据的sharedperference文件地址
+     * 存放缓存数据,首页图片地址的sharedperference文件地址
      */
     public static final String CACHE_DATA = "cachedata";
     /**

@@ -2,11 +2,10 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:layout_width="match_parent"
              android:layout_height="match_parent">
-    <android.support.v4.view.ViewPager
-        android:layout_width="match_parent"
-        android:layout_height="160dp"
-        android:id="@+id/head_viewpager"
-        >
-    </android.support.v4.view.ViewPager>
 
+
+    <cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager
+        android:id="@+id/head_viewpager"
+        android:layout_width="match_parent"
+        android:layout_height="175dp" />
 </FrameLayout>

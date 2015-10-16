@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:textColor="@color/white"
         android:layout_height="60dp"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:layout_marginTop="10dp"
         android:gravity="center_vertical"
         android:paddingLeft="30dp"
@@ -49,7 +49,16 @@
     <Button
         android:layout_width="match_parent"
         android:textColor="@color/white"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="30dp"
+        android:layout_height="80dp"
+        android:id="@+id/check_version_btn"
+        android:background="@drawable/cardpress"
+        android:textSize="20sp"
+        android:gravity="center"
+        android:text="检测新版本"/>
+    <Button
+        android:layout_width="match_parent"
+        android:textColor="@color/white"
         android:layout_height="80dp"
         android:id="@+id/suggestion_btn"
         android:background="@drawable/cardpress"

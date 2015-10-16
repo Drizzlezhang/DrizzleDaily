@@ -14,7 +14,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -52,6 +51,7 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private List<BaseListItem> hotListItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
+    private static final String HOTCACHENAME = "hotlistcache";
 
     private Handler handler = new Handler() {
         @Override
@@ -85,9 +85,9 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
         ButterKnife.bind(this, view);
         initViews();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-        String hotcachejson = sharedPreferences.getString("hotlistcache", "");
+        String hotcachejson = sharedPreferences.getString(HOTCACHENAME, "");
         if (hotcachejson.equals("")) {
-           //TODO
+            //TODO
         } else {
             manageHotJson(hotcachejson);
         }
@@ -104,7 +104,7 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra("readid", hotListItems.get(position).getId());
+                intent.putExtra(Config.READID, hotListItems.get(position).getId());
                 startActivity(intent);
             }
         });
@@ -113,6 +113,24 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onRefresh() {
         getLists(Config.Hot_NEWS);
+    }
+
+    /**
+     * swiperefresh在主线程中无法消失，需要新开线程
+     *
+     * @param refresh
+     */
+    private void swipeRefresh(final boolean refresh) {
+        mRefreshLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                if (refresh) {
+                    mRefreshLayout.setRefreshing(true);
+                } else {
+                    mRefreshLayout.setRefreshing(false);
+                }
+            }
+        });
     }
 
     @Override
@@ -126,12 +144,7 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-        mRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                mRefreshLayout.setRefreshing(true);
-            }
-        });
+        swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
@@ -144,16 +157,15 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
                 public void onResponse(String response) {
                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("hotlistcache", response);
+                    editor.putString(HOTCACHENAME, response);
                     editor.commit();
                     manageHotJson(response);
                 }
             });
         } else {
             TUtils.showShort(getActivity(), "网络未连接");
-            mRefreshLayout.setRefreshing(false);
+            swipeRefresh(false);
         }
-
     }
 
     /**
