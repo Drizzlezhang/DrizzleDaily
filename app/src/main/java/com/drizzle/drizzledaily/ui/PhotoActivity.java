@@ -19,7 +19,7 @@ import butterknife.ButterKnife;
 /**
  * 查看大图片页面
  */
-public class PhotoActivity extends BaseActivity {
+public class PhotoActivity extends AppCompatActivity {
     @Bind(R.id.photo_toolbar)
     Toolbar mToolbar;
 
@@ -28,6 +28,9 @@ public class PhotoActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences=getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid=preferences.getInt(Config.SKIN_NUMBER,0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_photo);
         ButterKnife.bind(this);

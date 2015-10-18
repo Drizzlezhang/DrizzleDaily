@@ -57,7 +57,7 @@ import butterknife.ButterKnife;
 /**
  * 阅读文章主界面
  */
-public class ReadActivity extends BaseActivity {
+public class ReadActivity extends AppCompatActivity {
 
     private int readid;
     private String ImgUrl;
@@ -115,6 +115,9 @@ public class ReadActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_read);
         ButterKnife.bind(this);

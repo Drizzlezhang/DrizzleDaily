@@ -7,8 +7,6 @@ import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -16,7 +14,6 @@ import android.util.Log;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
@@ -28,8 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import butterknife.Bind;
@@ -122,18 +117,11 @@ public class GildeActivity extends AppCompatActivity {
     private void playAnim() {
         File file = new File(Config.START_PHOTO_FOLDER, "startimg.jpg");
         if (file.exists()) {
-            FileInputStream inputStream= null;
-            try {
-                inputStream = new FileInputStream(file);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
-            startImg.setImageBitmap(bitmap);
+            Glide.with(this).load(file)
+                    .centerCrop().error(R.mipmap.start_img)
+                    .crossFade().into(startImg);
         } else {
-
             Glide.with(this).load(R.mipmap.start_img)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .centerCrop().placeholder(R.mipmap.start_img)
                     .error(R.mipmap.start_img).crossFade()
                     .into(startImg);
@@ -152,10 +140,5 @@ public class GildeActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.right_in, R.anim.not_move);
             }
         });
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
     }
 }

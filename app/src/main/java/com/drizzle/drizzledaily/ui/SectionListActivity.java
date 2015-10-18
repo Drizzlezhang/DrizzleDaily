@@ -40,7 +40,7 @@ import butterknife.ButterKnife;
 /**
  * 专栏列表activity
  */
-public class SectionListActivity extends BaseActivity {
+public class SectionListActivity extends AppCompatActivity {
 
     private int sectionid;
     private static final String SECTIONID="sectionid";
@@ -79,6 +79,9 @@ public class SectionListActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_list);
         ButterKnife.bind(this);

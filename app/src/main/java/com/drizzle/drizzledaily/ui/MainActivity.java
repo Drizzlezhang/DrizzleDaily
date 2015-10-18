@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -22,7 +21,6 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -59,7 +57,7 @@ import butterknife.ButterKnife;
 /**
  * 主界面，管理多个列表fragment
  */
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @Bind(R.id.main_toolbar)
     Toolbar mToolbar;
 
@@ -86,12 +84,15 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private CollectListFragment collectListFragment;
     private SearchFragment searchFragment;
     private AboutDeveloperFragment developerFragment;
-    public static MainActivity instance;
+    private MainActivity instance;
 
     private IWXAPI wxApi;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
+        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -102,21 +103,13 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         instance = this;
         calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
-        if (savedInstanceState == null) {
-            if (latestListFragment == null) {
-                latestListFragment = new LatestListFragment();
-            }
+        if (latestListFragment == null) {
+            latestListFragment = new LatestListFragment();
             fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
-        } else {
-            int fragmentid = savedInstanceState.getInt("fragmentid", 1);
-            for (int i = 1; i < 8; i++) {
-                hideFragment(i);
-            }
-            fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(String.valueOf(fragmentid))).commit();
+            fragmentTransaction.replace(R.id.main_frg_container, latestListFragment).commit();
         }
-    }
 
+    }
     private void initData() {
         strings = new String[]{"原装色", "火焰红", "冷酷蓝", "高级黑", "热烈橙", "生命绿", "高贵紫", "香蕉黄"};
         ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
@@ -175,28 +168,28 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case android.R.id.home:
                 finish();
                 break;
+            case R.id.action_skin:
+                new MaterialDialog.Builder(MainActivity.this)
+                        .title("换个皮肤吧~")
+                        .items(strings)
+                        .itemsCallback(new MaterialDialog.ListCallback() {
+                            @Override
+                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                instance.finish();
+                                SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+                                SharedPreferences.Editor editor = preferences.edit();
+                                editor.putInt(Config.SKIN_NUMBER, which);
+                                editor.commit();
+                                instance.startActivity(new Intent(instance, instance.getClass()));
+                                overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
+                            }
+                        })
+                        .positiveText(android.R.string.cancel)
+                        .show();
+                break;
             case R.id.action_share:
                 dialogPlus.show();
                 break;
-//            case R.id.action_skin:
-//                new MaterialDialog.Builder(MainActivity.this)
-//                        .title("换个皮肤吧~")
-//                        .items(strings)
-//                        .itemsCallback(new MaterialDialog.ListCallback() {
-//                            @Override
-//                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-//                                SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-//                                SharedPreferences.Editor editor = preferences.edit();
-//                                editor.putInt(Config.SKIN_NUMBER, which);
-//                                editor.commit();
-//                                startActivity(new Intent(MainActivity.this, MainActivity.class));
-//                                finish();
-//                                overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
-//                            }
-//                        })
-//                        .positiveText(android.R.string.cancel)
-//                        .show();
-//                break;
             default:
                 break;
         }
@@ -231,15 +224,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (fragmentID == 1) {
                     //TODO
                 } else {
-                    if (latestListFragment == null) {
-                        latestListFragment = new LatestListFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (latestListFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(1 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
-                    }
+                    latestListFragment = new LatestListFragment();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, latestListFragment).commit();
                     mToolbar.setTitle("知乎日报");
                     fragmentID = 1;
                 }
@@ -248,15 +235,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (fragmentID == 2) {
                     //TODO
                 } else {
-                    if (hotListFragment == null) {
-                        hotListFragment = new HotListFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (hotListFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(2 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, hotListFragment, 2 + "").commit();
-                    }
+                    hotListFragment = new HotListFragment();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, hotListFragment).commit();
                     mToolbar.setTitle("大家都在看");
                     fragmentID = 2;
                 }
@@ -265,15 +246,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (fragmentID == 3) {
                     //TODO
                 } else {
-                    if (themeListFragment == null) {
-                        themeListFragment = new ThemeListFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (themeListFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(3 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, themeListFragment, 3 + "").commit();
-                    }
+                    themeListFragment = new ThemeListFragment();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, themeListFragment).commit();
                     mToolbar.setTitle("主题日报");
                     fragmentID = 3;
                 }
@@ -282,15 +257,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (fragmentID == 4) {
                     //TODO
                 } else {
-                    if (sectionsListFragment == null) {
-                        sectionsListFragment = new SectionsListFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (sectionsListFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(4 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, sectionsListFragment, 4 + "").commit();
-                    }
+                    sectionsListFragment = new SectionsListFragment();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, sectionsListFragment).commit();
                     mToolbar.setTitle("专栏");
                     fragmentID = 4;
                 }
@@ -299,15 +268,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (fragmentID == 5) {
                     //TODO
                 } else {
-                    if (collectListFragment == null) {
-                        collectListFragment = new CollectListFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (collectListFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(5 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, collectListFragment, 5 + "").commit();
-                    }
+                    collectListFragment = new CollectListFragment();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, collectListFragment).commit();
                     mToolbar.setTitle("我的收藏");
                     fragmentID = 5;
                 }
@@ -325,15 +288,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 if (fragmentID == 7) {
                     //TODO
                 } else {
-                    if (developerFragment == null) {
-                        developerFragment = new AboutDeveloperFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (developerFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(7 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, developerFragment, 7 + "").commit();
-                    }
+                    developerFragment = new AboutDeveloperFragment();
+                    fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.replace(R.id.main_frg_container, developerFragment).commit();
                     mToolbar.setTitle("关于开发者");
                     fragmentID = 7;
                 }
@@ -344,23 +301,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.putInt("fragmentid", fragmentID);
-        super.onSaveInstanceState(outState, outPersistentState);
-    }
-
-    /**
-     * 根据fragment tag隐藏对应的fragment
-     *
-     * @param frgid
-     */
-    private void hideFragment(int frgid) {
-        fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.hide(getSupportFragmentManager().findFragmentByTag(String.valueOf(frgid)));
-    }
-
     /**
      * 设置Mainactivity的Toolbar点击回调
      */
@@ -368,7 +308,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     public interface OnToolbarCilckListener {
         void onClickToolbar();
-
     }
 
     public void setToolbarClick(OnToolbarCilckListener listener) {
@@ -387,12 +326,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             c = DataUtils.getAfterDay(c);
             String time = DataUtils.printCalendar(c);
             searchFragment = SearchFragment.newInstance(time);
-            hideFragment(fragmentID);
-            if (searchFragment.isAdded()) {
-                fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(6 + "")).commit();
-            } else {
-                fragmentTransaction.add(R.id.main_frg_container, searchFragment, 6 + "").commit();
-            }
+            fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.main_frg_container, searchFragment).commit();
             mToolbar.setTitle(titleTime);
             fragmentID = 6;
         }
