@@ -52,7 +52,7 @@ import butterknife.ButterKnife;
  * 专栏日报阅读界面（没有大图提供,单开一个页面）
  */
 
-public class SectionReadActivity extends AppCompatActivity {
+public class SectionReadActivity extends BaseActivity {
     @Bind(R.id.section_read_toolbar)
     Toolbar mToolbar;
 
@@ -94,9 +94,6 @@ public class SectionReadActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-        int thid = preferences.getInt(Config.SKIN_NUMBER, 0);
-        ThemeUtils.onActivityCreateSetTheme(this, thid);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_read);
         ButterKnife.bind(this);
