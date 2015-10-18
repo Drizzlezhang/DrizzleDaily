@@ -305,11 +305,4 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         }
     }
 
-//    @Override
-//    public void setMenuVisibility(boolean menuVisible) {
-//        super.setMenuVisibility(menuVisible);
-//        if (this.getView() != null) {
-//            this.getView().setVisibility(menuVisible ? View.VISIBLE : View.GONE);
-//        }
-//    }
 }
