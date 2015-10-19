@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="个人设置"
-    >
-    <PreferenceCategory
-        android:title="阅读设置"
-        android:summary="设置阅读方式和界面"
-        >
-        <CheckBoxPreference
-            android:title="是否阅读"
-            android:key="check"
-            android:summaryOn="yes"
-            android:summaryOff="no"
-            android:defaultValue="true"
-            >
-        </CheckBoxPreference>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:title="个人设置">
+    <!--<PreferenceCategory-->
+    <!--android:title="阅读设置"-->
+    <!--android:summary="设置阅读方式和界面"-->
+    <!-->-->
+    <!--<CheckBoxPreference-->
+    <!--android:title="是否阅读"-->
+    <!--android:key="check"-->
+    <!--android:summaryOn="yes"-->
+    <!--android:summaryOff="no"-->
+    <!--android:defaultValue="true"-->
+    <!-->-->
+    <!--</CheckBoxPreference>-->
+    <!--</PreferenceCategory>-->
+    <PreferenceScreen
+        android:key="clearcache"
+        android:summary="点击清理图片缓存。"
+        android:title="缓存清理"></PreferenceScreen>
+
+    <PreferenceCategory android:title="主题设置">
+        <PreferenceScreen
+            android:key="theme"
+            android:summary="更换主题背景和颜色,改变后下次生效。"
+            android:title="冷酷蓝"></PreferenceScreen>
     </PreferenceCategory>
+
 </PreferenceScreen>

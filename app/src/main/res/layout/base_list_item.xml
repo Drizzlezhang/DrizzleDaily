@@ -20,8 +20,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:layout_margin="10dp"
-            android:scaleType="centerCrop"
-            android:src="@mipmap/item_default_pic" />
+            android:scaleType="centerCrop" />
 
         <TextView
             android:id="@+id/base_item_title"

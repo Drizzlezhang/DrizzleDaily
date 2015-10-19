@@ -80,23 +80,26 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                         }
                     };
                     mListView.setAdapter(adapter);
-                    FragmentManager manager = getFragmentManager();
+                    final FragmentManager manager = getChildFragmentManager();
                     fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
                         @Override
                         public Fragment getItem(int position) {
                             BaseListItem baseListItem = headpagerItems.get(position);
-                            return HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(), baseListItem.getId());
+                            HeadPagerFragment pagerFragment = HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(), baseListItem.getId());
+                            return pagerFragment;
                         }
 
                         @Override
                         public int getCount() {
                             return headpagerItems.size();
                         }
+
+
                     };
-                    mViewPager.setInterval(1500);
+                    mViewPager.setInterval(2000);
                     mViewPager.setStopScrollWhenTouch(true);
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
-                    mViewPager.startAutoScroll(2500);
+                    mViewPager.startAutoScroll(3000);
                     mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:
@@ -240,16 +243,16 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         getLists(Config.LATEST_NEWS);
     }
 
-    /**
-     * 在销毁视图的时候强制停止刷新，避免视图重叠
-     */
-    @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mRefreshLayout.isRefreshing()) {
-            swipeRefresh(false);
-        }
-    }
+//    /**
+//     * 在销毁视图的时候强制停止刷新，避免视图重叠
+//     */
+//    @Override
+//    public void onDestroyView() {
+//        super.onDestroyView();
+//        if (mRefreshLayout.isRefreshing()) {
+//            swipeRefresh(false);
+//        }
+//    }
 
     /**
      * swiperefresh在主线程中无法消失，需要新开线程
@@ -304,7 +307,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             TUtils.showShort(getActivity(), "json error");
         }
     }
-
+//
 //    @Override
 //    public void setMenuVisibility(boolean menuVisible) {
 //        super.setMenuVisibility(menuVisible);
