@@ -116,15 +116,19 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         getLists(Config.THEME_LIST);
     }
 
+
     /**
-     * 在销毁视图的时候停止刷新，避免视图重叠
+     * 在页面切换时停止活动view
+     * @param hidden
      */
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mRefreshLayout.isRefreshing()) {
-            swipeRefresh(false);
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden==true){
+            if (mRefreshLayout.isRefreshing()){
+                mRefreshLayout.setRefreshing(false);
+            }
         }
+        super.onHiddenChanged(hidden);
     }
 
     /**

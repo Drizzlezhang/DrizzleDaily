@@ -1,9 +1,7 @@
 package com.drizzle.drizzledaily.ui;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -16,16 +14,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.DatePicker;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
@@ -40,7 +35,6 @@ import com.drizzle.drizzledaily.fragments.ThemeListFragment;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.DataUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
@@ -77,6 +71,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private Calendar calendar;
     //主activity的fragmentid，默认为首页，1
     private int fragmentID = 1;
+
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
     private LatestListFragment latestListFragment;
@@ -86,7 +81,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private CollectListFragment collectListFragment;
     private SearchFragment searchFragment;
     private AboutDeveloperFragment developerFragment;
-    public static MainActivity instance;
 
     private IWXAPI wxApi;
 
@@ -99,13 +93,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         initViews();
         wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
         wxApi.registerApp(Config.WXAPPID);
-        instance = this;
         calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
         if (savedInstanceState == null) {
-            if (latestListFragment == null) {
-                latestListFragment = new LatestListFragment();
-            }
+            latestListFragment = new LatestListFragment();
             fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
         } else {
@@ -178,25 +169,27 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.action_share:
                 dialogPlus.show();
                 break;
-//            case R.id.action_skin:
-//                new MaterialDialog.Builder(MainActivity.this)
-//                        .title("换个皮肤吧~")
-//                        .items(strings)
-//                        .itemsCallback(new MaterialDialog.ListCallback() {
-//                            @Override
-//                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-//                                SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-//                                SharedPreferences.Editor editor = preferences.edit();
-//                                editor.putInt(Config.SKIN_NUMBER, which);
-//                                editor.commit();
-//                                startActivity(new Intent(MainActivity.this, MainActivity.class));
-//                                finish();
-//                                overridePendingTransition(R.anim.alpha_in, R.anim.alpha_out);
-//                            }
-//                        })
-//                        .positiveText(android.R.string.cancel)
-//                        .show();
-//                break;
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            case R.id.action_aboutapp:
+                if (fragmentID == 7) {
+                    //TODO
+                } else {
+                    if (developerFragment == null) {
+                        developerFragment = new AboutDeveloperFragment();
+                    }
+                    hideFragment(fragmentID);
+                    if (developerFragment.isAdded()) {
+                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(7 + "")).commit();
+                    } else {
+                        fragmentTransaction.add(R.id.main_frg_container, developerFragment, 7 + "").commit();
+                    }
+                    mToolbar.setTitle("关于开发者");
+                    fragmentID = 7;
+                }
+                break;
             default:
                 break;
         }
@@ -312,31 +305,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                     fragmentID = 5;
                 }
                 break;
-            case R.id.drawer_menu_settings:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                break;
             case R.id.drawer_menu_choose:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, dateSetListener,
                         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
-                break;
-            case R.id.drawer_menu_drizzle:
-                if (fragmentID == 7) {
-                    //TODO
-                } else {
-                    if (developerFragment == null) {
-                        developerFragment = new AboutDeveloperFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (developerFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(7 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, developerFragment, 7 + "").commit();
-                    }
-                    mToolbar.setTitle("关于开发者");
-                    fragmentID = 7;
-                }
                 break;
             default:
                 break;
@@ -374,7 +346,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     public void setToolbarClick(OnToolbarCilckListener listener) {
         this.cilckListener = listener;
     }
-
 
     /**
      * 根据选择的日期获取当天的日报内容
@@ -431,6 +402,5 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             System.exit(0);
         }
     }
-
 
 }

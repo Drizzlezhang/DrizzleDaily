@@ -153,9 +153,4 @@ public class GildeActivity extends AppCompatActivity {
             }
         });
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 }

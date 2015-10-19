@@ -151,6 +151,19 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
         super.onSaveInstanceState(outState);
     }
 
+    /**
+     * 在页面切换时停止活动view
+     * @param hidden
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden==true){
+            mProgressBar.setVisibility(View.GONE);
+        }
+        super.onHiddenChanged(hidden);
+    }
+
+
     @Override
     public void onClickToolbar() {
         mListView.smoothScrollToPosition(0);

@@ -8,10 +8,13 @@ import java.io.File;
  * 数据请求地址
  */
 public class Config {
+
+
     /**
-     * 存放的文章唯一id
+     * 存放的文章,图片唯一id
      */
     public static final String READID = "readid";
+    public static final String IMAGEURL="imageurl";
     /**
      * 申请到的微信id,fir token,bugtestid
      */

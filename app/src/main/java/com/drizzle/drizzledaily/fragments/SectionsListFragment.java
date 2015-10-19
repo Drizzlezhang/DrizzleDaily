@@ -120,14 +120,17 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     }
 
     /**
-     *在销毁视图的时候停止刷新，避免视图重叠
+     * 在页面切换时停止活动view
+     * @param hidden
      */
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        if (mRefreshLayout.isRefreshing()){
-            swipeRefresh(false);
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden==true){
+            if (mRefreshLayout.isRefreshing()){
+                mRefreshLayout.setRefreshing(false);
+            }
         }
+        super.onHiddenChanged(hidden);
     }
 
     /**
@@ -154,7 +157,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
      * @param listUrl
      */
     private void getLists(final String listUrl) {
-      swipeRefresh(true);
+        swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
             OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
                 @Override
@@ -173,7 +176,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
                 }
             });
         } else {
-          swipeRefresh(false);
+            swipeRefresh(false);
             TUtils.showShort(getActivity(), "网络未连接");
         }
     }

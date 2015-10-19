@@ -242,17 +242,20 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     public void onRefresh() {
         getLists(Config.LATEST_NEWS);
     }
+    /**
+     * 在页面切换时停止活动view
+     * @param hidden
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden==true){
+            if (mRefreshLayout.isRefreshing()){
+                mRefreshLayout.setRefreshing(false);
+            }
+        }
+        super.onHiddenChanged(hidden);
+    }
 
-//    /**
-//     * 在销毁视图的时候强制停止刷新，避免视图重叠
-//     */
-//    @Override
-//    public void onDestroyView() {
-//        super.onDestroyView();
-//        if (mRefreshLayout.isRefreshing()) {
-//            swipeRefresh(false);
-//        }
-//    }
 
     /**
      * swiperefresh在主线程中无法消失，需要新开线程

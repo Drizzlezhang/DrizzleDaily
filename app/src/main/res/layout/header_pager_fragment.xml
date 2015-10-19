@@ -12,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_margin="10dp"
-        android:text="@string/abc_action_bar_home_subtitle_description_format"
         android:textSize="20sp"
         android:textColor="@color/white"
         android:id="@+id/head_fragment_title"/>

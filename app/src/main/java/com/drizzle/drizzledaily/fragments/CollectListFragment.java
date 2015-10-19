@@ -32,7 +32,7 @@ import butterknife.ButterKnife;
 /**
  * 收藏夹列表
  */
-public class CollectListFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener{
+public class CollectListFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener {
     @Bind(R.id.collect_listview)
     ListView listView;
 
@@ -90,8 +90,8 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     }
 
 
-    private void initViews(){
-        ((MainActivity)getActivity()).setToolbarClick(this);
+    private void initViews() {
+        ((MainActivity) getActivity()).setToolbarClick(this);
         //根据收藏文章的type决定跳转的阅读页面activity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -137,6 +137,19 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     @Override
     public void onClickToolbar() {
         listView.smoothScrollToPosition(0);
+    }
+
+    /**
+     * fragment在show和hide时调用的方法
+     *
+     * @param hidden
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (hidden == false) {
+            handler.sendEmptyMessage(1);
+        }
+        super.onHiddenChanged(hidden);
     }
 
     /**

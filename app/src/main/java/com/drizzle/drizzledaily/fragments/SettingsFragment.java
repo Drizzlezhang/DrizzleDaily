@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
@@ -14,7 +13,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.MainActivity;
+import com.drizzle.drizzledaily.ui.PhotoActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 
 /**
@@ -22,6 +21,7 @@ import com.drizzle.drizzledaily.utils.TUtils;
  */
 public class SettingsFragment extends PreferenceFragment {
     private String[] strings;
+    public static final String STARTIMGCACHEURL = Config.START_PHOTO_FOLDER + "/startimg.jpg";
 
     public SettingsFragment() {
 
@@ -37,10 +37,11 @@ public class SettingsFragment extends PreferenceFragment {
     @Override
     public boolean onPreferenceTreeClick(PreferenceScreen preferenceScreen, final Preference preference) {
         switch (preference.getKey()) {
-//            case "check":
-//                CheckBoxPreference checkBoxPreference = (CheckBoxPreference) findPreference("check");
-//                TUtils.showShort(getActivity(), checkBoxPreference.isChecked() + "");
-//                break;
+            case "seestartimg":
+                Intent intent = new Intent(getActivity(), PhotoActivity.class);
+                intent.putExtra(Config.IMAGEURL, STARTIMGCACHEURL);
+                startActivity(intent);
+                break;
             case "theme":
                 new MaterialDialog.Builder(getActivity())
                         .title("换个皮肤吧~")
@@ -66,7 +67,7 @@ public class SettingsFragment extends PreferenceFragment {
                     }
                 }).start();
                 Glide.get(getActivity()).clearMemory();
-                TUtils.showShort(getActivity(),"缓存已清理");
+                TUtils.showShort(getActivity(), "缓存已清理");
                 break;
             default:
                 break;
