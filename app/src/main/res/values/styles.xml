@@ -7,6 +7,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--red主题 火焰红-->
     <style name="RedAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -14,6 +15,7 @@
     <item name="colorPrimary">@color/redcolorPrimary</item>
     <item name="colorPrimaryDark">@color/redcolorPrimaryDark</item>
     <item name="colorAccent">@color/redcolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--blue主题 冷酷蓝-->
     <style name="BlueAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -21,6 +23,7 @@
         <item name="colorPrimary">@color/bluecolorPrimary</item>
         <item name="colorPrimaryDark">@color/bluecolorPrimaryDark</item>
         <item name="colorAccent">@color/bluecolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--black主题 高级黑-->
     <style name="BlackAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -28,6 +31,7 @@
         <item name="colorPrimary">@color/blackcolorPrimary</item>
         <item name="colorPrimaryDark">@color/blackcolorPrimaryDark</item>
         <item name="colorAccent">@color/blackcolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--orange主题 热烈橙-->
     <style name="OrangeAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -35,6 +39,7 @@
         <item name="colorPrimary">@color/orangecolorPrimary</item>
         <item name="colorPrimaryDark">@color/orangecolorPrimaryDark</item>
         <item name="colorAccent">@color/orangecolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--green主题 生命绿-->
     <style name="GreenAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -42,6 +47,7 @@
         <item name="colorPrimary">@color/greencolorPrimary</item>
         <item name="colorPrimaryDark">@color/greencolorPrimaryDark</item>
         <item name="colorAccent">@color/greencolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--purple主题 高贵紫-->
     <style name="PurpleAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -49,6 +55,7 @@
         <item name="colorPrimary">@color/purplecolorPrimary</item>
         <item name="colorPrimaryDark">@color/purplecolorPrimaryDark</item>
         <item name="colorAccent">@color/purplecolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
     <!--yellow主题 香蕉黄-->
     <style name="YellowAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -56,6 +63,7 @@
         <item name="colorPrimary">@color/yellowcolorPrimary</item>
         <item name="colorPrimaryDark">@color/yellowcolorPrimaryDark</item>
         <item name="colorAccent">@color/yellowcolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
     </style>
 
 

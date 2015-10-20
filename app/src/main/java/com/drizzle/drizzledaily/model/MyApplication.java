@@ -2,6 +2,7 @@ package com.drizzle.drizzledaily.model;
 
 import android.app.Application;
 
+import cn.bmob.v3.Bmob;
 import im.fir.sdk.FIR;
 
 /**
@@ -10,7 +11,8 @@ import im.fir.sdk.FIR;
 public class MyApplication extends Application {
     @Override
     public void onCreate() {
-        FIR.init(this);
         super.onCreate();
+        FIR.init(this);
+        Bmob.initialize(this, "7674bc5c8d85e763b58e487eab5627a5");
     }
 }

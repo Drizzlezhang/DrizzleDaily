@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -53,7 +54,7 @@ import butterknife.ButterKnife;
 /**
  * 主界面，管理多个列表fragment
  */
-public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     @Bind(R.id.main_toolbar)
     Toolbar mToolbar;
 
@@ -165,23 +166,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             case R.id.action_settings:
                 Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
                 startActivity(intent);
-                break;
-            case R.id.action_aboutapp:
-                if (fragmentID == 7) {
-                    //TODO
-                } else {
-                    if (developerFragment == null) {
-                        developerFragment = new AboutDeveloperFragment();
-                    }
-                    hideFragment(fragmentID);
-                    if (developerFragment.isAdded()) {
-                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(7 + "")).commit();
-                    } else {
-                        fragmentTransaction.add(R.id.main_frg_container, developerFragment, 7 + "").commit();
-                    }
-                    mToolbar.setTitle("关于开发者");
-                    fragmentID = 7;
-                }
                 break;
             default:
                 break;
@@ -302,6 +286,23 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, dateSetListener,
                         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
                 datePickerDialog.show();
+                break;
+            case R.id.drawer_menu_drizzle:
+                if (fragmentID == 7) {
+                    //TODO
+                } else {
+                    if (developerFragment == null) {
+                        developerFragment = new AboutDeveloperFragment();
+                    }
+                    hideFragment(fragmentID);
+                    if (developerFragment.isAdded()) {
+                        fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(7 + "")).commit();
+                    } else {
+                        fragmentTransaction.add(R.id.main_frg_container, developerFragment, 7 + "").commit();
+                    }
+                    mToolbar.setTitle("关于开发者");
+                    fragmentID = 7;
+                }
                 break;
             default:
                 break;

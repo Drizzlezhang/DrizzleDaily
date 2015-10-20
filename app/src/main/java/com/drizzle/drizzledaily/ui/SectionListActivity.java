@@ -1,12 +1,9 @@
 package com.drizzle.drizzledaily.ui;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +20,6 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.squareup.okhttp.Request;
 
 import org.json.JSONArray;
@@ -40,7 +36,7 @@ import butterknife.ButterKnife;
 /**
  * 专栏列表activity
  */
-public class SectionListActivity extends BaseActivity {
+public class SectionListActivity extends MySwipeActivity {
 
     private int sectionid;
     private static final String SECTIONID="sectionid";

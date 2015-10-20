@@ -1,14 +1,11 @@
 package com.drizzle.drizzledaily.ui;
 
-import android.app.Activity;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +23,6 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.drizzle.drizzledaily.utils.ThemeUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
@@ -52,7 +48,7 @@ import butterknife.ButterKnife;
  * 专栏日报阅读界面（没有大图提供,单开一个页面）
  */
 
-public class SectionReadActivity extends BaseActivity {
+public class SectionReadActivity extends MySwipeActivity {
     @Bind(R.id.section_read_toolbar)
     Toolbar mToolbar;
 

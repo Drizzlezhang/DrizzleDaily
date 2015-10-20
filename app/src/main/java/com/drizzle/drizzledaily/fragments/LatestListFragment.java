@@ -96,10 +96,10 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
 
                     };
-                    mViewPager.setInterval(2000);
+                    mViewPager.setInterval(3000);
                     mViewPager.setStopScrollWhenTouch(true);
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
-                    mViewPager.startAutoScroll(3000);
+                    mViewPager.startAutoScroll(5000);
                     mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:

@@ -6,10 +6,6 @@
             android:title="个人设置"
             android:orderInCategory="100"
             app:showAsAction="never"/>
-    <item android:id="@+id/action_aboutapp"
-          android:title="关于应用"
-          android:orderInCategory="100"
-          app:showAsAction="never"/>
       <item android:id="@+id/action_share"
             android:title="分享应用"
             android:icon="@drawable/abc_ic_menu_share_mtrl_alpha"

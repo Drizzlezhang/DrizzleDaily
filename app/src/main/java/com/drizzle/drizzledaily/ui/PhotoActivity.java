@@ -24,7 +24,7 @@ import butterknife.ButterKnife;
 /**
  * 查看大图片页面
  */
-public class PhotoActivity extends BaseActivity {
+public class PhotoActivity extends MySwipeActivity {
     @Bind(R.id.photo_toolbar)
     Toolbar mToolbar;
 

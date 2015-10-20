@@ -5,15 +5,13 @@
              android:background="@color/blackcolorPrimary"
               android:orientation="vertical"
              tools:context="com.drizzle.drizzledaily.fragments.AboutDeveloperFragment">
-    <TextView
-        android:layout_width="match_parent"
-        android:textColor="@color/white"
-        android:layout_height="60dp"
-        android:textSize="22sp"
-        android:layout_marginTop="10dp"
-        android:gravity="center_vertical"
-        android:paddingLeft="30dp"
-        android:text="知乎日报"/>
+  <ImageView
+      android:layout_width="90dp"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginTop="20dp"
+      android:scaleType="centerCrop"
+      android:src="@mipmap/labal_icon"
+      android:layout_height="90dp"/>
     <TextView
         android:layout_width="match_parent"
         android:textColor="@color/white"
@@ -49,7 +47,6 @@
     <Button
         android:layout_width="match_parent"
         android:textColor="@color/white"
-        android:layout_marginTop="30dp"
         android:layout_height="80dp"
         android:id="@+id/check_version_btn"
         android:background="@drawable/cardpress"

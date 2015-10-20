@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
         android:text="知乎日报"
+        android:id="@+id/head_title"
         android:textColor="@color/white"
         android:textSize="40sp"/>
 

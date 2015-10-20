@@ -1,19 +1,13 @@
 package com.drizzle.drizzledaily.ui;
 
-import android.app.Activity;
 import android.app.FragmentManager;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.fragments.SettingsFragment;
-import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.utils.ThemeUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -21,7 +15,7 @@ import butterknife.ButterKnife;
 /**
  * 设置界面用于放置设置fragment
  */
-public class SettingsActivity extends BaseActivity {
+public class SettingsActivity extends MySwipeActivity {
     @Bind(R.id.settings_toolbar)
     Toolbar mToolbar;
 

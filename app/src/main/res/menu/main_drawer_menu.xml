@@ -28,17 +28,13 @@
             android:title="寻找日报"/>
     </group>
 
-    <!--<item android:title="设置">-->
-        <!--<menu>-->
-            <!--<item-->
-                <!--android:id="@+id/drawer_menu_settings"-->
-                <!--android:icon="@mipmap/settings"-->
-                <!--android:title="个人设置"/>-->
-            <!--<item-->
-                <!--android:id="@+id/drawer_menu_drizzle"-->
-                <!--android:icon="@mipmap/ic_android"-->
-                <!--android:title="关于应用"/>-->
-        <!--</menu>-->
-    <!--</item>-->
+    <item android:title="设置">
+        <menu>
+            <item
+                android:id="@+id/drawer_menu_drizzle"
+                android:icon="@mipmap/ic_android"
+                android:title="关于应用"/>
+        </menu>
+    </item>
 
 </menu>
