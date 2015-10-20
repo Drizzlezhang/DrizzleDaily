@@ -159,6 +159,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (id) {
             case android.R.id.home:
                 finish();
+                overridePendingTransition(R.anim.not_move,R.anim.fab_out);
                 break;
             case R.id.action_share:
                 dialogPlus.show();

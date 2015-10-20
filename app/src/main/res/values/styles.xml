@@ -8,6 +8,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
     <!--red主题 火焰红-->
     <style name="RedAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -16,6 +17,7 @@
     <item name="colorPrimaryDark">@color/redcolorPrimaryDark</item>
     <item name="colorAccent">@color/redcolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
     <!--blue主题 冷酷蓝-->
     <style name="BlueAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -24,6 +26,7 @@
         <item name="colorPrimaryDark">@color/bluecolorPrimaryDark</item>
         <item name="colorAccent">@color/bluecolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
     <!--black主题 高级黑-->
     <style name="BlackAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -32,6 +35,7 @@
         <item name="colorPrimaryDark">@color/blackcolorPrimaryDark</item>
         <item name="colorAccent">@color/blackcolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
     <!--orange主题 热烈橙-->
     <style name="OrangeAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -40,6 +44,19 @@
         <item name="colorPrimaryDark">@color/orangecolorPrimaryDark</item>
         <item name="colorAccent">@color/orangecolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
+    </style>
+
+    <style name="MainOrangeAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/orangecolorPrimary</item>
+        <item name="colorPrimaryDark">@color/orangecolorPrimaryDark</item>
+        <item name="colorAccent">@color/orangecolorPrimary</item>
+    </style>
+    <!--设置activity切换动画-->
+    <style name="animation_translucent_translate" parent="@android:style/Animation.Translucent">
+        <item name="android:windowEnterAnimation">@anim/right_in</item>
+        <item name="android:windowExitAnimation">@anim/right_out</item>
     </style>
     <!--green主题 生命绿-->
     <style name="GreenAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -48,6 +65,7 @@
         <item name="colorPrimaryDark">@color/greencolorPrimaryDark</item>
         <item name="colorAccent">@color/greencolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
     <!--purple主题 高贵紫-->
     <style name="PurpleAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -56,6 +74,7 @@
         <item name="colorPrimaryDark">@color/purplecolorPrimaryDark</item>
         <item name="colorAccent">@color/purplecolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
     <!--yellow主题 香蕉黄-->
     <style name="YellowAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
@@ -63,21 +82,25 @@
         <item name="colorPrimary">@color/yellowcolorPrimary</item>
         <item name="colorPrimaryDark">@color/yellowcolorPrimaryDark</item>
         <item name="colorAccent">@color/yellowcolorPrimary</item>
+        <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
+    <style name="start_animation_translucent_translate" parent="@android:style/Animation.Translucent">
+        <item name="android:windowExitAnimation">@anim/alpha_out</item>
+        <item name="android:windowEnterAnimation">@anim/alpha_in</item>
+    </style>
 
-    <!--导航页theme-->
-    <style name="StartTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="StartTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/black</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/black</item>
-    </style>
-    <style name="StartTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/start_animation_translucent_translate</item>
     </style>
+
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
 

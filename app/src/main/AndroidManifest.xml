@@ -35,8 +35,8 @@
         android:allowBackup="true"
         android:icon="@mipmap/labal_icon"
         android:label="@string/app_name"
-        android:supportsRtl="true"
-        android:theme="@style/OrangeAppTheme">
+        android:theme="@style/OrangeAppTheme"
+        android:supportsRtl="true">
         <activity
             android:name=".ui.MainActivity"
             android:screenOrientation="portrait">
@@ -75,7 +75,8 @@
             android:name=".ui.SettingsActivity"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".ui.MySwipeActivity">
+        <activity android:name=".ui.MySwipeActivity"
+            >
         </activity>
 
         <meta-data

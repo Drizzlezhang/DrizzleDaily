@@ -149,7 +149,6 @@ public class GildeActivity extends AppCompatActivity {
             public void onAnimationEnd(Animator animation) {
                 startActivity(new Intent(GildeActivity.this, MainActivity.class));
                 finish();
-                overridePendingTransition(R.anim.right_in, R.anim.not_move);
             }
         });
     }
