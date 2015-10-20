@@ -95,17 +95,10 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         wxApi.registerApp(Config.WXAPPID);
         calendar = Calendar.getInstance();
         fragmentManager = getSupportFragmentManager();
-        if (savedInstanceState == null) {
-            latestListFragment = new LatestListFragment();
-            fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
-        } else {
-            int fragmentid = savedInstanceState.getInt("fragmentid", 1);
-            for (int i = 1; i < 8; i++) {
-                hideFragment(i);
-            }
-            fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(String.valueOf(fragmentid))).commit();
-        }
+        latestListFragment = new LatestListFragment();
+        fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
+
     }
 
     private void initData() {
@@ -319,8 +312,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
-        outState.putInt("fragmentid", fragmentID);
-        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     /**
