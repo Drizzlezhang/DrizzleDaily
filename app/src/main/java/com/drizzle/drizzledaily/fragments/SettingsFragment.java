@@ -1,15 +1,11 @@
 package com.drizzle.drizzledaily.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
-import android.view.View;
 
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.model.Config;
@@ -42,23 +38,23 @@ public class SettingsFragment extends PreferenceFragment {
                 intent.putExtra(Config.IMAGEURL, STARTIMGCACHEURL);
                 startActivity(intent);
                 break;
-            case "theme":
-                new MaterialDialog.Builder(getActivity())
-                        .title("换个皮肤吧~")
-                        .items(strings)
-                        .itemsCallback(new MaterialDialog.ListCallback() {
-                            @Override
-                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                SharedPreferences preferences = getActivity().getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-                                SharedPreferences.Editor editor = preferences.edit();
-                                editor.putInt(Config.SKIN_NUMBER, which);
-                                editor.commit();
-                                preference.setTitle(strings[which]);
-                            }
-                        })
-                        .positiveText(android.R.string.cancel)
-                        .show();
-                break;
+//            case "theme":
+//                new MaterialDialog.Builder(getActivity())
+//                        .title("换个皮肤吧~")
+//                        .items(strings)
+//                        .itemsCallback(new MaterialDialog.ListCallback() {
+//                            @Override
+//                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+//                                SharedPreferences preferences = getActivity().getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+//                                SharedPreferences.Editor editor = preferences.edit();
+//                                editor.putInt(Config.SKIN_NUMBER, which);
+//                                editor.commit();
+//                                preference.setTitle(strings[which]);
+//                            }
+//                        })
+//                        .positiveText(android.R.string.cancel)
+//                        .show();
+//                break;
             case "clearcache":
                 new Thread(new Runnable() {
                     @Override

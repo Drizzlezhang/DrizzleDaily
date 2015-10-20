@@ -16,12 +16,12 @@
     <!--</PreferenceCategory>-->
 
 
-    <PreferenceCategory android:title="主题设置">
-        <PreferenceScreen
-            android:key="theme"
-            android:summary="更换主题背景和颜色,改变后下次生效。"
-            android:title="冷酷蓝"></PreferenceScreen>
-    </PreferenceCategory>
+    <!--<PreferenceCategory android:title="主题设置">-->
+        <!--<PreferenceScreen-->
+            <!--android:key="theme"-->
+            <!--android:summary="更换主题背景和颜色,改变后下次生效。"-->
+            <!--android:title="冷酷蓝"></PreferenceScreen>-->
+    <!--</PreferenceCategory>-->
     <PreferenceScreen
         android:key="clearcache"
         android:summary="点击清理图片缓存。"
