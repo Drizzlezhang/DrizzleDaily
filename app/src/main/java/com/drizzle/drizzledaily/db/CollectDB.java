@@ -8,7 +8,9 @@ import android.database.sqlite.SQLiteDatabase;
 import com.drizzle.drizzledaily.bean.CollectBean;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 收藏夹本地数据库操作类
@@ -65,6 +67,28 @@ public class CollectDB {
             cursor.close();
         }
         return list;
+    }
+
+    /**
+     * 获取set集合
+     * @return
+     */
+    public Set<CollectBean> findSetCollects(){
+        Set<CollectBean> collectBeanSet = new HashSet<>();
+        Cursor cursor = db.query("Collect", null, null, null, null, null, null);
+        if (cursor.moveToFirst()) {
+            do {
+                CollectBean collect = new CollectBean();
+                collect.setId(cursor.getInt(cursor.getColumnIndex("collect_id")));
+                collect.setTitle(cursor.getString(cursor.getColumnIndex("collect_title")));
+                collect.setType(cursor.getInt(cursor.getColumnIndex("collect_type")));
+                collectBeanSet.add(collect);
+            } while (cursor.moveToNext());
+        }
+        if (cursor != null) {
+            cursor.close();
+        }
+        return collectBeanSet;
     }
 
 }

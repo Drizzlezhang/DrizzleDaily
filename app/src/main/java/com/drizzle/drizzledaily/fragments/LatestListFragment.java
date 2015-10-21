@@ -146,7 +146,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-        mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
+       // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override

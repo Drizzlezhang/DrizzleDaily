@@ -1,6 +1,5 @@
 package com.drizzle.drizzledaily.ui;
 
-import android.app.FragmentManager;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -8,35 +7,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.fragments.SettingsFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
 /**
- * 设置界面用于放置设置fragment
+ * 登录界面
  */
-public class SettingsActivity extends AppCompatActivity {
-    @Bind(R.id.settings_toolbar)
+public class LogininActivity extends AppCompatActivity {
+    @Bind(R.id.loginin_toolbar)
     Toolbar mToolbar;
-
-    private SettingsFragment settingsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_settings);
+        setContentView(R.layout.activity_loginin);
         ButterKnife.bind(this);
         initViews();
-        FragmentManager fragmentManager = getFragmentManager();
-        if (settingsFragment == null) {
-            settingsFragment = new SettingsFragment();
-            fragmentManager.beginTransaction().replace(R.id.settings_container, settingsFragment).commit();
-        }
     }
 
     private void initViews() {
-        mToolbar.setTitle("个人设置");
+        mToolbar.setTitle("登录");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -56,10 +46,5 @@ public class SettingsActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onBackPressed() {
-        super.onBackPressed();
     }
 }

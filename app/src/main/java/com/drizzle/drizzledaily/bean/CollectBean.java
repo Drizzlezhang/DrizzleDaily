@@ -8,7 +8,8 @@ public class CollectBean {
     private String title;
     private int type;
 
-    public  CollectBean(){}
+    public CollectBean() {
+    }
 
     public CollectBean(int id, String title, int type) {
         this.id = id;
@@ -38,5 +39,34 @@ public class CollectBean {
 
     public void setType(int type) {
         this.type = type;
+    }
+
+    /**
+     * 重写hashcode方法，为set判断对象
+     * @return
+     */
+    @Override
+    public int hashCode() {
+        return id;
+    }
+
+    /**
+     * 重写equals方法判断对象是否相同
+     * @param obj
+     * @return
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (this == obj) {
+            return true;
+        }
+        if (obj instanceof CollectBean) {
+            CollectBean bean = (CollectBean) obj;
+            return (bean.getId() == this.id);
+        }
+        return false;
     }
 }

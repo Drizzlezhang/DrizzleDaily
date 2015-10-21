@@ -122,16 +122,15 @@ public class GildeActivity extends AppCompatActivity {
     private void playAnim() {
         File file = new File(Config.START_PHOTO_FOLDER, "startimg.jpg");
         if (file.exists()) {
-            FileInputStream inputStream= null;
+            FileInputStream inputStream = null;
             try {
                 inputStream = new FileInputStream(file);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            Bitmap bitmap= BitmapFactory.decodeStream(inputStream);
+            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
             startImg.setImageBitmap(bitmap);
         } else {
-
             Glide.with(this).load(R.mipmap.start_img)
                     .diskCacheStrategy(DiskCacheStrategy.NONE)
                     .centerCrop().placeholder(R.mipmap.start_img)

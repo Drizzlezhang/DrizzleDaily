@@ -49,6 +49,7 @@ import butterknife.ButterKnife;
  */
 
 public class SectionReadActivity extends MySwipeActivity {
+
     @Bind(R.id.section_read_toolbar)
     Toolbar mToolbar;
 
@@ -77,6 +78,7 @@ public class SectionReadActivity extends MySwipeActivity {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
+                    //webview加载css和html
                     String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
                     String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
                     html = html.replace("<div class=\"img-place-holder\">", "");

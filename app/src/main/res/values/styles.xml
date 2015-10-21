@@ -37,6 +37,21 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
+    <!--black主题 高级黑-->
+    <style name="MainBlackAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/blackcolorPrimary</item>
+        <item name="colorPrimaryDark">@color/blackcolorPrimaryDark</item>
+        <item name="colorAccent">@color/blackcolorPrimary</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@style/main_animation_translucent_translate</item>
+    </style>
+
+    <style name="main_animation_translucent_translate" parent="@android:style/Animation.Translucent">
+        <item name="android:windowExitAnimation">@anim/bottom_out</item>
+        <item name="android:windowEnterAnimation">@anim/bottom_in</item>
+    </style>
+
     <!--orange主题 热烈橙-->
     <style name="OrangeAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->

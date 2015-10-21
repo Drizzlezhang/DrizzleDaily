@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.TextView;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -50,6 +51,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * 主界面，管理多个列表fragment
@@ -63,6 +65,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Bind(R.id.main_nav_view)
     NavigationView navigationView;
+
+    @Bind(R.id.drawer_touxiang)
+    CircleImageView circleImageView;
+
+    @Bind(R.id.drawer_name)
+    TextView nameText;
 
     private DialogPlus dialogPlus;
     private CommonAdapter<ShareBean> adapter;
@@ -118,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initViews() {
-        mToolbar.setTitle("首页");
+        mToolbar.setTitle("知乎日报");
         setSupportActionBar(mToolbar);
         mToolbar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -145,6 +153,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 })
                 .setCancelable(true).setPadding(20, 30, 20, 20).create();
+        circleImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     @Override
@@ -157,10 +171,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         switch (id) {
-            case android.R.id.home:
-                finish();
-                overridePendingTransition(R.anim.not_move,R.anim.fab_out);
-                break;
             case R.id.action_share:
                 dialogPlus.show();
                 break;

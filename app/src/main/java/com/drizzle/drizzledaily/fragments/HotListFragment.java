@@ -97,7 +97,7 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-        mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
+//        mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mListView.setDivider(null);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {

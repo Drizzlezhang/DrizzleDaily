@@ -99,7 +99,7 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-        mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
+       // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -115,7 +115,6 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
     public void onRefresh() {
         getLists(Config.THEME_LIST);
     }
-
 
     /**
      * 在页面切换时停止活动view

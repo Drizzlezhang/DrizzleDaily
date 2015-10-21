@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.drizzle.drizzledaily.ui.PhotoActivity">
+    tools:context="com.drizzle.drizzledaily.ui.RegisterActivity">
     <android.support.v7.widget.Toolbar
-        android:id="@+id/photo_toolbar"
+        android:id="@+id/register_toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:theme="@style/AppTheme.AppBarOverlay"
         app:popupTheme="@style/AppTheme.PopupOverlay"/>
-    <com.bm.library.PhotoView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
-        android:id="@+id/photo_img"
-      />
-</LinearLayout>
+
+</RelativeLayout>
