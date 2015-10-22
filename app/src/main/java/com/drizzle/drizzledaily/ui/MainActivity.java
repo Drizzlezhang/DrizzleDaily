@@ -76,6 +76,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CommonAdapter<ShareBean> adapter;
     private List<ShareBean> shareBeanList = new ArrayList<>();
     private String[] strings;
+    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6};
+
 
     private Calendar calendar;
     //主activity的fragmentid，默认为首页，1
@@ -156,7 +158,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         circleImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                startActivity(new Intent(MainActivity.this, UserActivity.class));
             }
         });
     }

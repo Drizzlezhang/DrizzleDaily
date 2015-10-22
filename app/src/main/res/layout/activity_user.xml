@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.drizzle.drizzledaily.ui.UserActivity">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/user_toolbar"
         android:layout_width="match_parent"
@@ -14,5 +15,65 @@
         android:theme="@style/AppTheme.AppBarOverlay"
         app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/user_touxiang"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/user_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="20dp"
+        android:src="@mipmap/touxiang"
+        app:border_color="@color/blackcolorPrimary"
+        app:border_width="2dp"/>
+
+    <TextView
+        android:id="@+id/user_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_touxiang"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="15dp"
+        android:text="未登录"
+        android:textColor="@color/blackcolorPrimary"
+        android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/user_sex"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/user_name"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="35dp"
+        android:text="性别未知"
+        android:textColor="@color/blackcolorPrimary"
+        android:textSize="20sp"/>
+
+    <Button
+        android:id="@+id/user_change_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/user_loginout_btn"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:background="@drawable/cardpress"/>
+
+    <Button
+        android:id="@+id/user_loginout_btn"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/cardpress"/>
 
 </RelativeLayout>

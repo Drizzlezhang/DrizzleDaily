@@ -43,7 +43,8 @@
         android:theme="@style/BlackAppTheme" >
         <activity
             android:name=".ui.MainActivity"
-            android:screenOrientation="portrait" >
+            android:screenOrientation="portrait"
+            android:theme="@style/MainBlackAppTheme" >
         </activity>
         <activity
             android:name=".ui.GildeActivity"
@@ -93,13 +94,26 @@
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" >
         </activity>
-        <activity android:name=".ui.Main2Activity" >
+        <activity
+            android:name=".ui.Main2Activity"
+            android:screenOrientation="portrait" >
         </activity>
-        <activity android:name=".ui.RegisterActivity" >
+        <activity
+            android:name=".ui.RegisterActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainBlackAppTheme" >
         </activity>
-        <activity android:name=".ui.UserActivity" >
+        <activity
+            android:name=".ui.UserActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainBlackAppTheme" >
         </activity>
-        <activity android:name=".ui.LogininActivity" >
+        <activity
+            android:name=".ui.LogininActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainBlackAppTheme" >
+        </activity>
+        <activity android:name=".ui.ChangePasswordActivity" >
         </activity>
     </application>
 

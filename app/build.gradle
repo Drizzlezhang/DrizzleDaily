@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion "23.0.1"
+    buildToolsVersion "23.0.0"
 
     defaultConfig {
         applicationId "com.drizzle.drizzledaily"
@@ -34,6 +34,7 @@ dependencies {
     compile 'com.afollestad:material-dialogs:0.7.8.1'
     compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.github.mrengineer13:snackbar:1.2.0'
+    compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.orhanobut:dialogplus:1.10@aar'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'me.imid.swipebacklayout.lib:library:1.0.0'

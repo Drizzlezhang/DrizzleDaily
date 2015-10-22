@@ -1,12 +1,13 @@
 package com.drizzle.drizzledaily.bean;
 
 /**
- * 收藏用bean，包括文章id，标题，type类型（有大图和无大图）
+ * 收藏用bean，包括文章id，标题，type类型（有大图和无大图），保存时的时间（用来排序）
  */
 public class CollectBean {
     private int id;
     private String title;
     private int type;
+    private int saveTime = 0;
 
     public CollectBean() {
     }
@@ -16,6 +17,15 @@ public class CollectBean {
         this.title = title;
         this.type = type;
     }
+
+    public int getSaveTime() {
+        return saveTime;
+    }
+
+    public void setSaveTime(int saveTime) {
+        this.saveTime = saveTime;
+    }
+
 
     public int getId() {
         return id;
@@ -43,6 +53,7 @@ public class CollectBean {
 
     /**
      * 重写hashcode方法，为set判断对象
+     *
      * @return
      */
     @Override
@@ -52,6 +63,7 @@ public class CollectBean {
 
     /**
      * 重写equals方法判断对象是否相同
+     *
      * @param obj
      * @return
      */

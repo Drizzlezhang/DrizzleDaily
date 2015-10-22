@@ -15,55 +15,44 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-/**
- * 登录界面
- */
-public class LogininActivity extends AppCompatActivity implements View.OnClickListener {
-    @Bind(R.id.loginin_toolbar)
+public class ChangePasswordActivity extends AppCompatActivity {
+    @Bind(R.id.change_toolbar)
     Toolbar mToolbar;
 
-    @Bind(R.id.loginin_input_name)
-    MaterialEditText loginInputName;
+    @Bind(R.id.change_touxiang)
+    CircleImageView changeTouxiang;
 
-    @Bind(R.id.loginin_input_password)
-    MaterialEditText loginInputPassword;
+    @Bind(R.id.change_old_password)
+    MaterialEditText changeOldPassword;
 
-    @Bind(R.id.loginin_register_btn)
-    Button registerBtn;
+    @Bind(R.id.change_new_password)
+    MaterialEditText changeNewPassword;
 
-    @Bind(R.id.loginin_btn)
-    Button logininBtn;
+    @Bind(R.id.change_new_password_again)
+    MaterialEditText changeNewPasswordAgain;
 
-    @Bind(R.id.loginin_touxiang)
-    CircleImageView touxiang;
+    @Bind(R.id.change_password)
+    Button changePasswordBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_loginin);
+        setContentView(R.layout.activity_change_password);
         ButterKnife.bind(this);
         initViews();
     }
 
     private void initViews() {
-        mToolbar.setTitle("登录");
+        mToolbar.setTitle("修改密码");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-    }
+        changePasswordBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.loginin_btn:
-
-                break;
-            case R.id.loginin_register_btn:
-
-                break;
-            default:
-                break;
-        }
+            }
+        });
     }
 
     @Override
