@@ -7,7 +7,7 @@ import cn.bmob.v3.BmobUser;
  */
 public class MyUser extends BmobUser {
 
-    private int touxiangId;
+    private int touxiangId = 6;
     private String collectJson = "[]";
     private int sex;
 

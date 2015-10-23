@@ -1,19 +1,23 @@
 package com.drizzle.drizzledaily.ui;
 
-import android.support.v7.app.AppCompatActivity;
+import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.bean.ShareBean;
+import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.GridHolder;
 import com.orhanobut.dialogplus.OnBackPressListener;
@@ -24,6 +28,9 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.UpdateListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -49,11 +56,14 @@ public class UserActivity extends AppCompatActivity {
     @Bind(R.id.user_touxiang)
     CircleImageView userTouxiang;
 
-    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6};
+    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang};
     private String[] superheros = new String[]{"SpiderMan", "IronMan", "Hulk", "SuperMan", "GreenArrow", "BatMan"};
     private CommonAdapter<ShareBean> adapter;
     private List<ShareBean> touxiangList = new ArrayList<>();
     private DialogPlus dialogPlus;
+    private ProgressDialog progressDialog;
+
+    private int loginType = 1;//登录状态，1为未登录，2为登录
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,15 +74,23 @@ public class UserActivity extends AppCompatActivity {
         initViews();
     }
 
+    @Override
+    protected void onResume() {
+        initUser();
+        super.onResume();
+    }
+
     private void initViews() {
         mToolbar.setTitle("个人管理");
         setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
         userTouxiang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-             dialogPlus.show();
+                if (loginType == 1) {
+                    //TODO
+                } else {
+                    dialogPlus.show();
+                }
             }
         });
         dialogPlus = DialogPlus.newDialog(UserActivity.this)
@@ -87,15 +105,76 @@ public class UserActivity extends AppCompatActivity {
                 })
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
-                    public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                    public void onItemClick(DialogPlus dialog, Object item, View view, final int position) {
+                        MyUser newUser = new MyUser();
+                        newUser.setTouxiangId(position);
+                        MyUser myUser = BmobUser.getCurrentUser(UserActivity.this, MyUser.class);
+                        newUser.update(UserActivity.this, myUser.getObjectId(), new UpdateListener() {
+                            @Override
+                            public void onSuccess() {
+                                // TODO Auto-generated method stub
+                                userTouxiang.setImageResource(touxiangs[position]);
+                                TUtils.showShort(UserActivity.this, "头像更新成功");
+                                dialogPlus.dismiss();
+                            }
 
-
-                        dialogPlus.dismiss();
+                            @Override
+                            public void onFailure(int code, String msg) {
+                                // TODO Auto-generated method stub
+                                TUtils.showShort(UserActivity.this, "头像更新失败");
+                                dialogPlus.dismiss();
+                            }
+                        });
                     }
                 })
                 .setCancelable(true)
                 .setPadding(20, 20, 20, 20)
                 .create();
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("请稍等...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(true);
+    }
+
+    @OnClick({R.id.user_change_btn, R.id.user_loginout_btn})
+    public void userClick(View view) {
+        switch (view.getId()) {
+            case R.id.user_change_btn:
+                if (loginType == 1) {
+                    startActivity(new Intent(UserActivity.this, RegisterActivity.class));
+                } else {
+                    startActivity(new Intent(UserActivity.this, ChangePasswordActivity.class));
+                }
+                break;
+            case R.id.user_loginout_btn:
+                if (loginType == 1) {
+                    startActivity(new Intent(UserActivity.this, LogininActivity.class));
+                } else {
+                    new MaterialDialog.Builder(UserActivity.this)
+                            .title("登出账号？").content("点击确定登出您的账号。")
+                            .positiveText("确定").negativeText("取消")
+                            .callback(new MaterialDialog.ButtonCallback() {
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+                                    if (!NetUtils.isConnected(UserActivity.this)) {
+                                        TUtils.showShort(UserActivity.this, "网络未连接");
+                                    } else {
+                                        MyUser.logOut(UserActivity.this);
+                                        finish();
+                                    }
+                                }
+
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     private void initDatas() {
@@ -111,19 +190,25 @@ public class UserActivity extends AppCompatActivity {
         };
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_single, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == android.R.id.home) {
-            finish();
-            return true;
+    private void initUser() {
+        MyUser userInfo = BmobUser.getCurrentUser(this, MyUser.class);
+        if (userInfo != null) {
+            loginType = 2;
+            userChange.setText("修改密码");
+            userLoginout.setText("登     出");
+            userName.setText(userInfo.getUsername());
+            userTouxiang.setImageResource(touxiangs[userInfo.getTouxiangId()]);
+            int sex = 0;
+            sex = userInfo.getSex();
+            if (sex == 1) {
+                userSex.setText("男同志");
+            } else {
+                userSex.setText("女同志");
+            }
+        } else {
+            loginType = 1;
+            userChange.setText("注      册");
+            userLoginout.setText("登      录");
         }
-        return super.onOptionsItemSelected(item);
     }
 }

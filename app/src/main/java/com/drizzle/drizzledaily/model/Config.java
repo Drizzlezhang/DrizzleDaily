@@ -9,12 +9,16 @@ import java.io.File;
  */
 public class Config {
 
-
+    /**
+     * 存放之前的数据库到sharedperence的标识
+     */
+    public static final String COLLECTCACHE = "collectcache";
+    public static final String COLLECTVERSION = "collectversion";
     /**
      * 存放的文章,图片唯一id
      */
     public static final String READID = "readid";
-    public static final String IMAGEURL="imageurl";
+    public static final String IMAGEURL = "imageurl";
     /**
      * 申请到的微信id,fir token,bugtestid
      */

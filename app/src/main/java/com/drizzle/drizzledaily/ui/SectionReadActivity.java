@@ -1,5 +1,7 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -24,6 +26,8 @@ import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
@@ -40,6 +44,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -67,6 +72,7 @@ public class SectionReadActivity extends MySwipeActivity {
     private CollectDB collectDB;
     private String cssadd;
     private String pageUrl;
+    private Set<CollectBean> collectBeanSet;
 
     private DialogPlus dialogPlus;
     private CommonAdapter<ShareBean> adapter;
@@ -143,6 +149,11 @@ public class SectionReadActivity extends MySwipeActivity {
     }
 
     private void initData() {
+        SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+        Gson gson = new Gson();
+        collectBeanSet = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
+        }.getType());
         ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
         ShareBean bean2 = new ShareBean(R.mipmap.weixin, "微信好友");
         shareBeanList.add(bean1);
@@ -226,14 +237,21 @@ public class SectionReadActivity extends MySwipeActivity {
                 finish();
                 break;
             case R.id.action_collect:
-                CollectBean bean = new CollectBean(readid, pagetitle, 2);
-                collectDB.deleteCollect(readid);
-                collectDB.saveCollect(bean);
+                int savetime = (int) System.currentTimeMillis();
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                final SharedPreferences.Editor editor = sharedPreferences.edit();
+                final CollectBean bean = new CollectBean(readid, pagetitle, 2, savetime);
+                collectBeanSet.add(bean);
+                final Gson gson = new Gson();
+                editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
+                editor.commit();
                 new SnackBar.Builder(this)
                         .withOnClickListener(new SnackBar.OnMessageClickListener() {
                             @Override
                             public void onMessageClick(Parcelable token) {
-                                collectDB.deleteCollect(readid);
+                                collectBeanSet.remove(bean);
+                                editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
+                                editor.commit();
                                 TUtils.showShort(SectionReadActivity.this, "已取消收藏");
                             }
                         })

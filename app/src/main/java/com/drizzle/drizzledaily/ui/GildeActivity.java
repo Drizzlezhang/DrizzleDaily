@@ -18,10 +18,13 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.bean.CollectBean;
+import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.google.gson.Gson;
 import com.squareup.okhttp.Request;
 
 import org.json.JSONException;
@@ -31,6 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -44,6 +48,7 @@ public class GildeActivity extends AppCompatActivity {
     ImageView startImg;
 
     private static final String STARTIMGCACHEURL = "shartimgurl";
+
     /**
      * 开启一个handler请求图片并下载
      */
@@ -54,7 +59,7 @@ public class GildeActivity extends AppCompatActivity {
                 case 1:
                     //TODO
                     if (NetUtils.isConnected(GildeActivity.this)) {
-                        OkHttpClientManager.getAsyn(Config.START_IMAGE + "480*728", new OkHttpClientManager.StringCallback() {
+                        OkHttpClientManager.getAsyn(Config.START_IMAGE + "720*1184", new OkHttpClientManager.StringCallback() {
                             @Override
                             public void onFailure(Request request, IOException e) {
                                 TUtils.showShort(GildeActivity.this, "服务器出问题了");
@@ -112,8 +117,29 @@ public class GildeActivity extends AppCompatActivity {
         if (!file.exists()) {
             file.mkdirs();
         }
+        initDatabase();
         handler.sendEmptyMessageDelayed(1, 1000);
         playAnim();
+    }
+
+    /**
+     * 为之前已存放到数据库的用户服务，将数据转为json存入sharedperence
+     */
+    private void initDatabase() {
+        SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        int collectversion = sharedPreferences.getInt(Config.COLLECTVERSION, 0);
+        if (collectversion == 0) {
+            CollectDB collectDB = CollectDB.getInstance(this);
+            Set<CollectBean> collectBeanSet = collectDB.findSetCollects();
+            Gson gson = new Gson();
+            String collectCache = gson.toJson(collectBeanSet);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString(Config.COLLECTCACHE, collectCache);
+            editor.putInt(Config.COLLECTVERSION, 1);
+            editor.commit();
+        } else {
+            //TODO
+        }
     }
 
     /**

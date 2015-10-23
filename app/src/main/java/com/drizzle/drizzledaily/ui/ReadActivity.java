@@ -1,6 +1,8 @@
 package com.drizzle.drizzledaily.ui;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -23,12 +25,13 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
-import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
@@ -45,6 +48,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import butterknife.Bind;
@@ -61,7 +65,6 @@ public class ReadActivity extends MySwipeActivity {
     private String pagetltle;
     private String cssadd;
     private String pageUrl;
-    private CollectDB collectDB;
 
     @Bind(R.id.read_toolbar)
     Toolbar mToolbar;
@@ -85,6 +88,7 @@ public class ReadActivity extends MySwipeActivity {
     NestedScrollView mNestedScrollView;
     private DialogPlus dialogPlus;
     private CommonAdapter<ShareBean> adapter;
+    private Set<CollectBean> collectBeanSet;
     private List<ShareBean> shareBeanList = new ArrayList<>();
     private Bitmap shareBitmap;
     private IWXAPI wxApi;
@@ -133,7 +137,11 @@ public class ReadActivity extends MySwipeActivity {
     }
 
     private void initData() {
-        collectDB = CollectDB.getInstance(this);
+        SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+        Gson gson = new Gson();
+        collectBeanSet = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
+        }.getType());
         ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
         ShareBean bean2 = new ShareBean(R.mipmap.weixin, "微信好友");
         shareBeanList.add(bean1);
@@ -190,6 +198,7 @@ public class ReadActivity extends MySwipeActivity {
 
     /**
      * 处理readjson数据
+     *
      * @param managerReadId
      */
     private void managerReadJson(int managerReadId) {
@@ -277,14 +286,21 @@ public class ReadActivity extends MySwipeActivity {
                 finish();
                 break;
             case R.id.action_collect:
-                CollectBean bean = new CollectBean(readid, pagetltle, 1);
-                collectDB.deleteCollect(readid);
-                collectDB.saveCollect(bean);
+                int savetime = (int) System.currentTimeMillis();
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                final SharedPreferences.Editor editor = sharedPreferences.edit();
+                final CollectBean bean = new CollectBean(readid, pagetltle, 1, savetime);
+                collectBeanSet.add(bean);
+                final Gson gson = new Gson();
+                editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
+                editor.commit();
                 new SnackBar.Builder(this)
                         .withOnClickListener(new SnackBar.OnMessageClickListener() {
                             @Override
                             public void onMessageClick(Parcelable token) {
-                                collectDB.deleteCollect(readid);
+                                collectBeanSet.remove(bean);
+                                editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
+                                editor.commit();
                                 TUtils.showShort(ReadActivity.this, "已取消收藏");
                             }
                         })

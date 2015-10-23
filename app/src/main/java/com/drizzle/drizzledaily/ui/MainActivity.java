@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.fragments.AboutDeveloperFragment;
 import com.drizzle.drizzledaily.fragments.CollectListFragment;
@@ -51,6 +52,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.update.BmobUpdateAgent;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
@@ -67,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView navigationView;
 
     @Bind(R.id.drawer_touxiang)
-    CircleImageView circleImageView;
+    CircleImageView mainTouxiang;
 
     @Bind(R.id.drawer_name)
     TextView nameText;
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CommonAdapter<ShareBean> adapter;
     private List<ShareBean> shareBeanList = new ArrayList<>();
     private String[] strings;
-    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6};
+    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang};
 
 
     private Calendar calendar;
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         ButterKnife.bind(this);
         initData();
         initViews();
+        BmobUpdateAgent.update(this);
         wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
         wxApi.registerApp(Config.WXAPPID);
         calendar = Calendar.getInstance();
@@ -155,13 +159,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                 })
                 .setCancelable(true).setPadding(20, 30, 20, 20).create();
-        circleImageView.setOnClickListener(new View.OnClickListener() {
+        mainTouxiang.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 startActivity(new Intent(MainActivity.this, UserActivity.class));
             }
         });
+    }
+
+    private void initUser() {
+        MyUser userInfo = BmobUser.getCurrentUser(this, MyUser.class);
+        if (userInfo != null) {
+            nameText.setText(userInfo.getUsername());
+            mainTouxiang.setImageResource(touxiangs[userInfo.getTouxiangId()]);
+        } else {
+            nameText.setText("未登录");
+            mainTouxiang.setImageResource(touxiangs[6]);
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        initUser();
+        super.onResume();
     }
 
     @Override

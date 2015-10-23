@@ -1,7 +1,8 @@
 package com.drizzle.drizzledaily.fragments;
 
-
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -17,13 +18,16 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.SwipeAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
-import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.ui.SectionReadActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import butterknife.Bind;
@@ -42,8 +46,7 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     @Bind(R.id.collect_center_text)
     TextView centerText;
 
-    private CollectDB collectDB;
-    private List<CollectBean> collectBeanList;
+    private List<CollectBean> collectBeanList = new ArrayList<CollectBean>();
     private SwipeAdapter adapter;
 
     private Handler handler = new Handler() {
@@ -51,13 +54,20 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    collectBeanList.clear();
-                    collectBeanList = collectDB.findCollects();
+                    final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                    String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+                    final Gson gson = new Gson();
+                    collectBeanList = gson.fromJson(collectcache, new TypeToken<List<CollectBean>>() {
+                    }.getType());
+                    Collections.sort(collectBeanList);
                     adapter = new SwipeAdapter(getActivity(), collectBeanList);
                     adapter.setOnDeleteClick(new SwipeAdapter.CallDeleteBack() {
                         @Override
                         public void onDeleteBtnclick(int pageid) {
-                            collectDB.deleteCollect(pageid);
+                            collectBeanList.remove(new CollectBean(pageid, "", 1, 0));
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanList));
+                            editor.commit();
                             handler.sendEmptyMessage(1);
                         }
                     });
@@ -82,8 +92,6 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_collect_list, container, false);
         ButterKnife.bind(this, view);
-        collectDB = CollectDB.getInstance(getActivity());
-        collectBeanList = collectDB.findCollects();
         handler.sendEmptyMessage(1);
         initViews();
         return view;
@@ -120,7 +128,6 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
                         .callback(new MaterialDialog.ButtonCallback() {
                             @Override
                             public void onPositive(MaterialDialog dialog) {
-                                collectDB.wipeCollect();
                                 handler.sendEmptyMessage(1);
                             }
 
