@@ -39,37 +39,11 @@
         android:hint="请输入用户名"
         app:met_floatingLabel="normal"/>
 
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/register_input_password"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:met_clearButton="true"
-        android:layout_below="@+id/register_input_name"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        android:inputType="textPassword"
-        android:layout_marginTop="10dp"
-        android:hint="请输入密码"
-        app:met_floatingLabel="normal"/>
-
-    <com.rengwuxian.materialedittext.MaterialEditText
-        android:id="@+id/register_input_password_again"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/register_input_password"
-        android:layout_marginLeft="25dp"
-        android:layout_marginRight="25dp"
-        app:met_clearButton="true"
-        android:layout_marginTop="10dp"
-        android:inputType="textPassword"
-        android:hint="请再次输入密码"
-        app:met_floatingLabel="normal"/>
-
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/register_sex"
-        android:layout_below="@+id/register_input_password_again"
+        android:layout_below="@+id/register_input_name"
         android:layout_margin="20dp"
         android:orientation="horizontal">
 
@@ -86,6 +60,32 @@
             android:text="女同志"/>
 
     </RadioGroup>
+
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/register_input_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_clearButton="true"
+        android:layout_below="@+id/register_sex"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:inputType="textPassword"
+        android:hint="请输入密码"
+        app:met_floatingLabel="normal"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/register_input_password_again"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_input_password"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        app:met_clearButton="true"
+        android:layout_marginTop="10dp"
+        android:inputType="textPassword"
+        android:hint="请再次输入密码"
+        app:met_floatingLabel="normal"/>
 
     <Button
         android:id="@+id/register_btn"

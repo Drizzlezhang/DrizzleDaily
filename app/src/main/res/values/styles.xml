@@ -107,7 +107,7 @@
     </style>
 
     <style name="StartTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
-        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimary">@color/nocolor</item>
         <item name="colorPrimaryDark">@color/black</item>
         <item name="colorAccent">@color/black</item>
         <item name="windowActionBar">false</item>

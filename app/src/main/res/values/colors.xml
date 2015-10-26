@@ -8,6 +8,7 @@
     <color name="textgrey">#727272</color>
     <color name="textblack">#212121</color>
     <color name="pressgrey">#B6B6B6</color>
+    <color name="nocolor">#00000000</color>
 
 
     <!--TEAL主题 原色-->

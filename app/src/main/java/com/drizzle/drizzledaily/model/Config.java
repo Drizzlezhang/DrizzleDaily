@@ -86,4 +86,9 @@ public class Config {
      * http://news-at.zhihu.com/api/3/news/hot
      */
     public static final String Hot_NEWS = "http://news-at.zhihu.com/api/3/news/hot";
+
+    /**
+     * 头像地址
+     */
+    public static final String TOUXIANGURL = "http://d.hiphotos.baidu.com/baike/w%3D268/sign=f456853874cf3bc7e800caeae900babd/962bd40735fae6cde8d6d2540bb30f2442a70fa0.jpg";
 }

@@ -1,7 +1,10 @@
 package com.drizzle.drizzledaily.fragments;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
@@ -18,6 +21,7 @@ import com.drizzle.drizzledaily.utils.TUtils;
 public class SettingsFragment extends PreferenceFragment {
     private String[] strings;
     public static final String STARTIMGCACHEURL = Config.START_PHOTO_FOLDER + "/startimg.jpg";
+    private ProgressDialog progressDialog;
 
     public SettingsFragment() {
 
@@ -28,6 +32,10 @@ public class SettingsFragment extends PreferenceFragment {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.xml.preferences);
         strings = new String[]{"原装色", "火焰红", "冷酷蓝", "高级黑", "热烈橙", "生命绿", "高贵紫", "香蕉黄"};
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("请稍等...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(true);
     }
 
     @Override
@@ -63,11 +71,26 @@ public class SettingsFragment extends PreferenceFragment {
                     }
                 }).start();
                 Glide.get(getActivity()).clearMemory();
-                TUtils.showShort(getActivity(), "缓存已清理");
+                progressDialog.show();
+                handler.sendEmptyMessageDelayed(1, 1000);
                 break;
             default:
                 break;
         }
         return true;
     }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    TUtils.showShort(getActivity(), "缓存已清理");
+                    progressDialog.dismiss();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 }
