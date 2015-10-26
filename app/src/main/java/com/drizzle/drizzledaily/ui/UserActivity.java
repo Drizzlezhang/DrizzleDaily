@@ -56,10 +56,13 @@ public class UserActivity extends AppCompatActivity {
     @Bind(R.id.user_touxiang)
     CircleImageView userTouxiang;
 
-    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang};
+    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang,R.mipmap.touxiang7,R.mipmap.touxiang8};
     private String[] superheros = new String[]{"SpiderMan", "IronMan", "Hulk", "SuperMan", "GreenArrow", "BatMan"};
     private CommonAdapter<ShareBean> adapter;
     private List<ShareBean> touxiangList = new ArrayList<>();
+    private List<ShareBean> yuetouxianglist=new ArrayList<>();
+    private CommonAdapter<ShareBean> yueadapter;
+    private DialogPlus yuedialogPlus;
     private DialogPlus dialogPlus;
     private ProgressDialog progressDialog;
 
@@ -91,6 +94,17 @@ public class UserActivity extends AppCompatActivity {
                 } else {
                     dialogPlus.show();
                 }
+            }
+        });
+        userTouxiang.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                if (loginType == 1) {
+                    //TODO
+                } else {
+                    yuedialogPlus.show();
+                }
+                return true;
             }
         });
         dialogPlus = DialogPlus.newDialog(UserActivity.this)
@@ -134,6 +148,7 @@ public class UserActivity extends AppCompatActivity {
         progressDialog.setMessage("请稍等...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(true);
+
     }
 
     @OnClick({R.id.user_change_btn, R.id.user_loginout_btn})
@@ -188,6 +203,45 @@ public class UserActivity extends AppCompatActivity {
                 helper.setImgByid(R.id.choose_touxiang, item.getImgId());
             }
         };
+        ShareBean bean1 = new ShareBean(R.mipmap.touxiang7, "忘了这个人名了");
+        ShareBean bean2 = new ShareBean(R.mipmap.touxiang8, "这个不认识");
+        yuetouxianglist.add(bean1);
+        yuetouxianglist.add(bean2);
+        yueadapter = new CommonAdapter<ShareBean>(this, yuetouxianglist, R.layout.share_list_item) {
+            @Override
+            public void convert(ViewHolder helper, ShareBean item) {
+                helper.setText(R.id.share_item_text, item.getText());
+                helper.setImgByid(R.id.share_item_img, item.getImgId());
+            }
+        };
+        yuedialogPlus = DialogPlus.newDialog(UserActivity.this)
+                .setAdapter(yueadapter)
+                .setOnItemClickListener(new OnItemClickListener() {
+                    @Override
+                    public void onItemClick(DialogPlus dialog, Object item, View view, final int position) {
+                        MyUser newUser = new MyUser();
+                        newUser.setTouxiangId(position+7);
+                        MyUser myUser = BmobUser.getCurrentUser(UserActivity.this, MyUser.class);
+                        newUser.update(UserActivity.this, myUser.getObjectId(), new UpdateListener() {
+                            @Override
+                            public void onSuccess() {
+                                // TODO Auto-generated method stub
+                                userTouxiang.setImageResource(touxiangs[position+7]);
+                                TUtils.showShort(UserActivity.this, "头像更新成功");
+                                yuedialogPlus.dismiss();
+                            }
+
+                            @Override
+                            public void onFailure(int code, String msg) {
+                                // TODO Auto-generated method stub
+                                TUtils.showShort(UserActivity.this, "头像更新失败");
+                                yuedialogPlus.dismiss();
+                            }
+                        });
+                        yuedialogPlus.dismiss();
+                    }
+                })
+                .setCancelable(true).setPadding(20, 30, 20, 20).create();
     }
 
     private void initUser() {

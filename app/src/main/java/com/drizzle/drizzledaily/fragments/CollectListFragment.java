@@ -1,6 +1,7 @@
 package com.drizzle.drizzledaily.fragments;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.SwipeAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
+import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
@@ -28,10 +30,14 @@ import com.google.gson.reflect.TypeToken;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * 收藏夹列表
@@ -40,14 +46,18 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     @Bind(R.id.collect_listview)
     ListView listView;
 
-    @Bind(R.id.collect_fab)
-    FloatingActionButton floatingActionButton;
+    @Bind(R.id.upload_fab)
+    FloatingActionButton uploadfloatingActionButton;
+
+    @Bind(R.id.sync_fab)
+    FloatingActionButton syncfloatingActionButton;
 
     @Bind(R.id.collect_center_text)
     TextView centerText;
 
     private List<CollectBean> collectBeanList = new ArrayList<CollectBean>();
     private SwipeAdapter adapter;
+    private ProgressDialog progressDialog;
 
     private Handler handler = new Handler() {
         @Override
@@ -119,26 +129,101 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
                 }
             }
         });
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        uploadfloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new MaterialDialog.Builder(getActivity())
-                        .title("删除整个收藏夹？").content("点击确定将将删除您收藏的所有文章。")
-                        .positiveText("确定").negativeText("取消")
-                        .callback(new MaterialDialog.ButtonCallback() {
+                uploadCollects();
+            }
+        });
+        syncfloatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                syncCollects();
+            }
+        });
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage("请稍等...");
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(true);
+    }
+
+
+    private void uploadCollects() {
+        new MaterialDialog.Builder(getActivity())
+                .title("上传收藏夹？").content("点击确定将上传本地收藏到云。")
+                .positiveText("确定").negativeText("取消")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(final MaterialDialog dialog) {
+                        progressDialog.show();
+                        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                        String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+                        MyUser newUser = new MyUser();
+                        newUser.setCollectJson(collectcache);
+                        MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
+                        newUser.update(getActivity(), myUser.getObjectId(), new UpdateListener() {
                             @Override
-                            public void onPositive(MaterialDialog dialog) {
-                                handler.sendEmptyMessage(1);
+                            public void onSuccess() {
+                                // TODO Auto-generated method stub
+                                TUtils.showShort(getActivity(), "收藏夹上传成功");
+                                progressDialog.dismiss();
                             }
 
                             @Override
-                            public void onNegative(MaterialDialog dialog) {
-                                super.onNegative(dialog);
+                            public void onFailure(int code, String msg) {
+                                // TODO Auto-generated method stub
+                                TUtils.showShort(getActivity(), "收藏夹上传失败");
+                                progressDialog.dismiss();
                             }
-                        })
-                        .show();
-            }
-        });
+                        });
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                })
+                .show();
+    }
+
+    private void syncCollects() {
+        new MaterialDialog.Builder(getActivity())
+                .title("同步收藏夹？").content("点击确定将同步云到本地。")
+                .positiveText("确定").negativeText("取消")
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @Override
+                    public void onPositive(final MaterialDialog dialog) {
+                        progressDialog.show();
+                        //获取本地数据
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                        String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+                        Gson gson = new Gson();
+                        Set<CollectBean> oldcollectset = new HashSet<CollectBean>();
+                        oldcollectset = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
+                        }.getType());
+                        //获取网络数据
+                        MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
+                        String cloudcollect = myUser.getCollectJson();
+                        Set<CollectBean> cloudcollectset = new HashSet<CollectBean>();
+                        cloudcollectset = gson.fromJson(cloudcollect, new TypeToken<Set<CollectBean>>() {
+                        }.getType());
+                        //数据合并转换为json存储到本地
+                        cloudcollectset.addAll(oldcollectset);
+                        String newcollcetjson = gson.toJson(cloudcollectset);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString(Config.COLLECTCACHE, newcollcetjson);
+                        editor.commit();
+                        handler.sendEmptyMessage(1);
+                        TUtils.showShort(getActivity(), "同步成功");
+                        progressDialog.dismiss();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        super.onNegative(dialog);
+                    }
+                })
+                .show();
     }
 
     @Override

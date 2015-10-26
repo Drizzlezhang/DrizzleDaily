@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CommonAdapter<ShareBean> adapter;
     private List<ShareBean> shareBeanList = new ArrayList<>();
     private String[] strings;
-    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang};
+    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang,R.mipmap.touxiang7,R.mipmap.touxiang8};
 
 
     private Calendar calendar;
