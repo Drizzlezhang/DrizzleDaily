@@ -18,9 +18,6 @@ public class MySwipeActivity extends AppCompatActivity implements SwipeBackActiv
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-//        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-//        int themeid = preferences.getInt(Config.SKIN_NUMBER, 2);
-//        ThemeUtils.onActivityCreateSetTheme(this, themeid);
         super.onCreate(savedInstanceState);
         mHelper = new SwipeBackActivityHelper(this);
         mHelper.onActivityCreate();

@@ -320,6 +320,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.drawer_menu_choose:
                 DatePickerDialog datePickerDialog = new DatePickerDialog(MainActivity.this, dateSetListener,
                         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH));
+                datePickerDialog.setCancelable(true);
+                datePickerDialog.setTitle("请选择日报日期");
+                datePickerDialog.setCanceledOnTouchOutside(true);
                 datePickerDialog.show();
                 break;
             case R.id.drawer_menu_drizzle:

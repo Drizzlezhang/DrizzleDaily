@@ -74,13 +74,13 @@
             android:layout_height="match_parent">
 
             <com.wang.avi.AVLoadingIndicatorView
-                android:id="@+id/read_progress"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                app:indicator="BallClipRotatePulse"
-                app:indicator_color="@color/black"
-                />
+            android:id="@+id/read_progress"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            app:indicator="LineScalePulseOutRapid"
+            app:indicator_color="@color/black"
+            />
 
             <WebView
                 android:id="@+id/read_webview"

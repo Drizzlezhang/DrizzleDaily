@@ -96,7 +96,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
 
                     };
-                    mViewPager.setInterval(3000);
+                    mViewPager.setInterval(4000);
                     mViewPager.setStopScrollWhenTouch(true);
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
                     mViewPager.startAutoScroll(5000);
@@ -310,12 +310,4 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             TUtils.showShort(getActivity(), "json error");
         }
     }
-//
-//    @Override
-//    public void setMenuVisibility(boolean menuVisible) {
-//        super.setMenuVisibility(menuVisible);
-//        if (this.getView() != null) {
-//            this.getView().setVisibility(menuVisible ? View.VISIBLE : View.GONE);
-//        }
-//    }
 }

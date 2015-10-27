@@ -12,9 +12,9 @@ import java.io.IOException;
 /**
  * 图片操作类
  */
-public class ImageUtils {
+public class Imageutils {
 
-    private ImageUtils() {
+    private Imageutils() {
         /* cannot be instantiated */
         throw new UnsupportedOperationException("cannot be instantiated");
     }

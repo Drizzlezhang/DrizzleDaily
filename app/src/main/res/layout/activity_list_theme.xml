@@ -82,9 +82,9 @@
             <com.wang.avi.AVLoadingIndicatorView
                 android:id="@+id/theme_list_progress"
                 android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_height="40dp"
                 android:layout_gravity="center"
-                app:indicator="BallClipRotatePulse"
+                app:indicator="LineScalePulseOutRapid"
                 app:indicator_color="@color/black"
                 />
         </FrameLayout>
