@@ -25,11 +25,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"></WebView>
 
-        <ProgressBar
+        <com.wang.avi.AVLoadingIndicatorView
             android:id="@+id/section_read_progress"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_gravity="center"
+            app:indicator="BallClipRotatePulse"
+            app:indicator_color="@color/black"
             />
     </FrameLayout>
 

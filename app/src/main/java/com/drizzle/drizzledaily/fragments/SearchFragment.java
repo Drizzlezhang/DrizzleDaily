@@ -10,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -23,6 +22,7 @@ import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,7 +44,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     ListView mListView;
 
     @Bind(R.id.search_progress)
-    ProgressBar mProgressBar;
+    AVLoadingIndicatorView loadingIndicatorView;
 
     private CommonAdapter<BaseListItem> adapter;
     private String id;
@@ -104,7 +104,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
                 @Override
                 public void onFailure(Request request, IOException e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
-                    mProgressBar.setVisibility(View.GONE);
+                    loadingIndicatorView.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -120,18 +120,18 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
                             BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
                             baseListItems.add(baseListItem);
                         }
-                        mProgressBar.setVisibility(View.GONE);
+                        loadingIndicatorView.setVisibility(View.GONE);
                         handler.sendEmptyMessage(1);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         TUtils.showShort(getActivity(), "json error");
-                        mProgressBar.setVisibility(View.GONE);
+                        loadingIndicatorView.setVisibility(View.GONE);
                     }
                 }
             });
         } else {
             TUtils.showShort(getActivity(), "网络未连接");
-            mProgressBar.setVisibility(View.GONE);
+            loadingIndicatorView.setVisibility(View.GONE);
         }
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -153,12 +153,13 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
 
     /**
      * 在页面切换时停止活动view
+     *
      * @param hidden
      */
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (hidden==true){
-            mProgressBar.setVisibility(View.GONE);
+        if (hidden == true) {
+            loadingIndicatorView.setVisibility(View.GONE);
         }
         super.onHiddenChanged(hidden);
     }

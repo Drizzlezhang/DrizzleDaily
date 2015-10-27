@@ -149,81 +149,89 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
 
 
     private void uploadCollects() {
-        new MaterialDialog.Builder(getActivity())
-                .title("上传收藏夹？").content("点击确定将上传本地收藏到云。")
-                .positiveText("确定").negativeText("取消")
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(final MaterialDialog dialog) {
-                        progressDialog.show();
-                        final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                        String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
-                        MyUser newUser = new MyUser();
-                        newUser.setCollectJson(collectcache);
-                        MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
-                        newUser.update(getActivity(), myUser.getObjectId(), new UpdateListener() {
-                            @Override
-                            public void onSuccess() {
-                                // TODO Auto-generated method stub
-                                TUtils.showShort(getActivity(), "收藏夹上传成功");
-                                progressDialog.dismiss();
-                            }
+        final MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
+        if (myUser == null) {
+            TUtils.showShort(getActivity(), "未登录");
+        } else {
+            new MaterialDialog.Builder(getActivity())
+                    .title("上传收藏夹？").content("点击确定将上传本地收藏到云。")
+                    .positiveText("确定").negativeText("取消")
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(final MaterialDialog dialog) {
+                            progressDialog.show();
+                            final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                            String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+                            MyUser newUser = new MyUser();
+                            newUser.setCollectJson(collectcache);
+                            newUser.update(getActivity(), myUser.getObjectId(), new UpdateListener() {
+                                @Override
+                                public void onSuccess() {
+                                    // TODO Auto-generated method stub
+                                    TUtils.showShort(getActivity(), "收藏夹上传成功");
+                                    progressDialog.dismiss();
+                                }
 
-                            @Override
-                            public void onFailure(int code, String msg) {
-                                // TODO Auto-generated method stub
-                                TUtils.showShort(getActivity(), "收藏夹上传失败");
-                                progressDialog.dismiss();
-                            }
-                        });
-                    }
+                                @Override
+                                public void onFailure(int code, String msg) {
+                                    // TODO Auto-generated method stub
+                                    TUtils.showShort(getActivity(), "收藏夹上传失败");
+                                    progressDialog.dismiss();
+                                }
+                            });
+                        }
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                    }
-                })
-                .show();
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
+                        }
+                    })
+                    .show();
+        }
     }
 
     private void syncCollects() {
-        new MaterialDialog.Builder(getActivity())
-                .title("同步收藏夹？").content("点击确定将同步云到本地。")
-                .positiveText("确定").negativeText("取消")
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(final MaterialDialog dialog) {
-                        progressDialog.show();
-                        //获取本地数据
-                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                        String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
-                        Gson gson = new Gson();
-                        Set<CollectBean> oldcollectset = new HashSet<CollectBean>();
-                        oldcollectset = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
-                        }.getType());
-                        //获取网络数据
-                        MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
-                        String cloudcollect = myUser.getCollectJson();
-                        Set<CollectBean> cloudcollectset = new HashSet<CollectBean>();
-                        cloudcollectset = gson.fromJson(cloudcollect, new TypeToken<Set<CollectBean>>() {
-                        }.getType());
-                        //数据合并转换为json存储到本地
-                        cloudcollectset.addAll(oldcollectset);
-                        String newcollcetjson = gson.toJson(cloudcollectset);
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putString(Config.COLLECTCACHE, newcollcetjson);
-                        editor.commit();
-                        handler.sendEmptyMessage(1);
-                        TUtils.showShort(getActivity(), "同步成功");
-                        progressDialog.dismiss();
-                    }
+        final MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
+        if (myUser == null) {
+            TUtils.showShort(getActivity(), "未登录");
+        } else {
+            new MaterialDialog.Builder(getActivity())
+                    .title("同步收藏夹？").content("点击确定将同步云到本地。")
+                    .positiveText("确定").negativeText("取消")
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @Override
+                        public void onPositive(final MaterialDialog dialog) {
+                            progressDialog.show();
+                            //获取本地数据
+                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                            String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+                            Gson gson = new Gson();
+                            Set<CollectBean> oldcollectset = new HashSet<CollectBean>();
+                            oldcollectset = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
+                            }.getType());
+                            //获取网络数据
+                            String cloudcollect = myUser.getCollectJson();
+                            Set<CollectBean> cloudcollectset = new HashSet<CollectBean>();
+                            cloudcollectset = gson.fromJson(cloudcollect, new TypeToken<Set<CollectBean>>() {
+                            }.getType());
+                            //数据合并转换为json存储到本地
+                            cloudcollectset.addAll(oldcollectset);
+                            String newcollcetjson = gson.toJson(cloudcollectset);
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(Config.COLLECTCACHE, newcollcetjson);
+                            editor.commit();
+                            handler.sendEmptyMessage(1);
+                            TUtils.showShort(getActivity(), "同步成功");
+                            progressDialog.dismiss();
+                        }
 
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        super.onNegative(dialog);
-                    }
-                })
-                .show();
+                        @Override
+                        public void onNegative(MaterialDialog dialog) {
+                            super.onNegative(dialog);
+                        }
+                    })
+                    .show();
+        }
     }
 
     @Override

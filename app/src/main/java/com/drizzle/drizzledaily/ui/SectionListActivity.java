@@ -10,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -21,6 +20,7 @@ import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -50,7 +50,7 @@ public class SectionListActivity extends MySwipeActivity {
     ListView mListView;
 
     @Bind(R.id.section_list_progress)
-    ProgressBar mProgressBar;
+    AVLoadingIndicatorView loadingIndicatorView;
 
     private Handler handler = new Handler() {
         @Override
@@ -89,7 +89,7 @@ public class SectionListActivity extends MySwipeActivity {
                 @Override
                 public void onFailure(Request request, IOException e) {
                     TUtils.showShort(SectionListActivity.this, "服务器出问题了");
-                    mProgressBar.setVisibility(View.GONE);
+                    loadingIndicatorView.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -109,17 +109,17 @@ public class SectionListActivity extends MySwipeActivity {
                             sectionList.add(baseListItem);
                         }
                         handler.sendEmptyMessage(0);
-                        mProgressBar.setVisibility(View.GONE);
+                        loadingIndicatorView.setVisibility(View.GONE);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         TUtils.showShort(SectionListActivity.this, "json error");
-                        mProgressBar.setVisibility(View.GONE);
+                        loadingIndicatorView.setVisibility(View.GONE);
                     }
                 }
             });
         } else {
             TUtils.showShort(SectionListActivity.this, "网络未连接");
-            mProgressBar.setVisibility(View.GONE);
+            loadingIndicatorView.setVisibility(View.GONE);
         }
     }
 

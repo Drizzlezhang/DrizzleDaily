@@ -51,11 +51,11 @@
                     android:id="@+id/read_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="载入中···"
                     android:layout_marginLeft="5dp"
                     android:layout_marginRight="50dp"
                     android:ellipsize="end"
                     android:singleLine="true"
+                    android:text="载入中···"
                     android:textColor="@color/white"
                     android:textSize="20sp"/>
             </android.support.v7.widget.Toolbar>
@@ -64,20 +64,22 @@
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/read_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/read_scroll"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <ProgressBar
+            <com.wang.avi.AVLoadingIndicatorView
                 android:id="@+id/read_progress"
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center"
+                app:indicator="BallClipRotatePulse"
+                app:indicator_color="@color/black"
                 />
 
             <WebView

@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -27,6 +26,7 @@ import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -59,7 +59,7 @@ public class ThemeListActivity extends MySwipeActivity {
     TextView themeDes;
 
     @Bind(R.id.theme_list_progress)
-    ProgressBar mProgressBar;
+    AVLoadingIndicatorView loadingIndicatorView;
 
     @Bind(R.id.theme_list_scroll)
     NestedScrollView mNestedScrollView;
@@ -108,7 +108,7 @@ public class ThemeListActivity extends MySwipeActivity {
                 @Override
                 public void onFailure(Request request, IOException e) {
                     TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
-                    mProgressBar.setVisibility(View.GONE);
+                    loadingIndicatorView.setVisibility(View.GONE);
                 }
 
                 @Override
@@ -128,17 +128,17 @@ public class ThemeListActivity extends MySwipeActivity {
                             themeList.add(baseListItem);
                         }
                         handler.sendEmptyMessage(0);
-                        mProgressBar.setVisibility(View.GONE);
+                        loadingIndicatorView.setVisibility(View.GONE);
                     } catch (JSONException e) {
                         e.printStackTrace();
                         TUtils.showShort(ThemeListActivity.this, "json error");
-                        mProgressBar.setVisibility(View.GONE);
+                        loadingIndicatorView.setVisibility(View.GONE);
                     }
                 }
             });
         } else {
             TUtils.showShort(ThemeListActivity.this, "网络未连接");
-            mProgressBar.setVisibility(View.GONE);
+            loadingIndicatorView.setVisibility(View.GONE);
         }
     }
 

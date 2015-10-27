@@ -46,6 +46,9 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@style/main_animation_translucent_translate</item>
     </style>
+    <style name="PhotoBlackAppTheme" parent="MainBlackAppTheme">
+        <item name="android:textColorPrimary">@color/white</item>
+    </style>
 
     <style name="main_animation_translucent_translate" parent="@android:style/Animation.Translucent">
         <item name="android:windowExitAnimation">@anim/bottom_out</item>

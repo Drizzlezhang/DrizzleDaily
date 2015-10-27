@@ -16,7 +16,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -41,6 +40,7 @@ import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
 import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -82,7 +82,7 @@ public class ReadActivity extends MySwipeActivity {
     WebView readWeb;
 
     @Bind(R.id.read_progress)
-    ProgressBar mProgressBar;
+    AVLoadingIndicatorView loadingIndicatorView;
 
     @Bind(R.id.read_scroll)
     NestedScrollView mNestedScrollView;
@@ -131,7 +131,7 @@ public class ReadActivity extends MySwipeActivity {
             managerReadJson(readid);
         } else {
             TUtils.showShort(ReadActivity.this, "网络未连接");
-            mProgressBar.setVisibility(View.GONE);
+            loadingIndicatorView.setVisibility(View.GONE);
         }
 
     }
@@ -206,7 +206,7 @@ public class ReadActivity extends MySwipeActivity {
             @Override
             public void onFailure(Request request, IOException e) {
                 TUtils.showShort(ReadActivity.this, "服务器出问题了");
-                mProgressBar.setVisibility(View.GONE);
+                loadingIndicatorView.setVisibility(View.GONE);
             }
 
             @Override
@@ -237,11 +237,11 @@ public class ReadActivity extends MySwipeActivity {
                         }
                     }).start();
                     handler.sendEmptyMessage(0);
-                    mProgressBar.setVisibility(View.GONE);
+                    loadingIndicatorView.setVisibility(View.GONE);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     TUtils.showShort(ReadActivity.this, "json error");
-                    mProgressBar.setVisibility(View.GONE);
+                    loadingIndicatorView.setVisibility(View.GONE);
                 }
             }
         });

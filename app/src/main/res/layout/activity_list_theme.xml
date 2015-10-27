@@ -31,54 +31,61 @@
                 android:scaleType="centerCrop"
                 app:layout_collapseMode="parallax"
                 />
+
             <TextView
+                android:id="@+id/theme_list_des"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/theme_list_des"
-                android:textSize="25sp"
                 android:layout_gravity="bottom"
-                app:layout_collapseMode="parallax"
                 android:layout_margin="20dp"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white"
+                android:textSize="25sp"
+                app:layout_collapseMode="parallax"/>
+
             <android.support.v7.widget.Toolbar
                 android:id="@+id/theme_list_toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 app:layout_collapseMode="pin"
                 app:popupTheme="@style/AppTheme.PopupOverlay">
+
                 <TextView
+                    android:id="@+id/theme_list_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:id="@+id/theme_list_title"
-                    android:textSize="20sp"
+                    android:paddingLeft="20dp"
                     android:text="载入中"
                     android:textColor="@color/white"
-                    android:paddingLeft="20dp"/>
+                    android:textSize="20sp"/>
             </android.support.v7.widget.Toolbar>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.NestedScrollView
+        android:id="@+id/theme_list_scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/theme_list_scroll"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+
             <ListView
                 android:id="@+id/theme_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_margin="5dp"
                 android:scrollbars="none"></ListView>
-            <ProgressBar
-                android:layout_width="60dp"
+
+            <com.wang.avi.AVLoadingIndicatorView
                 android:id="@+id/theme_list_progress"
+                android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:layout_gravity="center"
+                app:indicator="BallClipRotatePulse"
+                app:indicator_color="@color/black"
                 />
         </FrameLayout>
     </android.support.v4.widget.NestedScrollView>
