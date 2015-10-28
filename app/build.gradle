@@ -30,11 +30,10 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.4.0'
     compile 'com.squareup.okio:okio:1.5.0'
     compile 'com.github.bumptech.glide:glide:3.6.0'
+    compile 'com.afollestad.material-dialogs:core:0.8.4.2@aar'
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.nineoldandroids:library:2.4.0'
-
     compile 'com.bm.photoview:library:2.0.7'
-    compile 'com.afollestad:material-dialogs:0.7.8.1'
     compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.github.mrengineer13:snackbar:1.2.0'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
@@ -46,7 +45,6 @@ dependencies {
     compile('cn.trinea.android.view.autoscrollviewpager:android-auto-scroll-view-pager:1.1.2') {
         exclude module: 'support-v4'
     }
-
     compile files('libs/libammsdk.jar')
     compile files('libs/Bughd_android_sdk_v1.3.3.jar')
     //bmob-sdk ：Bmob的android sdk包

@@ -19,7 +19,7 @@ local.properties
 K 25
 svn:wc:ra_dav:version-url
 V 59
-/svn/drizzledaily/!svn/ver/21/DrizzleDaily/local.properties
+/svn/drizzledaily/!svn/ver/24/DrizzleDaily/local.properties
 END
 DrizzleDaily.iml
 K 25
@@ -49,7 +49,7 @@ build.gradle
 K 25
 svn:wc:ra_dav:version-url
 V 55
-/svn/drizzledaily/!svn/ver/17/DrizzleDaily/build.gradle
+/svn/drizzledaily/!svn/ver/24/DrizzleDaily/build.gradle
 END
 settings.gradle
 K 25

@@ -16,9 +16,7 @@ allprojects {
     repositories {
         jcenter()
         maven { url "https://raw.github.com/bmob/bmob-android-sdk/master" }
+        maven { url "https://jitpack.io" }
     }
 }
 
-//task clean(type: Delete) {
-//    delete rootProject.buildDir
-//}
