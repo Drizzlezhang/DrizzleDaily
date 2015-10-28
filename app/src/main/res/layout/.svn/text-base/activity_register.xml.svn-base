@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.drizzle.drizzledaily.ui.RegisterActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/register_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:popupTheme="@style/AppTheme.PopupOverlay"/>
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/register_touxiang"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_below="@+id/register_toolbar"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center_vertical"
+        android:layout_margin="20dp"
+        android:src="@mipmap/touxiang"
+        app:border_color="@color/blackcolorPrimary"
+        app:border_width="2dp"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/register_input_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_touxiang"
+        android:layout_marginLeft="25dp"
+        app:met_clearButton="true"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="15dp"
+        android:hint="请输入用户名"
+        app:met_floatingLabel="normal"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/register_sex"
+        android:layout_below="@+id/register_input_name"
+        android:layout_margin="20dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="男同志"/>
+
+        <RadioButton
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="女同志"/>
+
+    </RadioGroup>
+
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/register_input_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:met_clearButton="true"
+        android:layout_below="@+id/register_sex"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:inputType="textPassword"
+        android:hint="请输入密码"
+        app:met_floatingLabel="normal"/>
+
+    <com.rengwuxian.materialedittext.MaterialEditText
+        android:id="@+id/register_input_password_again"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/register_input_password"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        app:met_clearButton="true"
+        android:layout_marginTop="10dp"
+        android:inputType="textPassword"
+        android:hint="请再次输入密码"
+        app:met_floatingLabel="normal"/>
+
+    <Button
+        android:id="@+id/register_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="10dp"
+        android:text="注     册"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:background="@drawable/cardpress"/>
+</RelativeLayout>

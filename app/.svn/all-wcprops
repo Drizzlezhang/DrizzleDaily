@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/drizzledaily/!svn/ver/21/DrizzleDaily/app
+END
+app.iml
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/drizzledaily/!svn/ver/21/DrizzleDaily/app/app.iml
+END
+.gitignore
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/app/.gitignore
+END
+app-release.apk
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/drizzledaily/!svn/ver/17/DrizzleDaily/app/app-release.apk
+END
+proguard-rules.pro
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/app/proguard-rules.pro
+END
+build.gradle
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/drizzledaily/!svn/ver/20/DrizzleDaily/app/build.gradle
+END

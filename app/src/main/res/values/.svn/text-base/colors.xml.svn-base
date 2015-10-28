@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimaryLight">#B2DFDB</color>
+    <color name="colorAccent">#FF5252</color>
+    <color name="white">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="divider">#B6B6B6</color>
+    <color name="textgrey">#727272</color>
+    <color name="textblack">#212121</color>
+    <color name="pressgrey">#B6B6B6</color>
+    <color name="nocolor">#00000000</color>
+
+
+    <!--TEAL主题 原色-->
+    <color name="colorPrimary">#009688</color>
+    <color name="colorPrimaryDark">#00796B</color>
+    <!--red主题 火焰红-->
+    <color name="redcolorPrimary">#F44336</color>
+    <color name="redcolorPrimaryDark">#D32F2F</color>
+    <!--blue主题 冷酷蓝-->
+    <color name="bluecolorPrimary">#2196F3</color>
+    <color name="bluecolorPrimaryDark">#1976D2</color>
+    <!--black主题 高级黑-->
+    <color name="blackcolorPrimary">#424242</color>
+    <color name="blackcolorPrimaryDark">#212121</color>
+    <!--orange主题 热烈橙-->
+    <color name="orangecolorPrimary">#FF5722</color>
+    <color name="orangecolorPrimaryDark">#E64A19</color>
+    <!--green主题 生命绿-->
+    <color name="greencolorPrimary">#4CAF50</color>
+    <color name="greencolorPrimaryDark">#388E3C</color>
+    <!--purple主题 高贵紫-->
+    <color name="purplecolorPrimary">#673AB7</color>
+    <color name="purplecolorPrimaryDark">#512DA8</color>
+    <!--yellow主题 香蕉黄-->
+    <color name="yellowcolorPrimary">#FFEB3B</color>
+    <color name="yellowcolorPrimaryDark">#FBC02D</color>
+
+
+</resources>

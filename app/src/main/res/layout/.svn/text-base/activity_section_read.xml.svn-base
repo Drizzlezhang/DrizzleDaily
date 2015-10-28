@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/section_read_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/AppTheme.AppBarOverlay"
+        app:popupTheme="@style/AppTheme.PopupOverlay">
+    </android.support.v7.widget.Toolbar>
+
+        <WebView
+            android:id="@+id/section_read_webview"
+            android:layout_width="match_parent"
+            android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
+            android:layout_height="match_parent"></WebView>
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/section_read_progress"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_gravity="center"
+            app:indicator="Pacman"
+            app:indicator_color="@color/black"
+            />
+
+
+</merge>

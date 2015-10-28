@@ -1,0 +1,37 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.drizzle.drizzledaily.fragments.CollectListFragment">
+
+    <ListView
+        android:id="@+id/collect_listview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="none"></ListView>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/upload_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="30dp"
+        android:src="@mipmap/totop"/>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/sync_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|left"
+        android:layout_margin="30dp"
+        android:src="@mipmap/ic_sync_white_24dp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:id="@+id/collect_center_text"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="抱歉，您的收藏夹是空的。"
+        android:textSize="18sp"
+        android:visibility="gone"
+        android:textColor="@color/textgrey"
+        />
+</FrameLayout>

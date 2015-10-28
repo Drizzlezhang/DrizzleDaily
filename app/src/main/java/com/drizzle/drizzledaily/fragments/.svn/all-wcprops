@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/drizzledaily/!svn/ver/20/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments
+END
+ThemeListFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 118
+/svn/drizzledaily/!svn/ver/12/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/ThemeListFragment.java
+END
+AboutDeveloperFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/AboutDeveloperFragment.java
+END
+HeadPagerFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/HeadPagerFragment.java
+END
+SettingsFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 117
+/svn/drizzledaily/!svn/ver/18/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/SettingsFragment.java
+END
+CollectListFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 120
+/svn/drizzledaily/!svn/ver/20/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/CollectListFragment.java
+END
+SectionsListFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 121
+/svn/drizzledaily/!svn/ver/12/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/SectionsListFragment.java
+END
+SearchFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 115
+/svn/drizzledaily/!svn/ver/19/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/SearchFragment.java
+END
+HotListFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/svn/drizzledaily/!svn/ver/12/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/HotListFragment.java
+END
+LatestListFragment.java
+K 25
+svn:wc:ra_dav:version-url
+V 119
+/svn/drizzledaily/!svn/ver/20/DrizzleDaily/app/src/main/java/com/drizzle/drizzledaily/fragments/LatestListFragment.java
+END

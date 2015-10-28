@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/drizzledaily/!svn/ver/21/DrizzleDaily
+END
+.gitignore
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/.gitignore
+END
+gradlew
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/gradlew
+END
+local.properties
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/drizzledaily/!svn/ver/21/DrizzleDaily/local.properties
+END
+DrizzleDaily.iml
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/drizzledaily/!svn/ver/12/DrizzleDaily/DrizzleDaily.iml
+END
+.gitattributes
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/.gitattributes
+END
+gradle.properties
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/gradle.properties
+END
+gradlew.bat
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/gradlew.bat
+END
+build.gradle
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/drizzledaily/!svn/ver/17/DrizzleDaily/build.gradle
+END
+settings.gradle
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/drizzledaily/!svn/ver/2/DrizzleDaily/settings.gradle
+END
