@@ -102,13 +102,13 @@ public class SectionReadActivity extends MySwipeActivity {
         setContentView(R.layout.activity_section_read);
         ButterKnife.bind(this);
         initData();
-        initViews();
         collectDB = CollectDB.getInstance(this);
         if (savedInstanceState != null) {
             readid = savedInstanceState.getInt(Config.READID);
         } else {
             readid = getIntent().getIntExtra(Config.READID, -1);
         }
+        initViews();
         wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
         wxApi.registerApp(Config.WXAPPID);
         if (NetUtils.isConnected(SectionReadActivity.this)) {

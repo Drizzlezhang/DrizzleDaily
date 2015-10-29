@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 收藏夹本地数据库操作类
+ * 收藏夹本地数据库操作类(暂时弃用,转为json字符串存储)
  */
 public class CollectDB {
     private static final String COLLECT_DB_NAME = "collectlist";

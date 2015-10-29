@@ -50,7 +50,7 @@ public class GildeActivity extends AppCompatActivity {
     private static final String STARTIMGCACHEURL = "shartimgurl";
 
     /**
-     * 开启一个handler请求图片并下载
+     * 开启一个handler请求图片并下载,记录图片url,如果重复则使用已有的
      */
     private android.os.Handler handler = new android.os.Handler() {
         @Override

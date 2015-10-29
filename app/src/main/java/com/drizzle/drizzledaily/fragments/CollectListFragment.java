@@ -58,7 +58,9 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     private List<CollectBean> collectBeanList = new ArrayList<CollectBean>();
     private SwipeAdapter adapter;
     private ProgressDialog progressDialog;
-
+    /**
+     * 将adapter的点击事件写到handler中实现重复删除
+     */
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -129,6 +131,7 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
                 }
             }
         });
+        listView.setDivider(null);
         uploadfloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +150,9 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         progressDialog.setCancelable(true);
     }
 
-
+    /**
+     * 将本地收藏夹上传到云,并覆盖
+     */
     private void uploadCollects() {
         final MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
         if (myUser == null) {
@@ -190,6 +195,9 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         }
     }
 
+    /**
+     * 同步网络数据及本地数据,使用set集合合并数据,重写equals和hashcode方法,避免数据重复
+     */
     private void syncCollects() {
         final MyUser myUser = BmobUser.getCurrentUser(getActivity(), MyUser.class);
         if (myUser == null) {

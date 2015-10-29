@@ -168,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
     }
 
+    /**
+     * 拿到缓存的用户信息
+     */
     private void initUser() {
         MyUser userInfo = BmobUser.getCurrentUser(this, MyUser.class);
         if (userInfo != null) {
@@ -349,6 +352,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    /**
+     * 重写save方法,不保存fragment状态
+     * @param outState
+     * @param outPersistentState
+     */
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
     }
@@ -418,6 +426,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onKeyDown(keyCode, event);
     }
 
+    /**
+     * 按退出先关闭侧边栏,再关分享dialog,再回到主fragment,再按两次退出
+     */
     private void exit() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
             mDrawerLayout.closeDrawer(GravityCompat.START);

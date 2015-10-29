@@ -118,13 +118,13 @@ public class ReadActivity extends MySwipeActivity {
         setContentView(R.layout.activity_read);
         ButterKnife.bind(this);
         initData();
-        initViews();
         if (savedInstanceState != null) {
             readid = savedInstanceState.getInt(Config.READID);
         } else {
             Intent intent = getIntent();
             readid = intent.getIntExtra(Config.READID, -1);
         }
+        initViews();
         wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
         wxApi.registerApp(Config.WXAPPID);
         if (NetUtils.isConnected(ReadActivity.this)) {
@@ -180,7 +180,6 @@ public class ReadActivity extends MySwipeActivity {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
                         if (shareBitmap == null) {
-                            //这里替换一张自己工程里的图片资源
                             shareBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
                         }
                         if (position == 1) {

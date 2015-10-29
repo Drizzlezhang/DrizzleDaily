@@ -97,12 +97,12 @@ public class ThemeListActivity extends MySwipeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_theme);
         ButterKnife.bind(this);
-        initViews();
         if (savedInstanceState != null) {
             themeId = savedInstanceState.getInt(THEMEID);
         } else {
             themeId = getIntent().getIntExtra(THEMEID, -1);
         }
+        initViews();
         if (NetUtils.isConnected(ThemeListActivity.this)) {
             OkHttpClientManager.getAsyn(Config.THEME_LIST_EVERY + themeId, new OkHttpClientManager.StringCallback() {
                 @Override

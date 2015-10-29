@@ -94,7 +94,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                             return headpagerItems.size();
                         }
 
-
                     };
                     mViewPager.setInterval(4000);
                     mViewPager.setStopScrollWhenTouch(true);
@@ -238,6 +237,9 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
     }
 
+    /**
+     * 刷新列表,重置当前时间
+     */
     @Override
     public void onRefresh() {
         getLists(Config.LATEST_NEWS);

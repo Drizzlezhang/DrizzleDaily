@@ -39,7 +39,7 @@ import butterknife.ButterKnife;
 public class SectionListActivity extends MySwipeActivity {
 
     private int sectionid;
-    private static final String SECTIONID="sectionid";
+    private static final String SECTIONID = "sectionid";
     private List<BaseListItem> sectionList = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
@@ -78,12 +78,12 @@ public class SectionListActivity extends MySwipeActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_section_list);
         ButterKnife.bind(this);
-        initViews();
         if (savedInstanceState != null) {
             sectionid = savedInstanceState.getInt(SECTIONID);
         } else {
             sectionid = getIntent().getIntExtra(SECTIONID, -1);
         }
+        initViews();
         if (NetUtils.isConnected(SectionListActivity.this)) {
             OkHttpClientManager.getAsyn(Config.SECTION_LIST_EVERY + sectionid, new OkHttpClientManager.StringCallback() {
                 @Override

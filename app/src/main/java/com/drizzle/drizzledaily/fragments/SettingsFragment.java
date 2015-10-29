@@ -2,18 +2,24 @@ package com.drizzle.drizzledaily.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
+import android.text.InputType;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.bean.BugFeedBack;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.PhotoActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
+
+import cn.bmob.v3.listener.SaveListener;
 
 /**
  * 设置fragment
@@ -45,6 +51,38 @@ public class SettingsFragment extends PreferenceFragment {
                 Intent intent = new Intent(getActivity(), PhotoActivity.class);
                 intent.putExtra(Config.IMAGEURL, STARTIMGCACHEURL);
                 startActivity(intent);
+                break;
+            //提交bug
+            case "bugfeedback":
+                progressDialog.show();
+                final String model = Build.MODEL;
+                final String company = Build.MANUFACTURER;
+                new MaterialDialog.Builder(getActivity())
+                        .title("快速反馈应用bug")
+                        .inputType(InputType.TYPE_CLASS_TEXT)
+                        .positiveText("发送")
+                        .input("输入内容", "", new MaterialDialog.InputCallback() {
+                            @Override
+                            public void onInput(MaterialDialog dialog, CharSequence input) {
+                                BugFeedBack feedBack = new BugFeedBack();
+                                feedBack.setFeedBackContents(input.toString());
+                                feedBack.setModel(model + " from " + company);//获取到手机型号和品牌 TUtils.showShort(getActivity(),"bug提交成功");
+                                progressDialog.dismiss();
+                                feedBack.save(getActivity(), new SaveListener() {
+                                    @Override
+                                    public void onSuccess() {
+                                        TUtils.showShort(getActivity(),"bug提交成功");
+                                        progressDialog.dismiss();
+                                    }
+
+                                    @Override
+                                    public void onFailure(int i, String s) {
+                                        TUtils.showShort(getActivity(),"bug提交失败");
+                                        progressDialog.dismiss();
+                                    }
+                                });
+                            }
+                        }).show();
                 break;
 //            case "theme":
 //                new MaterialDialog.Builder(getActivity())

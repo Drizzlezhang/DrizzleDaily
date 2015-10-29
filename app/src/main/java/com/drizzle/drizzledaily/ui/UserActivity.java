@@ -34,7 +34,7 @@ import cn.bmob.v3.listener.UpdateListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
- * 个人管理
+ * 个人管理界面,有用户缓存则提示登出和修改个人信息,没有则提示登录和注册
  */
 public class UserActivity extends AppCompatActivity {
 
