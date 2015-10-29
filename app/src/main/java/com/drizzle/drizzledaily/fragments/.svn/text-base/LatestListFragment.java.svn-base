@@ -146,7 +146,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-       // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
+        // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
@@ -241,15 +241,18 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     @Override
     public void onRefresh() {
         getLists(Config.LATEST_NEWS);
+        mCalendar = Calendar.getInstance();
     }
+
     /**
      * 在页面切换时停止活动view
+     *
      * @param hidden
      */
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (hidden==true){
-            if (mRefreshLayout.isRefreshing()){
+        if (hidden == true) {
+            if (mRefreshLayout.isRefreshing()) {
                 mRefreshLayout.setRefreshing(false);
             }
         }

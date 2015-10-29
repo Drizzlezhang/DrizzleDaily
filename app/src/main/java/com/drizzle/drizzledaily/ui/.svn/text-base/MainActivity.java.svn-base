@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private CommonAdapter<ShareBean> adapter;
     private List<ShareBean> shareBeanList = new ArrayList<>();
     private String[] strings;
-    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang,R.mipmap.touxiang7,R.mipmap.touxiang8};
+    private int[] touxiangs = new int[]{R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5, R.mipmap.touxiang6, R.mipmap.touxiang, R.mipmap.touxiang7, R.mipmap.touxiang8};
 
 
     private Calendar calendar;
@@ -423,6 +423,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mDrawerLayout.closeDrawer(GravityCompat.START);
         } else if (dialogPlus.isShowing()) {
             dialogPlus.dismiss();
+        } else if (fragmentID != 1) {
+            if (latestListFragment == null) {
+                latestListFragment = new LatestListFragment();
+            }
+            hideFragment(fragmentID);
+            if (latestListFragment.isAdded()) {
+                fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(1 + "")).commit();
+            } else {
+                fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
+            }
+            mToolbar.setTitle("知乎日报");
+            fragmentID = 1;
         } else if (!isExit) {
             isExit = true;
             TUtils.showShort(MainActivity.this, "再按一次退出~");
