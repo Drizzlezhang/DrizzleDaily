@@ -69,28 +69,6 @@ public class ThemeListActivity extends MySwipeActivity {
     private CommonAdapter<BaseListItem> adapter;
     private static final String THEMEID = "themeid";
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    Glide.with(getApplicationContext()).load(imgUrl)
-                            .centerCrop().error(R.mipmap.place_img)
-                            .crossFade().into(mImageView);
-                    adapter = new CommonAdapter<BaseListItem>(ThemeListActivity.this, themeList, R.layout.simple_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.simple_item_title, item.getTitle());
-                        }
-                    };
-                    mListView.setAdapter(adapter);
-                    setListViewHeightBasedOnChildren(mListView);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +141,30 @@ public class ThemeListActivity extends MySwipeActivity {
             }
         });
     }
+
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    Glide.with(getApplicationContext()).load(imgUrl)
+                            .centerCrop().error(R.mipmap.place_img)
+                            .crossFade().into(mImageView);
+                    adapter = new CommonAdapter<BaseListItem>(ThemeListActivity.this, themeList, R.layout.simple_list_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.simple_item_title, item.getTitle());
+                        }
+                    };
+                    mListView.setAdapter(adapter);
+                    setListViewHeightBasedOnChildren(mListView);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {

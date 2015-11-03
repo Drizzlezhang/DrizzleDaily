@@ -66,51 +66,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     public LatestListFragment() {
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                            helper.setText(R.id.base_item_date, item.getDate());
-                        }
-                    };
-                    mListView.setAdapter(adapter);
-                    final FragmentManager manager = getChildFragmentManager();
-                    fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
-                        @Override
-                        public Fragment getItem(int position) {
-                            BaseListItem baseListItem = headpagerItems.get(position);
-                            HeadPagerFragment pagerFragment = HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(), baseListItem.getId());
-                            return pagerFragment;
-                        }
-
-                        @Override
-                        public int getCount() {
-                            return headpagerItems.size();
-                        }
-
-                    };
-                    mViewPager.setInterval(4000);
-                    mViewPager.setStopScrollWhenTouch(true);
-                    mViewPager.setAdapter(fragmentStatePagerAdapter);
-                    mViewPager.startAutoScroll(5000);
-                    mRefreshLayout.setRefreshing(false);
-                    break;
-                case 1:
-                    adapter.notifyDataSetChanged();
-                    mRefreshLayout.setRefreshing(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -176,6 +131,51 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         });
         mListView.setDivider(null);
     }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.base_item_title, item.getTitle());
+                            helper.setImg(R.id.base_item_img, item.getImgUrl());
+                            helper.setText(R.id.base_item_date, item.getDate());
+                        }
+                    };
+                    mListView.setAdapter(adapter);
+                    final FragmentManager manager = getChildFragmentManager();
+                    fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
+                        @Override
+                        public Fragment getItem(int position) {
+                            BaseListItem baseListItem = headpagerItems.get(position);
+                            HeadPagerFragment pagerFragment = HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(), baseListItem.getId());
+                            return pagerFragment;
+                        }
+
+                        @Override
+                        public int getCount() {
+                            return headpagerItems.size();
+                        }
+
+                    };
+                    mViewPager.setInterval(4000);
+                    mViewPager.setStopScrollWhenTouch(true);
+                    mViewPager.setAdapter(fragmentStatePagerAdapter);
+                    mViewPager.startAutoScroll(5000);
+                    mRefreshLayout.setRefreshing(false);
+                    break;
+                case 1:
+                    adapter.notifyDataSetChanged();
+                    mRefreshLayout.setRefreshing(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     /**
      * 请求数据并存入list，先判断有没有网，有网就用

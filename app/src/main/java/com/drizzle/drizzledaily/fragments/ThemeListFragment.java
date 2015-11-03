@@ -50,28 +50,6 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
     private List<BaseListItem> themeItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), themeItems, R.layout.base_grid_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.grid_item_title, item.getTitle());
-                            helper.setImg(R.id.grid_item_img, item.getImgUrl());
-                            helper.setText(R.id.grid_item_describe, item.getDescribe());
-                        }
-                    };
-                    mGridView.setAdapter(adapter);
-                    mRefreshLayout.setRefreshing(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
     public ThemeListFragment() {
     }
 
@@ -99,7 +77,7 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-       // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
+        // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -111,6 +89,28 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
         });
     }
 
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    adapter = new CommonAdapter<BaseListItem>(getActivity(), themeItems, R.layout.base_grid_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.grid_item_title, item.getTitle());
+                            helper.setImg(R.id.grid_item_img, item.getImgUrl());
+                            helper.setText(R.id.grid_item_describe, item.getDescribe());
+                        }
+                    };
+                    mGridView.setAdapter(adapter);
+                    mRefreshLayout.setRefreshing(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
     @Override
     public void onRefresh() {
         getLists(Config.THEME_LIST);
@@ -118,12 +118,13 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
 
     /**
      * 在页面切换时停止活动view
+     *
      * @param hidden
      */
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (hidden==true){
-            if (mRefreshLayout.isRefreshing()){
+        if (hidden == true) {
+            if (mRefreshLayout.isRefreshing()) {
                 mRefreshLayout.setRefreshing(false);
             }
         }

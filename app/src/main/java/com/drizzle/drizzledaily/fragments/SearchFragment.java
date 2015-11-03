@@ -51,26 +51,6 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     private List<BaseListItem> baseListItems = new ArrayList<>();
     private static final String TIMEID = "timeid";
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                        }
-                    };
-                    mListView.setAdapter(adapter);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
     public SearchFragment() {
         // Required empty public constructor
     }
@@ -144,6 +124,26 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
         });
         return view;
     }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.base_item_title, item.getTitle());
+                            helper.setImg(R.id.base_item_img, item.getImgUrl());
+                        }
+                    };
+                    mListView.setAdapter(adapter);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     public void onSaveInstanceState(Bundle outState) {

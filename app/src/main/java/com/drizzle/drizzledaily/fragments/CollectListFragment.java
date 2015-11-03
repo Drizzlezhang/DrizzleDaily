@@ -58,39 +58,6 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     private List<CollectBean> collectBeanList = new ArrayList<CollectBean>();
     private SwipeAdapter adapter;
     private ProgressDialog progressDialog;
-    /**
-     * 将adapter的点击事件写到handler中实现重复删除
-     */
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 1:
-                    final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                    String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
-                    final Gson gson = new Gson();
-                    collectBeanList = gson.fromJson(collectcache, new TypeToken<List<CollectBean>>() {
-                    }.getType());
-                    Collections.sort(collectBeanList);
-                    adapter = new SwipeAdapter(getActivity(), collectBeanList);
-                    adapter.setOnDeleteClick(new SwipeAdapter.CallDeleteBack() {
-                        @Override
-                        public void onDeleteBtnclick(int pageid) {
-                            collectBeanList.remove(new CollectBean(pageid, "", 1, 0));
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanList));
-                            editor.commit();
-                            handler.sendEmptyMessage(1);
-                        }
-                    });
-                    listView.setAdapter(adapter);
-                    isTextVisible();
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
 
     public CollectListFragment() {
@@ -149,6 +116,40 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         progressDialog.setCancelable(true);
     }
+
+    /**
+     * 将adapter的点击事件写到handler中实现重复删除
+     */
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 1:
+                    final SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                    String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+                    final Gson gson = new Gson();
+                    collectBeanList = gson.fromJson(collectcache, new TypeToken<List<CollectBean>>() {
+                    }.getType());
+                    Collections.sort(collectBeanList);
+                    adapter = new SwipeAdapter(getActivity(), collectBeanList);
+                    adapter.setOnDeleteClick(new SwipeAdapter.CallDeleteBack() {
+                        @Override
+                        public void onDeleteBtnclick(int pageid) {
+                            collectBeanList.remove(new CollectBean(pageid, "", 1, 0));
+                            SharedPreferences.Editor editor = sharedPreferences.edit();
+                            editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanList));
+                            editor.commit();
+                            handler.sendEmptyMessage(1);
+                        }
+                    });
+                    listView.setAdapter(adapter);
+                    isTextVisible();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     /**
      * 将本地收藏夹上传到云,并覆盖

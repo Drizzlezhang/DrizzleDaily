@@ -52,6 +52,26 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     private List<BaseListItem> sectionsItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
+    public SectionsListFragment() {
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.sections_list_fragment, container, false);
+        ButterKnife.bind(this, view);
+        initViews();
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        String sectioncachejson = sharedPreferences.getString("sectionlistcache", "");
+        if (sectioncachejson.equals("")) {
+            //TODO
+        } else {
+            manageSectionList(sectioncachejson);
+        }
+        getLists(Config.SECTION_LIST);
+        return view;
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -74,26 +94,6 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
         }
     };
 
-    public SectionsListFragment() {
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.sections_list_fragment, container, false);
-        ButterKnife.bind(this, view);
-        initViews();
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-        String sectioncachejson = sharedPreferences.getString("sectionlistcache", "");
-        if (sectioncachejson.equals("")) {
-            //TODO
-        } else {
-            manageSectionList(sectioncachejson);
-        }
-        getLists(Config.SECTION_LIST);
-        return view;
-    }
-
     @Override
     public void onClickToolbar() {
         mGridView.smoothScrollToPosition(0);
@@ -101,7 +101,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-      //  mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
+        //  mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -121,12 +121,13 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
 
     /**
      * 在页面切换时停止活动view
+     *
      * @param hidden
      */
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (hidden==true){
-            if (mRefreshLayout.isRefreshing()){
+        if (hidden == true) {
+            if (mRefreshLayout.isRefreshing()) {
                 mRefreshLayout.setRefreshing(false);
             }
         }

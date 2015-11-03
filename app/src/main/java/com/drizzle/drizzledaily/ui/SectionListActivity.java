@@ -52,27 +52,6 @@ public class SectionListActivity extends MySwipeActivity {
     @Bind(R.id.section_list_progress)
     AVLoadingIndicatorView loadingIndicatorView;
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getApplicationContext(), sectionList, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                            helper.setText(R.id.base_item_date, item.getDate());
-                        }
-                    };
-                    mListView.setAdapter(adapter);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,6 +123,28 @@ public class SectionListActivity extends MySwipeActivity {
             }
         });
     }
+
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    adapter = new CommonAdapter<BaseListItem>(getApplicationContext(), sectionList, R.layout.base_list_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.base_item_title, item.getTitle());
+                            helper.setImg(R.id.base_item_img, item.getImgUrl());
+                            helper.setText(R.id.base_item_date, item.getDate());
+                        }
+                    };
+                    mListView.setAdapter(adapter);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
