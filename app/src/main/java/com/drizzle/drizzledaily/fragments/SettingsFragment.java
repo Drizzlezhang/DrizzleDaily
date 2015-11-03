@@ -10,6 +10,7 @@ import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceScreen;
 import android.text.InputType;
+import android.text.TextUtils;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
@@ -64,23 +65,28 @@ public class SettingsFragment extends PreferenceFragment {
                         .input("输入内容", "", new MaterialDialog.InputCallback() {
                             @Override
                             public void onInput(MaterialDialog dialog, CharSequence input) {
-                                BugFeedBack feedBack = new BugFeedBack();
-                                feedBack.setFeedBackContents(input.toString());
-                                feedBack.setModel(model + " from " + company);//获取到手机型号和品牌 TUtils.showShort(getActivity(),"bug提交成功");
-                                progressDialog.dismiss();
-                                feedBack.save(getActivity(), new SaveListener() {
-                                    @Override
-                                    public void onSuccess() {
-                                        TUtils.showShort(getActivity(),"bug提交成功");
-                                        progressDialog.dismiss();
-                                    }
+                                if (TextUtils.isEmpty(input)) {
+                                    TUtils.showShort(getActivity(), "内容不能为空");
+                                    progressDialog.dismiss();
+                                } else {
+                                    BugFeedBack feedBack = new BugFeedBack();
+                                    feedBack.setFeedBackContents(input.toString());
+                                    feedBack.setModel(model + " from " + company);//获取到手机型号和品牌 TUtils.showShort(getActivity(),"bug提交成功");
+                                    progressDialog.dismiss();
+                                    feedBack.save(getActivity(), new SaveListener() {
+                                        @Override
+                                        public void onSuccess() {
+                                            TUtils.showShort(getActivity(), "bug提交成功");
+                                            progressDialog.dismiss();
+                                        }
 
-                                    @Override
-                                    public void onFailure(int i, String s) {
-                                        TUtils.showShort(getActivity(),"bug提交失败");
-                                        progressDialog.dismiss();
-                                    }
-                                });
+                                        @Override
+                                        public void onFailure(int i, String s) {
+                                            TUtils.showShort(getActivity(), "bug提交失败");
+                                            progressDialog.dismiss();
+                                        }
+                                    });
+                                }
                             }
                         }).show();
                 break;

@@ -53,27 +53,6 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private CommonAdapter<BaseListItem> adapter;
     private static final String HOTCACHENAME = "hotlistcache";
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), hotListItems, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                            helper.setText(R.id.base_item_date, "");
-                        }
-                    };
-                    mListView.setAdapter(adapter);
-                    mRefreshLayout.setRefreshing(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     public HotListFragment() {
     }
@@ -117,17 +96,40 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
 
     /**
      * 在页面切换时停止活动view
+     *
      * @param hidden
      */
     @Override
     public void onHiddenChanged(boolean hidden) {
-        if (hidden==true){
-            if (mRefreshLayout.isRefreshing()){
+        if (hidden == true) {
+            if (mRefreshLayout.isRefreshing()) {
                 mRefreshLayout.setRefreshing(false);
             }
         }
         super.onHiddenChanged(hidden);
     }
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    adapter = new CommonAdapter<BaseListItem>(getActivity(), hotListItems, R.layout.base_list_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.base_item_title, item.getTitle());
+                            helper.setImg(R.id.base_item_img, item.getImgUrl());
+                            helper.setText(R.id.base_item_date, "");
+                        }
+                    };
+                    mListView.setAdapter(adapter);
+                    mRefreshLayout.setRefreshing(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
 
 
     /**
