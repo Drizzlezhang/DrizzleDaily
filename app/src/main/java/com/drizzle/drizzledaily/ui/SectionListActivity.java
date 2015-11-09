@@ -16,17 +16,17 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 import com.wang.avi.AVLoadingIndicatorView;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,9 +64,9 @@ public class SectionListActivity extends MySwipeActivity {
         }
         initViews();
         if (NetUtils.isConnected(SectionListActivity.this)) {
-            OkHttpClientManager.getAsyn(Config.SECTION_LIST_EVERY + sectionid, new OkHttpClientManager.StringCallback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
+                new OkHttpRequest.Builder().url(Config.SECTION_LIST_EVERY + sectionid).get(new ResultCallback<String>() {
+                    @Override
+                    public void onError(Request request, Exception e) {
                     TUtils.showShort(SectionListActivity.this, "服务器出问题了");
                     loadingIndicatorView.setVisibility(View.GONE);
                 }

@@ -22,9 +22,11 @@ import butterknife.ButterKnife;
  * 顶部viewpager嵌套的fragment
  */
 public class HeadPagerFragment extends Fragment {
+
     private static String IMGKEY = "imgkey";
     private static String TITLEKEY = "titlekey";
     private static String IDKEY = "idkey";
+
     @Bind(R.id.head_fragment_img)
     ImageView headImg;
 

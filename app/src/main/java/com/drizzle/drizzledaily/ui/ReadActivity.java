@@ -25,7 +25,6 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -41,11 +40,12 @@ import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.wang.avi.AVLoadingIndicatorView;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -93,6 +93,8 @@ public class ReadActivity extends MySwipeActivity {
     private Bitmap shareBitmap;
     private IWXAPI wxApi;
 
+    private static final String APP_CACHE_DIRNAME = "/webcache"; // web缓存目录
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -133,7 +135,6 @@ public class ReadActivity extends MySwipeActivity {
             TUtils.showShort(ReadActivity.this, "网络未连接");
             loadingIndicatorView.setVisibility(View.GONE);
         }
-
     }
 
     private void initData() {
@@ -166,7 +167,11 @@ public class ReadActivity extends MySwipeActivity {
                 mNestedScrollView.smoothScrollTo(0, 0);
             }
         });
-        readWeb.getSettings().setJavaScriptEnabled(true);
+        if (NetUtils.isConnected(ReadActivity.this)) {
+            initWebView(true);
+        } else {
+            initWebView(false);
+        }
         dialogPlus = DialogPlus.newDialog(ReadActivity.this)
                 .setAdapter(adapter)
                 .setHeader(R.layout.share_head)
@@ -195,15 +200,73 @@ public class ReadActivity extends MySwipeActivity {
                 .create();
     }
 
+    public void initWebView(boolean isnet) {
+        readWeb.getSettings().setJavaScriptEnabled(true);
+//        readWeb.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+//        // 建议缓存策略为，判断是否有网络，有的话，使用LOAD_DEFAULT,无网络时，使用LOAD_CACHE_ELSE_NETWORK
+//        if (isnet) {
+//            readWeb.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT); // 设置缓存模式
+//        } else {
+//            readWeb.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); // 设置缓存模式
+//        }
+//        // 开启DOM storage API 功能
+//        readWeb.getSettings().setDomStorageEnabled(true);
+//        // 开启database storage API功能
+//        readWeb.getSettings().setDatabaseEnabled(true);
+//        String cacheDirPath = getFilesDir().getAbsolutePath()
+//                + APP_CACHE_DIRNAME;
+//        Log.i("cachePath", cacheDirPath);
+//        // 设置数据库缓存路径
+//        readWeb.getSettings().setDatabasePath(cacheDirPath); // API 19 deprecated
+//        // 设置Application caches缓存目录
+//        readWeb.getSettings().setAppCachePath(cacheDirPath);
+//        // 开启Application Cache功能
+//        readWeb.getSettings().setAppCacheEnabled(true);
+//        readWeb.getSettings().setDatabaseEnabled(true);
+//        Log.i("cachePath1", readWeb.getSettings().getDatabasePath());
+//        readWeb.setWebViewClient(new WebViewClient() {
+//            @Override
+//            public void onLoadResource(WebView view, String url) {
+//                super.onLoadResource(view, url);
+//            }
+//
+//            @Override
+//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+//                view.loadUrl(url);
+//                return true;
+//            }
+//
+//            // 页面开始时调用
+//            @Override
+//            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+//                super.onPageStarted(view, url, favicon);
+//            }
+//
+//            // 页面加载完成调用
+//            @Override
+//            public void onPageFinished(WebView view, String url) {
+//                super.onPageFinished(view, url);
+//            }
+//
+//            @Override
+//            public void onReceivedError(WebView view, int errorCode,
+//                                        String description, String failingUrl) {
+//                super.onReceivedError(view, errorCode, description, failingUrl);
+//            }
+//        });
+
+    }
+
+
     /**
      * 处理readjson数据
      *
      * @param managerReadId
      */
     private void managerReadJson(int managerReadId) {
-        OkHttpClientManager.getAsyn(Config.NEWS_BODY + managerReadId, new OkHttpClientManager.StringCallback() {
-            @Override
-            public void onFailure(Request request, IOException e) {
+            new OkHttpRequest.Builder().url(Config.NEWS_BODY + managerReadId).get(new ResultCallback<String>() {
+                @Override
+                public void onError (Request request, Exception e){
                 TUtils.showShort(ReadActivity.this, "服务器出问题了");
                 loadingIndicatorView.setVisibility(View.GONE);
             }

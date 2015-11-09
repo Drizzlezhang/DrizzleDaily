@@ -55,7 +55,6 @@ public class SettingsFragment extends PreferenceFragment {
                 break;
             //提交bug
             case "bugfeedback":
-                progressDialog.show();
                 final String model = Build.MODEL;
                 final String company = Build.MANUFACTURER;
                 new MaterialDialog.Builder(getActivity())
@@ -67,12 +66,11 @@ public class SettingsFragment extends PreferenceFragment {
                             public void onInput(MaterialDialog dialog, CharSequence input) {
                                 if (TextUtils.isEmpty(input)) {
                                     TUtils.showShort(getActivity(), "内容不能为空");
-                                    progressDialog.dismiss();
                                 } else {
+                                    progressDialog.show();
                                     BugFeedBack feedBack = new BugFeedBack();
                                     feedBack.setFeedBackContents(input.toString());
                                     feedBack.setModel(model + " from " + company);//获取到手机型号和品牌 TUtils.showShort(getActivity(),"bug提交成功");
-                                    progressDialog.dismiss();
                                     feedBack.save(getActivity(), new SaveListener() {
                                         @Override
                                         public void onSuccess() {

@@ -20,18 +20,18 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,7 +92,6 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public void onRefresh() {
         getLists(Config.Hot_NEWS);
     }
-
 
     /**
      * 在页面切换时停止活动view
@@ -163,22 +162,22 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private void getLists(final String listUrl) {
         swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
-            OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    TUtils.showShort(getActivity(), "服务器出问题了");
-                    mRefreshLayout.setRefreshing(false);
-                }
+            new OkHttpRequest.Builder().url(listUrl).get(new ResultCallback<String>() {
+                 @Override
+                 public void onError(Request request, Exception e) {
+                     TUtils.showShort(getActivity(), "服务器出问题了");
+                     mRefreshLayout.setRefreshing(false);
+                 }
 
-                @Override
-                public void onResponse(String response) {
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(HOTCACHENAME, response);
-                    editor.commit();
-                    manageHotJson(response);
-                }
-            });
+                 @Override
+                 public void onResponse(String response) {
+                     SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                     SharedPreferences.Editor editor = sharedPreferences.edit();
+                     editor.putString(HOTCACHENAME, response);
+                     editor.commit();
+                     manageHotJson(response);
+                 }
+             });
         } else {
             TUtils.showShort(getActivity(), "网络未连接");
             swipeRefresh(false);

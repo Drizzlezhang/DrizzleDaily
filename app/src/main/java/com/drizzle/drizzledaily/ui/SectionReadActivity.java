@@ -21,7 +21,6 @@ import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
@@ -37,11 +36,12 @@ import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.wang.avi.AVLoadingIndicatorView;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -112,9 +112,9 @@ public class SectionReadActivity extends MySwipeActivity {
         wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
         wxApi.registerApp(Config.WXAPPID);
         if (NetUtils.isConnected(SectionReadActivity.this)) {
-            OkHttpClientManager.getAsyn(Config.NEWS_BODY + readid, new OkHttpClientManager.StringCallback() {
+            new OkHttpRequest.Builder().url(Config.NEWS_BODY + readid).get(new ResultCallback<String>() {
                 @Override
-                public void onFailure(Request request, IOException e) {
+                public void onError(Request request, Exception e) {
                     TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
                     loadingIndicatorView.setVisibility(View.GONE);
                 }

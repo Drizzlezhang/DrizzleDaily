@@ -21,11 +21,12 @@ import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Request;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -33,7 +34,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Set;
 
 import butterknife.Bind;
@@ -59,9 +59,9 @@ public class GildeActivity extends AppCompatActivity {
                 case 1:
                     //TODO
                     if (NetUtils.isConnected(GildeActivity.this)) {
-                        OkHttpClientManager.getAsyn(Config.START_IMAGE + "720*1184", new OkHttpClientManager.StringCallback() {
+                        new OkHttpRequest.Builder().url(Config.START_IMAGE + "720*1184").get(new ResultCallback<String>() {
                             @Override
-                            public void onFailure(Request request, IOException e) {
+                            public void onError(Request request, Exception e) {
                                 TUtils.showShort(GildeActivity.this, "服务器出问题了");
                             }
 
@@ -70,6 +70,7 @@ public class GildeActivity extends AppCompatActivity {
                                 try {
                                     JSONObject jsonObject = new JSONObject(response);
                                     String imgurl = jsonObject.getString("img");
+                                    Log.d("img", imgurl);
                                     SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
                                     String cacheurl = sharedPreferences.getString(STARTIMGCACHEURL, "");
                                     if (cacheurl.equals(imgurl)) {
@@ -79,18 +80,20 @@ public class GildeActivity extends AppCompatActivity {
                                         editor.putString(STARTIMGCACHEURL, imgurl);
                                         editor.commit();
                                         //下载图片并覆盖
-                                        OkHttpClientManager.downloadAsyn(imgurl, Config.START_PHOTO_FOLDER,
-                                                "startimg.jpg", new OkHttpClientManager.StringCallback() {
+                                        new OkHttpRequest.Builder().url(imgurl).
+                                                destFileDir(Config.START_PHOTO_FOLDER).
+                                                destFileName("startimg.jpg").
+                                                download(new ResultCallback<String>() {
                                                     @Override
-                                                    public void onFailure(Request request, IOException e) {
+                                                    public void onError(Request request, Exception e) {
                                                         Log.d("startimg", "failed");
                                                     }
 
                                                     @Override
-                                                    public void onResponse(String response) {
+                                                    public void onResponse(String o) {
                                                         Log.d("startimg", "succeed");
                                                     }
-                                                });
+                                            });
                                     }
                                 } catch (JSONException e) {
                                     e.printStackTrace();

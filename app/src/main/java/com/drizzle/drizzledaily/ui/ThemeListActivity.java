@@ -22,17 +22,17 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 import com.wang.avi.AVLoadingIndicatorView;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,39 +82,41 @@ public class ThemeListActivity extends MySwipeActivity {
         }
         initViews();
         if (NetUtils.isConnected(ThemeListActivity.this)) {
-            OkHttpClientManager.getAsyn(Config.THEME_LIST_EVERY + themeId, new OkHttpClientManager.StringCallback() {
-                @Override
-                public void onFailure(Request request, IOException e) {
-                    TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
-                    loadingIndicatorView.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onResponse(String response) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(response);
-                        String name = jsonObject.getString("name");
-                        mTextView.setText(name);
-                        imgUrl = jsonObject.getString("background");
-                        themeDes.setText(jsonObject.getString("description"));
-                        JSONArray stories = jsonObject.getJSONArray("stories");
-                        for (int i = 0; i < stories.length(); i++) {
-                            JSONObject story = stories.getJSONObject(i);
-                            int id = story.getInt("id");
-                            String title = story.getString("title");
-                            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-                            themeList.add(baseListItem);
-                        }
-                        handler.sendEmptyMessage(0);
-                        loadingIndicatorView.setVisibility(View.GONE);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        TUtils.showShort(ThemeListActivity.this, "json error");
+                new OkHttpRequest.Builder().url(Config.THEME_LIST_EVERY + themeId).get(new ResultCallback<String>() {
+                    @Override
+                    public void onError (Request request, Exception e){
+                        TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
                         loadingIndicatorView.setVisibility(View.GONE);
                     }
+
+                    @Override
+                    public void onResponse (String response){
+                        try {
+                            JSONObject jsonObject = new JSONObject(response);
+                            String name = jsonObject.getString("name");
+                            mTextView.setText(name);
+                            imgUrl = jsonObject.getString("background");
+                            themeDes.setText(jsonObject.getString("description"));
+                            JSONArray stories = jsonObject.getJSONArray("stories");
+                            for (int i = 0; i < stories.length(); i++) {
+                                JSONObject story = stories.getJSONObject(i);
+                                int id = story.getInt("id");
+                                String title = story.getString("title");
+                                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
+                                themeList.add(baseListItem);
+                            }
+                            handler.sendEmptyMessage(0);
+                            loadingIndicatorView.setVisibility(View.GONE);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            TUtils.showShort(ThemeListActivity.this, "json error");
+                            loadingIndicatorView.setVisibility(View.GONE);
+                        }
+                    }
                 }
-            });
-        } else {
+
+                );
+            }else {
             TUtils.showShort(ThemeListActivity.this, "网络未连接");
             loadingIndicatorView.setVisibility(View.GONE);
         }

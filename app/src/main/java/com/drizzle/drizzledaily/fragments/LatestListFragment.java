@@ -23,19 +23,19 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.model.OkHttpClientManager;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
 import com.drizzle.drizzledaily.utils.DataUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
+import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -163,8 +163,11 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                     };
                     mViewPager.setInterval(4000);
                     mViewPager.setStopScrollWhenTouch(true);
+
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
+                    //indicator.setViewPager(mViewPager);
                     mViewPager.startAutoScroll(5000);
+
                     mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:
@@ -185,9 +188,9 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     private void getLists(final String listUrl) {
         swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
-            OkHttpClientManager.getAsyn(listUrl, new OkHttpClientManager.StringCallback() {
+            new OkHttpRequest.Builder().url(listUrl).get(new ResultCallback<String>() {
                 @Override
-                public void onFailure(Request request, IOException e) {
+                public void onError(Request request, Exception e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
                     mRefreshLayout.setRefreshing(false);
                 }
@@ -281,7 +284,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     /**
-     * 处理请求到和或者缓存的最新数据
+     * 处理请求到或者缓存的最新数据
      *
      * @param jsonResponse
      */

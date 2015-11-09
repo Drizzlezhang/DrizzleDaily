@@ -63,7 +63,9 @@ public class AboutDeveloperFragment extends android.support.v4.app.Fragment {
         return view;
     }
 
-    //发邮件
+    /**
+     * 发送邮件
+     */
     private void sendMail() {
         String emailSubject = "知乎日报ByDrizzle意见反馈";
         Intent data = new Intent(Intent.ACTION_SENDTO);
