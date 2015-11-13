@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 首页适配器
+ * 首页适配器,因为要根据不同的viewtype进行区分,所以重写一个适配器
  */
 public class LatestAdapter extends BaseAdapter {
     private Context mContext;

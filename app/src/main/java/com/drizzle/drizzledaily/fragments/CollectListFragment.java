@@ -98,7 +98,6 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
                 }
             }
         });
-        listView.setDivider(null);
         uploadfloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
