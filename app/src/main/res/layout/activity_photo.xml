@@ -17,7 +17,7 @@
     <com.bm.library.PhotoView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:scaleType="fitCenter"
+        android:scaleType="centerInside"
         android:id="@+id/photo_img"
       />
 </LinearLayout>

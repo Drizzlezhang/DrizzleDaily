@@ -5,6 +5,7 @@ package com.drizzle.drizzledaily.bean;
  */
 public class BaseListItem {
     private int id;
+    private int viewType=1;
     private String title;
     private String imgUrl;
     private boolean isClicked;
@@ -21,13 +22,24 @@ public class BaseListItem {
         this.isClicked = isClicked;
         this.date = date;
     }
-    public BaseListItem(int id, String title, String imgUrl, boolean isClicked, String date,String describe) {
+
+    public BaseListItem(int id, String title, String imgUrl, boolean isClicked, String date, String describe) {
         this.id = id;
-        this.describe=describe;
+        this.describe = describe;
         this.title = title;
         this.imgUrl = imgUrl;
         this.isClicked = isClicked;
         this.date = date;
+    }
+
+    public BaseListItem(int id, int viewType, String title, String imgUrl, boolean isClicked, String date, String describe) {
+        this.id = id;
+        this.viewType = viewType;
+        this.title = title;
+        this.imgUrl = imgUrl;
+        this.isClicked = isClicked;
+        this.date = date;
+        this.describe = describe;
     }
 
     public String getDescribe() {
@@ -77,5 +89,13 @@ public class BaseListItem {
 
     public void setIsClicked(boolean isClicked) {
         this.isClicked = isClicked;
+    }
+
+    public int getViewType() {
+        return viewType;
+    }
+
+    public void setViewType(int viewType) {
+        this.viewType = viewType;
     }
 }

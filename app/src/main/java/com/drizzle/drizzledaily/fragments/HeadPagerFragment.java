@@ -78,7 +78,7 @@ public class HeadPagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.header_pager_fragment, container, false);
         ButterKnife.bind(this, view);
         headTitle.setText(titleText);
-        Glide.with(getActivity()).load(imgUrl)
+        Glide.with(HeadPagerFragment.this).load(imgUrl)
                 .centerCrop().error(R.mipmap.place_img)
                 .crossFade().into(headImg);
         headImg.setOnClickListener(new View.OnClickListener() {

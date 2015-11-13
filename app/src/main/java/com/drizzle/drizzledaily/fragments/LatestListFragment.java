@@ -19,8 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.CommonAdapter;
-import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.adapter.LatestAdapter;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.MainActivity;
@@ -59,7 +58,8 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     private Calendar mCalendar;
     private List<BaseListItem> baseListItems = new ArrayList<>();
     private List<BaseListItem> headpagerItems = new ArrayList<>();
-    private CommonAdapter<BaseListItem> adapter;
+    private LatestAdapter latestAdapter;
+    //private CommonAdapter<BaseListItem> adapter;
     private FragmentStatePagerAdapter fragmentStatePagerAdapter;
     private static final String LATESTCACHENAME = "latestcache";
 
@@ -124,9 +124,13 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra(Config.READID, baseListItems.get(position - 1).getId());
-                startActivity(intent);
+                if (baseListItems.get(position - 1).getViewType() == 0) {
+                    //TODO
+                } else {
+                    Intent intent = new Intent(getActivity(), ReadActivity.class);
+                    intent.putExtra(Config.READID, baseListItems.get(position - 1).getId());
+                    startActivity(intent);
+                }
             }
         });
         mListView.setDivider(null);
@@ -137,15 +141,8 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                            helper.setText(R.id.base_item_date, item.getDate());
-                        }
-                    };
-                    mListView.setAdapter(adapter);
+                    latestAdapter = new LatestAdapter(getActivity(), baseListItems);
+                    mListView.setAdapter(latestAdapter);
                     final FragmentManager manager = getChildFragmentManager();
                     fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
                         @Override
@@ -163,15 +160,12 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                     };
                     mViewPager.setInterval(4000);
                     mViewPager.setStopScrollWhenTouch(true);
-
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
-                    //indicator.setViewPager(mViewPager);
                     mViewPager.startAutoScroll(5000);
-
                     mRefreshLayout.setRefreshing(false);
                     break;
                 case 1:
-                    adapter.notifyDataSetChanged();
+                    latestAdapter.notifyDataSetChanged();
                     mRefreshLayout.setRefreshing(false);
                     break;
                 default:
@@ -200,6 +194,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                     String data = "";
                     try {
                         if (listUrl.equals(Config.LATEST_NEWS)) {
+                            //如果请求成功,将请求到的数据保存并解析
                             SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
                             SharedPreferences.Editor editor = sharedPreferences.edit();
                             editor.putString(LATESTCACHENAME, response);
@@ -207,6 +202,10 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                             manageLatestJson(response);
                         } else {
                             data = DataUtils.printDate(DataUtils.getBeforeDay(mCalendar));
+                            BaseListItem onedayNews = new BaseListItem();
+                            onedayNews.setViewType(0);
+                            onedayNews.setDate(data);
+                            baseListItems.add(onedayNews);
                             mCalendar = DataUtils.getAfterDay(mCalendar);
                             JSONObject jsonObject = new JSONObject(response);
                             JSONArray stories = jsonObject.getJSONArray("stories");
@@ -284,7 +283,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     }
 
     /**
-     * 处理请求到或者缓存的最新数据
+     * 处理请求到或者缓存的最新数据(仅解析今日热闻)
      *
      * @param jsonResponse
      */
@@ -292,6 +291,10 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
         try {
             baseListItems.clear();
             headpagerItems.clear();
+            BaseListItem todayNews = new BaseListItem();
+            todayNews.setViewType(0);
+            todayNews.setDate("今日热闻");
+            baseListItems.add(todayNews);
             String date = DataUtils.printDate(mCalendar);
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONArray stories = jsonObject.getJSONArray("stories");
