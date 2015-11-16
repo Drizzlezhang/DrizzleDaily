@@ -63,7 +63,7 @@ public class LatestAdapter extends BaseAdapter {
         ViewHolder2 viewHolder2 = null;
         switch (viewtype) {
             case 0://type为日期
-                View view1=null;
+                View view1 = null;
                 if (view1 == null) {
                     view1 = inflater.inflate(R.layout.base_date_item, null);
                     viewHolder1 = new ViewHolder1();
@@ -71,12 +71,12 @@ public class LatestAdapter extends BaseAdapter {
                     view1.setTag(viewHolder1);
                 } else {
                     viewHolder1 = (ViewHolder1) view1.getTag();
-                    viewHolder1.itemDate.setText(listItem.getDate());
                 }
-                convertView=view1;
+                viewHolder1.itemDate.setText(listItem.getDate());
+                convertView = view1;
                 break;
             case 1://type为内容
-                View view2 =null;
+                View view2 = null;
                 if (view2 == null) {
                     view2 = inflater.inflate(R.layout.base_list_item, null);
                     viewHolder2 = new ViewHolder2();
@@ -85,12 +85,12 @@ public class LatestAdapter extends BaseAdapter {
                     view2.setTag(viewHolder2);
                 } else {
                     viewHolder2 = (ViewHolder2) view2.getTag();
-                    viewHolder2.itemTitle.setText(listItem.getTitle());
-                    Glide.with(mContext).load(listItem.getImgUrl())
-                            .centerCrop().error(R.mipmap.place_img)
-                            .crossFade().into(viewHolder2.itemImg);
                 }
-                convertView=view2;
+                viewHolder2.itemTitle.setText(listItem.getTitle());
+                Glide.with(mContext).load(listItem.getImgUrl())
+                        .centerCrop().error(R.mipmap.place_img)
+                        .crossFade().into(viewHolder2.itemImg);
+                convertView = view2;
                 break;
             default:
                 break;
@@ -102,7 +102,7 @@ public class LatestAdapter extends BaseAdapter {
         public TextView itemDate;
     }
 
-    class ViewHolder2{
+    class ViewHolder2 {
         public TextView itemTitle;
         public ImageView itemImg;
     }
