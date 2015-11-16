@@ -23,6 +23,8 @@ public class LatestAdapter extends BaseAdapter {
     private Context mContext;
     private LayoutInflater inflater;
     private List<BaseListItem> baseListItemList = new ArrayList<>();
+    View view1=null;
+    View view2=null;
 
     public LatestAdapter(Context mContext, List<BaseListItem> baseListItemList) {
         this.mContext = mContext;
@@ -59,11 +61,11 @@ public class LatestAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         int viewtype = getItemViewType(position);
         BaseListItem listItem = baseListItemList.get(position);
-        ViewHolder1 viewHolder1 = null;
-        ViewHolder2 viewHolder2 = null;
+        ViewHolder1 viewHolder1 ;
+        ViewHolder2 viewHolder2 ;
+
         switch (viewtype) {
             case 0://type为日期
-                View view1 = null;
                 if (view1 == null) {
                     view1 = inflater.inflate(R.layout.base_date_item, null);
                     viewHolder1 = new ViewHolder1();
@@ -76,7 +78,6 @@ public class LatestAdapter extends BaseAdapter {
                 convertView = view1;
                 break;
             case 1://type为内容
-                View view2 = null;
                 if (view2 == null) {
                     view2 = inflater.inflate(R.layout.base_list_item, null);
                     viewHolder2 = new ViewHolder2();
