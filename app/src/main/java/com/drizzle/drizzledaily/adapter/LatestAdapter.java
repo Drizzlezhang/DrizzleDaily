@@ -60,40 +60,43 @@ public class LatestAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         int viewtype = getItemViewType(position);
         BaseListItem listItem = baseListItemList.get(position);
-        ViewHolder1 viewHolder1 ;
-        ViewHolder2 viewHolder2 ;
-        View view1=null;
-        View view2=null;
-        switch (viewtype) {
-            case 0://type为日期
-                if (view1 == null) {
-                    view1 = inflater.inflate(R.layout.base_date_item, null);
+        ViewHolder1 viewHolder1 = null;
+        ViewHolder2 viewHolder2 = null;
+        if (convertView == null) {
+            switch (viewtype) {
+                case 0:
+                    convertView = inflater.inflate(R.layout.base_date_item, parent, false);
                     viewHolder1 = new ViewHolder1();
-                    viewHolder1.itemDate = (TextView) view1.findViewById(R.id.base_date_item_text);
-                    view1.setTag(viewHolder1);
-                } else {
-                    viewHolder1 = (ViewHolder1) view1.getTag();
-                }
-                viewHolder1.itemDate.setText(listItem.getDate());
-                convertView = view1;
-                break;
-            case 1://type为内容
-                if (view2 == null) {
-                    view2 = inflater.inflate(R.layout.base_list_item, null);
+                    viewHolder1.itemDate = (TextView) convertView.findViewById(R.id.base_date_item_text);
+                    convertView.setTag(viewHolder1);
+                    break;
+                case 1:
+                    convertView = inflater.inflate(R.layout.base_list_item, parent, false);
                     viewHolder2 = new ViewHolder2();
-                    viewHolder2.itemTitle = (TextView) view2.findViewById(R.id.base_item_title);
-                    viewHolder2.itemImg = (ImageView) view2.findViewById(R.id.base_item_img);
-                    view2.setTag(viewHolder2);
-                } else {
-                    viewHolder2 = (ViewHolder2) view2.getTag();
-                }
+                    viewHolder2.itemTitle = (TextView) convertView.findViewById(R.id.base_item_title);
+                    viewHolder2.itemImg = (ImageView) convertView.findViewById(R.id.base_item_img);
+                    convertView.setTag(viewHolder2);
+                    break;
+            }
+        } else {
+            switch (viewtype) {
+                case 0:
+                    viewHolder1 = (ViewHolder1) convertView.getTag();
+                    break;
+                case 1:
+                    viewHolder2 = (ViewHolder2) convertView.getTag();
+                    break;
+            }
+        }
+        switch (viewtype) {
+            case 0:
+                viewHolder1.itemDate.setText(listItem.getDate());
+                break;
+            case 1:
                 viewHolder2.itemTitle.setText(listItem.getTitle());
                 Glide.with(mContext).load(listItem.getImgUrl())
                         .centerCrop().error(R.mipmap.place_img)
                         .crossFade().into(viewHolder2.itemImg);
-                convertView = view2;
-                break;
-            default:
                 break;
         }
         return convertView;
