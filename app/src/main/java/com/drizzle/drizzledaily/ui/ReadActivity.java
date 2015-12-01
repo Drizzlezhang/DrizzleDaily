@@ -202,59 +202,6 @@ public class ReadActivity extends MySwipeActivity {
 
     public void initWebView(boolean isnet) {
         readWeb.getSettings().setJavaScriptEnabled(true);
-//        readWeb.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-//        // 建议缓存策略为，判断是否有网络，有的话，使用LOAD_DEFAULT,无网络时，使用LOAD_CACHE_ELSE_NETWORK
-//        if (isnet) {
-//            readWeb.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT); // 设置缓存模式
-//        } else {
-//            readWeb.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK); // 设置缓存模式
-//        }
-//        // 开启DOM storage API 功能
-//        readWeb.getSettings().setDomStorageEnabled(true);
-//        // 开启database storage API功能
-//        readWeb.getSettings().setDatabaseEnabled(true);
-//        String cacheDirPath = getFilesDir().getAbsolutePath()
-//                + APP_CACHE_DIRNAME;
-//        Log.i("cachePath", cacheDirPath);
-//        // 设置数据库缓存路径
-//        readWeb.getSettings().setDatabasePath(cacheDirPath); // API 19 deprecated
-//        // 设置Application caches缓存目录
-//        readWeb.getSettings().setAppCachePath(cacheDirPath);
-//        // 开启Application Cache功能
-//        readWeb.getSettings().setAppCacheEnabled(true);
-//        readWeb.getSettings().setDatabaseEnabled(true);
-//        Log.i("cachePath1", readWeb.getSettings().getDatabasePath());
-//        readWeb.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public void onLoadResource(WebView view, String url) {
-//                super.onLoadResource(view, url);
-//            }
-//
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                view.loadUrl(url);
-//                return true;
-//            }
-//
-//            // 页面开始时调用
-//            @Override
-//            public void onPageStarted(WebView view, String url, Bitmap favicon) {
-//                super.onPageStarted(view, url, favicon);
-//            }
-//
-//            // 页面加载完成调用
-//            @Override
-//            public void onPageFinished(WebView view, String url) {
-//                super.onPageFinished(view, url);
-//            }
-//
-//            @Override
-//            public void onReceivedError(WebView view, int errorCode,
-//                                        String description, String failingUrl) {
-//                super.onReceivedError(view, errorCode, description, failingUrl);
-//            }
-//        });
-
     }
 
 

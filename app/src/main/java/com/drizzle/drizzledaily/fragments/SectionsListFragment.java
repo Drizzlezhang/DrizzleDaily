@@ -101,7 +101,6 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
-        //  mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

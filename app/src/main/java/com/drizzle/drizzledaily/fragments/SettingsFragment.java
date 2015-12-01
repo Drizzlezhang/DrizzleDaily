@@ -88,23 +88,6 @@ public class SettingsFragment extends PreferenceFragment {
                             }
                         }).show();
                 break;
-//            case "theme":
-//                new MaterialDialog.Builder(getActivity())
-//                        .title("换个皮肤吧~")
-//                        .items(strings)
-//                        .itemsCallback(new MaterialDialog.ListCallback() {
-//                            @Override
-//                            public void onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-//                                SharedPreferences preferences = getActivity().getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-//                                SharedPreferences.Editor editor = preferences.edit();
-//                                editor.putInt(Config.SKIN_NUMBER, which);
-//                                editor.commit();
-//                                preference.setTitle(strings[which]);
-//                            }
-//                        })
-//                        .positiveText(android.R.string.cancel)
-//                        .show();
-//                break;
             case "clearcache":
                 new Thread(new Runnable() {
                     @Override

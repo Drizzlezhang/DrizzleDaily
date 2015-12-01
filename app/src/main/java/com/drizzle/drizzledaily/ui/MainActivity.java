@@ -36,7 +36,7 @@ import com.drizzle.drizzledaily.fragments.SearchFragment;
 import com.drizzle.drizzledaily.fragments.SectionsListFragment;
 import com.drizzle.drizzledaily.fragments.ThemeListFragment;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.utils.DataUtils;
+import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
@@ -354,6 +354,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     /**
      * 重写save方法,不保存fragment状态
+     *
      * @param outState
      * @param outPersistentState
      */
@@ -378,7 +379,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public interface OnToolbarCilckListener {
         void onClickToolbar();
-
     }
 
     public void setToolbarClick(OnToolbarCilckListener listener) {
@@ -391,10 +391,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-            Calendar c = DataUtils.setCalendar(year, monthOfYear + 1, dayOfMonth);
-            String titleTime = DataUtils.printDate(c);
-            c = DataUtils.getAfterDay(c);
-            String time = DataUtils.printCalendar(c);
+            Calendar c = DateUtils.setCalendar(year, monthOfYear + 1, dayOfMonth);
+            String titleTime = DateUtils.printDate(c);
+            c = DateUtils.getAfterDay(c);
+            String time = DateUtils.printCalendar(c);
             searchFragment = SearchFragment.newInstance(time);
             hideFragment(fragmentID);
             if (searchFragment.isAdded()) {

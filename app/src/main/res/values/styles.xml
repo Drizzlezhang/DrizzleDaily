@@ -12,10 +12,10 @@
     </style>
     <!--red主题 火焰红-->
     <style name="RedAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <!-- Customize your theme here. -->
-    <item name="colorPrimary">@color/redcolorPrimary</item>
-    <item name="colorPrimaryDark">@color/redcolorPrimaryDark</item>
-    <item name="colorAccent">@color/redcolorPrimary</item>
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/redcolorPrimary</item>
+        <item name="colorPrimaryDark">@color/redcolorPrimaryDark</item>
+        <item name="colorAccent">@color/redcolorPrimary</item>
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@style/animation_translucent_translate</item>
     </style>
@@ -46,6 +46,7 @@
         <item name="android:windowIsTranslucent">true</item>
         <item name="android:windowAnimationStyle">@style/main_animation_translucent_translate</item>
     </style>
+
     <style name="PhotoBlackAppTheme" parent="MainBlackAppTheme">
         <item name="android:textColorPrimary">@color/white</item>
     </style>
@@ -116,10 +117,12 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowAnimationStyle">@style/start_animation_translucent_translate</item>
+        <item name="android:windowAnimationStyle">@style/start_animation_translucent_translate
+        </item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
-    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Dark" />
 
 </resources>

@@ -24,7 +24,7 @@ import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.MainActivity;
 import com.drizzle.drizzledaily.ui.ReadActivity;
-import com.drizzle.drizzledaily.utils.DataUtils;
+import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
@@ -59,18 +59,11 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     private List<BaseListItem> baseListItems = new ArrayList<>();
     private List<BaseListItem> headpagerItems = new ArrayList<>();
     private LatestAdapter latestAdapter;
-    //private CommonAdapter<BaseListItem> adapter;
     private FragmentStatePagerAdapter fragmentStatePagerAdapter;
     private static final String LATESTCACHENAME = "latestcache";
 
     public LatestListFragment() {
     }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
 
     @Nullable
     @Override
@@ -108,7 +101,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                 switch (scrollState) {
                     case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
                         if (view.getLastVisiblePosition() == view.getCount() - 1) {
-                            String time = DataUtils.printCalendar(mCalendar);
+                            String time = DateUtils.printCalendar(mCalendar);
                             getLists(Config.BEFORE_NEWS + time);
                         }
                         break;
@@ -162,7 +155,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                     mViewPager.setStopScrollWhenTouch(true);
                     mViewPager.setAdapter(fragmentStatePagerAdapter);
                     mViewPager.startAutoScroll(5000);
-                    handler.sendEmptyMessageDelayed(1,100);
+                    handler.sendEmptyMessageDelayed(1, 100);
                     break;
                 case 1:
                     latestAdapter.notifyDataSetChanged();
@@ -201,12 +194,12 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                             editor.commit();
                             manageLatestJson(response);
                         } else {
-                            data = DataUtils.printDate(DataUtils.getBeforeDay(mCalendar));
+                            data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
                             BaseListItem onedayNews = new BaseListItem();
                             onedayNews.setViewType(0);
                             onedayNews.setDate(data);
                             baseListItems.add(onedayNews);
-                            mCalendar = DataUtils.getAfterDay(mCalendar);
+                            mCalendar = DateUtils.getAfterDay(mCalendar);
                             JSONObject jsonObject = new JSONObject(response);
                             JSONArray stories = jsonObject.getJSONArray("stories");
                             for (int i = 0; i < stories.length(); i++) {
@@ -218,7 +211,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
                                 baseListItems.add(baseListItem);
                             }
                             handler.sendEmptyMessage(1);
-                            mCalendar = DataUtils.getBeforeDay(mCalendar);
+                            mCalendar = DateUtils.getBeforeDay(mCalendar);
                         }
                     } catch (JSONException e) {
                         e.printStackTrace();
@@ -295,7 +288,7 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
             todayNews.setViewType(0);
             todayNews.setDate("今日热闻");
             baseListItems.add(todayNews);
-            String date = DataUtils.printDate(mCalendar);
+            String date = DateUtils.printDate(mCalendar);
             JSONObject jsonObject = new JSONObject(jsonResponse);
             JSONArray stories = jsonObject.getJSONArray("stories");
             for (int i = 0; i < stories.length(); i++) {

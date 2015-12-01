@@ -29,6 +29,7 @@ public class Config {
      * 存放图片地址
      */
     public static final String PHOTO_FOLDER = new File(Environment.getExternalStorageDirectory(), "").getPath() + "/drizzledaily/pics";
+
     public static final String START_PHOTO_FOLDER = new File(Environment.getExternalStorageDirectory(), "").getPath() + "/drizzledaily/start";
     /**
      * 存放皮肤代号的sharedperference文件地址

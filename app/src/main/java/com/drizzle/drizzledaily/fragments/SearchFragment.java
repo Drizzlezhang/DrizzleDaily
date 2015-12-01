@@ -80,9 +80,9 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
         ButterKnife.bind(this, view);
         ((MainActivity) getActivity()).setToolbarClick(this);
         if (NetUtils.isConnected(getActivity())) {
-                new OkHttpRequest.Builder().url(Config.BEFORE_NEWS + id).get(new ResultCallback<String>() {
-                    @Override
-                    public void onError(Request request, Exception e) {
+            new OkHttpRequest.Builder().url(Config.BEFORE_NEWS + id).get(new ResultCallback<String>() {
+                @Override
+                public void onError(Request request, Exception e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
                     loadingIndicatorView.setVisibility(View.GONE);
                 }
