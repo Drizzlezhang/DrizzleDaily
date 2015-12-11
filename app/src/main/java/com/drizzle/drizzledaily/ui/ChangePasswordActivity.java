@@ -59,7 +59,6 @@ public class ChangePasswordActivity extends AppCompatActivity {
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("请稍等...");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

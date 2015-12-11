@@ -5,7 +5,7 @@ package com.drizzle.drizzledaily.bean;
  */
 public class BaseListItem {
     private int id;
-    private int viewType=1;
+    private int viewType = 1;
     private String title;
     private String imgUrl;
     private boolean isClicked;
