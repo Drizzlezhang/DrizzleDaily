@@ -36,10 +36,6 @@ public class HeadPagerFragment extends Fragment {
     private String imgUrl;
     private String titleText;
     private int id;
-
-    public HeadPagerFragment() {
-    }
-
     /**
      * 获取单个fargment的标题，图片地址，文章id
      *

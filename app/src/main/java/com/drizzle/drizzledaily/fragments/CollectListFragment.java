@@ -42,7 +42,7 @@ import cn.bmob.v3.listener.UpdateListener;
 /**
  * 收藏夹列表
  */
-public class CollectListFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener {
+public class CollectListFragment extends BaseFragment implements MainActivity.OnToolbarCilckListener {
     @Bind(R.id.collect_listview)
     ListView listView;
 
@@ -58,11 +58,6 @@ public class CollectListFragment extends android.support.v4.app.Fragment impleme
     private List<CollectBean> collectBeanList = new ArrayList<CollectBean>();
     private SwipeAdapter adapter;
     private ProgressDialog progressDialog;
-
-
-    public CollectListFragment() {
-        // Required empty public constructor
-    }
 
 
     @Override

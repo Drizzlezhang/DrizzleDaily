@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 /**
  * 今日热门列表
  */
-public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
 
     @Bind(R.id.hot_list_refresh)
     SwipeRefreshLayout mRefreshLayout;
@@ -52,10 +52,6 @@ public class HotListFragment extends Fragment implements SwipeRefreshLayout.OnRe
     private List<BaseListItem> hotListItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
     private static final String HOTCACHENAME = "hotlistcache";
-
-
-    public HotListFragment() {
-    }
 
     @Nullable
     @Override

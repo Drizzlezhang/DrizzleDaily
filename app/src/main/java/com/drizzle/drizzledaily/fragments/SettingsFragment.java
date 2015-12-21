@@ -30,10 +30,6 @@ public class SettingsFragment extends PreferenceFragment {
     public static final String STARTIMGCACHEURL = Config.START_PHOTO_FOLDER + "/startimg.jpg";
     private ProgressDialog progressDialog;
 
-    public SettingsFragment() {
-
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

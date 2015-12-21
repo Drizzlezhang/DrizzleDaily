@@ -8,6 +8,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -38,7 +39,7 @@ import butterknife.ButterKnife;
 /**
  * 用于显示根据日期查找到的日报数据
  */
-public class SearchFragment extends android.support.v4.app.Fragment implements MainActivity.OnToolbarCilckListener {
+public class SearchFragment extends BaseFragment implements MainActivity.OnToolbarCilckListener {
 
     @Bind(R.id.search_list)
     ListView mListView;
@@ -51,10 +52,6 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     private List<BaseListItem> baseListItems = new ArrayList<>();
     private static final String TIMEID = "timeid";
 
-    public SearchFragment() {
-        // Required empty public constructor
-    }
-
     public static SearchFragment newInstance(String timeid) {
         Bundle args = new Bundle();
         args.putString(TIMEID, timeid);
@@ -66,7 +63,7 @@ public class SearchFragment extends android.support.v4.app.Fragment implements M
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
+    if(savedInstanceState != null) {
             id = savedInstanceState.getString(TIMEID);
         } else {
             id = getArguments().getString(TIMEID);

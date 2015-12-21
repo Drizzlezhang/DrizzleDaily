@@ -52,9 +52,6 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     private List<BaseListItem> sectionsItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
 
-    public SectionsListFragment() {
-    }
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

@@ -41,7 +41,7 @@ import butterknife.ButterKnife;
 /**
  * 主题日报列表
  */
-public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
     @Bind(R.id.theme_grid_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -49,9 +49,6 @@ public class ThemeListFragment extends Fragment implements SwipeRefreshLayout.On
     GridView mGridView;
     private List<BaseListItem> themeItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
-
-    public ThemeListFragment() {
-    }
 
     @Nullable
     @Override

@@ -46,7 +46,7 @@ import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 /**
  * 首页列表fragment，包括一个viewpager和一个listview
  */
-public class LatestListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+public class LatestListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
     @Bind(R.id.latest_list_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -61,9 +61,6 @@ public class LatestListFragment extends Fragment implements SwipeRefreshLayout.O
     private LatestAdapter latestAdapter;
     private FragmentStatePagerAdapter fragmentStatePagerAdapter;
     private static final String LATESTCACHENAME = "latestcache";
-
-    public LatestListFragment() {
-    }
 
     @Nullable
     @Override

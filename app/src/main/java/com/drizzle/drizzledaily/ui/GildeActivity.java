@@ -44,6 +44,7 @@ import butterknife.ButterKnife;
  */
 
 public class GildeActivity extends AppCompatActivity {
+
     @Bind(R.id.start_img)
     ImageView startImg;
 

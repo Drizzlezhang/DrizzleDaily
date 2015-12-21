@@ -1,9 +1,14 @@
 package com.drizzle.drizzledaily.bean;
 
+import java.io.Serializable;
+
 /**
  * 列表项bean，包括文章id，标题，图片地址,是否已经被点击,文章日期，描述
  */
-public class BaseListItem {
+public class BaseListItem{
+
+
+
     private int id;
     private int viewType = 1;
     private String title;
