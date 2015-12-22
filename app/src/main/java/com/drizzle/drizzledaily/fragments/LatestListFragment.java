@@ -123,7 +123,6 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
                 }
             }
         });
-        mListView.setDivider(null);
     }
 
     private Handler handler = new Handler() {
