@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -7,21 +7,20 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
+import android.widget.GridView;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.MainActivity;
-import com.drizzle.drizzledaily.ui.ReadActivity;
+import com.drizzle.drizzledaily.ui.activities.MainActivity;
+import com.drizzle.drizzledaily.ui.activities.ThemeListActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
@@ -39,54 +38,78 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * 今日热门列表
+ * 主题日报列表
  */
-public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
-
-    @Bind(R.id.hot_list_refresh)
+public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+    @Bind(R.id.theme_grid_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
-    @Bind(R.id.hot_list)
-    ListView mListView;
-
-    private List<BaseListItem> hotListItems = new ArrayList<>();
+    @Bind(R.id.theme_grid)
+    GridView mGridView;
+    private List<BaseListItem> themeItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
-    private static final String HOTCACHENAME = "hotlistcache";
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.hot_list_fragment, container, false);
+        View view = inflater.inflate(R.layout.theme_list_fragment, container, false);
         ButterKnife.bind(this, view);
         initViews();
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-        String hotcachejson = sharedPreferences.getString(HOTCACHENAME, "");
-        if (hotcachejson.equals("")) {
+        String themecachejson = sharedPreferences.getString("themelistcache", "");
+        if (themecachejson.equals("")) {
             //TODO
         } else {
-            manageHotJson(hotcachejson);
+            manageThemeJson(themecachejson);
         }
-        getLists(Config.Hot_NEWS);
+        getLists(Config.THEME_LIST);
         return view;
+    }
+
+    @Override
+    public void onClickToolbar() {
+        mGridView.smoothScrollToPosition(0);
     }
 
     private void initViews() {
         ((MainActivity) getActivity()).setToolbarClick(this);
+        // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
-        mListView.setDivider(null);
-        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra(Config.READID, hotListItems.get(position).getId());
+                Intent intent = new Intent(getActivity(), ThemeListActivity.class);
+                intent.putExtra("themeid", themeItems.get(position).getId());
                 startActivity(intent);
             }
         });
     }
 
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case 0:
+                    adapter = new CommonAdapter<BaseListItem>(getActivity(), themeItems, R.layout.base_grid_item) {
+                        @Override
+                        public void convert(ViewHolder helper, BaseListItem item) {
+                            helper.setText(R.id.grid_item_title, item.getTitle());
+                            helper.setImg(R.id.grid_item_img, item.getImgUrl());
+                            helper.setText(R.id.grid_item_describe, item.getDescribe());
+                        }
+                    };
+                    mGridView.setAdapter(adapter);
+                    mRefreshLayout.setRefreshing(false);
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
+
     @Override
     public void onRefresh() {
-        getLists(Config.Hot_NEWS);
+        getLists(Config.THEME_LIST);
     }
 
     /**
@@ -103,29 +126,6 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
         }
         super.onHiddenChanged(hidden);
     }
-
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), hotListItems, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                            helper.setText(R.id.base_item_date, "");
-                        }
-                    };
-                    mListView.setAdapter(adapter);
-                    mRefreshLayout.setRefreshing(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
-
 
     /**
      * swiperefresh在主线程中无法消失，需要新开线程
@@ -145,11 +145,6 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
         });
     }
 
-    @Override
-    public void onClickToolbar() {
-        mListView.smoothScrollToPosition(0);
-    }
-
     /**
      * 请求数据并存入list
      *
@@ -161,19 +156,19 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
             new OkHttpRequest.Builder().url(listUrl).get(new ResultCallback<String>() {
                 @Override
                 public void onError(Request request, Exception e) {
-                    TUtils.showShort(getActivity(), "服务器出问题了");
-                    mRefreshLayout.setRefreshing(false);
-                }
+                      TUtils.showShort(getActivity(), "服务器出问题了");
+                      mRefreshLayout.setRefreshing(false);
+                  }
 
-                @Override
-                public void onResponse(String response) {
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString(HOTCACHENAME, response);
-                    editor.commit();
-                    manageHotJson(response);
-                }
-            });
+                  @Override
+                  public void onResponse(String response) {
+                      SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                      SharedPreferences.Editor editor = sharedPreferences.edit();
+                      editor.putString("themelistcache", response);
+                      editor.commit();
+                      manageThemeJson(response);
+                  }
+              });
         } else {
             TUtils.showShort(getActivity(), "网络未连接");
             swipeRefresh(false);
@@ -181,20 +176,23 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
     }
 
     /**
-     * 处理请求到和或者缓存的最新数据
+     * 处理json数据
+     *
+     * @param themeJson
      */
-    private void manageHotJson(String hotJson) {
+    private void manageThemeJson(String themeJson) {
         try {
-            hotListItems.clear();
-            JSONObject jsonObject = new JSONObject(hotJson);
-            JSONArray recent = jsonObject.getJSONArray("recent");
-            for (int i = 0; i < recent.length(); i++) {
-                JSONObject story = recent.getJSONObject(i);
-                int id = story.getInt("news_id");
-                String title = story.getString("title");
+            themeItems.clear();
+            JSONObject jsonObject = new JSONObject(themeJson);
+            JSONArray others = jsonObject.getJSONArray("others");
+            for (int i = 0; i < others.length(); i++) {
+                JSONObject story = others.getJSONObject(i);
+                int id = story.getInt("id");
+                String title = story.getString("name");
                 String imgUrl = story.getString("thumbnail");
-                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-                hotListItems.add(baseListItem);
+                String describe = story.getString("description");
+                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
+                themeItems.add(baseListItem);
             }
             handler.sendEmptyMessage(0);
         } catch (JSONException e) {

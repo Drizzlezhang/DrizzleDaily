@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -22,8 +22,8 @@ import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.LatestAdapter;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.MainActivity;
-import com.drizzle.drizzledaily.ui.ReadActivity;
+import com.drizzle.drizzledaily.ui.activities.MainActivity;
+import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;

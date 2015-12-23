@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.ReadActivity;
+import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

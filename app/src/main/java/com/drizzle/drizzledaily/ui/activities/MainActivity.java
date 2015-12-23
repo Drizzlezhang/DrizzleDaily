@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.ui.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
@@ -28,14 +28,15 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.bean.ShareBean;
-import com.drizzle.drizzledaily.fragments.AboutDeveloperFragment;
-import com.drizzle.drizzledaily.fragments.CollectListFragment;
-import com.drizzle.drizzledaily.fragments.HotListFragment;
-import com.drizzle.drizzledaily.fragments.LatestListFragment;
-import com.drizzle.drizzledaily.fragments.SearchFragment;
-import com.drizzle.drizzledaily.fragments.SectionsListFragment;
-import com.drizzle.drizzledaily.fragments.ThemeListFragment;
+import com.drizzle.drizzledaily.ui.fragments.AboutDeveloperFragment;
+import com.drizzle.drizzledaily.ui.fragments.CollectListFragment;
+import com.drizzle.drizzledaily.ui.fragments.HotListFragment;
+import com.drizzle.drizzledaily.ui.fragments.LatestListFragment;
+import com.drizzle.drizzledaily.ui.fragments.SearchFragment;
+import com.drizzle.drizzledaily.ui.fragments.SectionsListFragment;
+import com.drizzle.drizzledaily.ui.fragments.ThemeListFragment;
 import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.ui.UserActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;

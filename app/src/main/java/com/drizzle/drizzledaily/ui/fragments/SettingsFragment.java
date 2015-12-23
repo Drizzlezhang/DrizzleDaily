@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -17,7 +17,7 @@ import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.BugFeedBack;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.PhotoActivity;
+import com.drizzle.drizzledaily.ui.activities.PhotoActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 
 import cn.bmob.v3.listener.SaveListener;

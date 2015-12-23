@@ -42,11 +42,11 @@
         android:supportsRtl="true"
         android:theme="@style/BlackAppTheme">
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainBlackAppTheme"></activity>
         <activity
-            android:name=".ui.GildeActivity"
+            android:name=".ui.activities.GildeActivity"
             android:screenOrientation="portrait"
             android:theme="@style/StartTheme.NoActionBar">
             <intent-filter>
@@ -56,25 +56,25 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ui.PhotoActivity"
+            android:name=".ui.activities.PhotoActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".ui.ThemeListActivity"
+            android:name=".ui.activities.ThemeListActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".ui.SectionListActivity"
+            android:name=".ui.activities.SectionListActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".ui.ReadActivity"
+            android:name=".ui.activities.ReadActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".ui.SectionReadActivity"
+            android:name=".ui.activities.SectionReadActivity"
             android:screenOrientation="portrait"></activity>
         <activity
-            android:name=".ui.SettingsActivity"
+            android:name=".ui.activities.SettingsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainBlackAppTheme"></activity>
-        <activity android:name=".ui.MySwipeActivity"></activity>
+        <activity android:name=".ui.activities.MySwipeActivity"></activity>
 
         <activity
             android:name=".ui.RegisterActivity"

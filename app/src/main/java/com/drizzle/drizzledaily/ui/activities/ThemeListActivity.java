@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

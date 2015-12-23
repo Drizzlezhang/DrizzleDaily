@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -21,9 +21,9 @@ import com.drizzle.drizzledaily.adapter.SwipeAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.MainActivity;
-import com.drizzle.drizzledaily.ui.ReadActivity;
-import com.drizzle.drizzledaily.ui.SectionReadActivity;
+import com.drizzle.drizzledaily.ui.activities.MainActivity;
+import com.drizzle.drizzledaily.ui.activities.ReadActivity;
+import com.drizzle.drizzledaily.ui.activities.SectionReadActivity;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;

@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.ui.activities;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
@@ -8,7 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.fragments.SettingsFragment;
+import com.drizzle.drizzledaily.ui.fragments.SettingsFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

@@ -1,6 +1,6 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.ui.activities;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,18 +8,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
-import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -45,50 +48,64 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * 专栏日报阅读界面（没有大图提供,单开一个页面）
+ * 阅读文章主界面
  */
+public class ReadActivity extends MySwipeActivity {
 
-public class SectionReadActivity extends MySwipeActivity {
-
-    @Bind(R.id.section_read_toolbar)
-    Toolbar mToolbar;
-
-    @Bind(R.id.section_read_webview)
-    WebView sectionWeb;
-
-    @Bind(R.id.section_read_progress)
-    AVLoadingIndicatorView loadingIndicatorView;
-
-    private String body;
     private int readid;
-    private int themeid;
-    private String themename;
-    private String pagetitle;
-    private CollectDB collectDB;
+    private String ImgUrl;
+    private String body;
+    private String pagetltle;
     private String cssadd;
     private String pageUrl;
-    private Set<CollectBean> collectBeanSet;
 
+    @Bind(R.id.read_toolbar)
+    Toolbar mToolbar;
+
+    @Bind(R.id.read_headimg)
+    ImageView headImg;
+
+    @Bind(R.id.read_title)
+    TextView readTitle;
+
+    @Bind(R.id.read_imgres)
+    TextView readImgres;
+
+    @Bind(R.id.read_webview)
+    WebView readWeb;
+
+    @Bind(R.id.read_progress)
+    AVLoadingIndicatorView loadingIndicatorView;
+
+    @Bind(R.id.read_scroll)
+    NestedScrollView mNestedScrollView;
     private DialogPlus dialogPlus;
     private CommonAdapter<ShareBean> adapter;
+    private Set<CollectBean> collectBeanSet;
     private List<ShareBean> shareBeanList = new ArrayList<>();
+    private Bitmap shareBitmap;
     private IWXAPI wxApi;
+
+    private static final String APP_CACHE_DIRNAME = "/webcache"; // web缓存目录
 
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    //webview加载css和html
+                    Glide.with(getApplicationContext()).load(ImgUrl)
+                            .centerCrop().error(R.mipmap.place_img)
+                            .crossFade().into(headImg);
                     String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
                     String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
                     html = html.replace("<div class=\"img-place-holder\">", "");
-                    sectionWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+                    readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
                     break;
                 default:
                     break;
@@ -99,57 +116,28 @@ public class SectionReadActivity extends MySwipeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_section_read);
+        setContentView(R.layout.activity_read);
         ButterKnife.bind(this);
         initData();
-        collectDB = CollectDB.getInstance(this);
         if (savedInstanceState != null) {
             readid = savedInstanceState.getInt(Config.READID);
         } else {
-            readid = getIntent().getIntExtra(Config.READID, -1);
+            Intent intent = getIntent();
+            readid = intent.getIntExtra(Config.READID, -1);
         }
         initViews();
         wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
         wxApi.registerApp(Config.WXAPPID);
-        if (NetUtils.isConnected(SectionReadActivity.this)) {
-            new OkHttpRequest.Builder().url(Config.NEWS_BODY + readid).get(new ResultCallback<String>() {
-                @Override
-                public void onError(Request request, Exception e) {
-                    TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
-                    loadingIndicatorView.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onResponse(String response) {
-                    try {
-                        JSONObject jsonObject = new JSONObject(response);
-                        String name = jsonObject.getString("title");
-                        mToolbar.setTitle(name);
-                        pagetitle = name;
-                        body = jsonObject.getString("body");
-                        JSONObject theme = jsonObject.getJSONObject("theme");
-                        themeid = theme.getInt("id");
-                        themename = theme.getString("name");
-                        cssadd = jsonObject.getJSONArray("css").getString(0);
-                        pageUrl = jsonObject.getString("share_url");
-                        handler.sendEmptyMessage(0);
-                        loadingIndicatorView.setVisibility(View.GONE);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                        TUtils.showShort(SectionReadActivity.this, "json error");
-                        loadingIndicatorView.setVisibility(View.GONE);
-                    }
-                }
-            });
+        if (NetUtils.isConnected(ReadActivity.this)) {
+            managerReadJson(readid);
         } else {
-            TUtils.showShort(SectionReadActivity.this, "网络未连接");
+            TUtils.showShort(ReadActivity.this, "网络未连接");
             loadingIndicatorView.setVisibility(View.GONE);
         }
-
     }
 
     private void initData() {
-        SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, MODE_PRIVATE);
         String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
         Gson gson = new Gson();
         collectBeanSet = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
@@ -165,16 +153,27 @@ public class SectionReadActivity extends MySwipeActivity {
                 helper.setImgByid(R.id.share_item_img, item.getImgId());
             }
         };
+        shareBitmap = null;
     }
 
     private void initViews() {
-        mToolbar.setTitle("载入中");
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
-        sectionWeb.getSettings().setJavaScriptEnabled(true);
-        dialogPlus = DialogPlus.newDialog(SectionReadActivity.this)
-                .setAdapter(adapter).setHeader(R.layout.share_head)
+        mToolbar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mNestedScrollView.smoothScrollTo(0, 0);
+            }
+        });
+        if (NetUtils.isConnected(ReadActivity.this)) {
+            initWebView(true);
+        } else {
+            initWebView(false);
+        }
+        dialogPlus = DialogPlus.newDialog(ReadActivity.this)
+                .setAdapter(adapter)
+                .setHeader(R.layout.share_head)
                 .setOnBackPressListener(new OnBackPressListener() {
                     @Override
                     public void onBackPressed(DialogPlus dialogPlus) {
@@ -184,15 +183,76 @@ public class SectionReadActivity extends MySwipeActivity {
                 .setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
+                        if (shareBitmap == null) {
+                            shareBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
+                        }
                         if (position == 1) {
-                            wechatShare(1, pagetitle, pageUrl); //分享到朋友圈
+                            wechatShare(1, pagetltle, pageUrl, shareBitmap); //分享到朋友圈
                         } else if (position == 2) {
-                            wechatShare(0, pagetitle, pageUrl);//分享给微信好友
+                            wechatShare(0, pagetltle, pageUrl, shareBitmap); //分享给微信好友
                         }
                         dialogPlus.dismiss();
                     }
                 })
-                .setCancelable(true).setPadding(20, 30, 20, 20).create();
+                .setCancelable(true)
+                .setPadding(20, 30, 20, 20)
+                .create();
+    }
+
+    public void initWebView(boolean isnet) {
+        readWeb.getSettings().setJavaScriptEnabled(true);
+    }
+
+
+    /**
+     * 处理readjson数据
+     *
+     * @param managerReadId
+     */
+    private void managerReadJson(int managerReadId) {
+            new OkHttpRequest.Builder().url(Config.NEWS_BODY + managerReadId).get(new ResultCallback<String>() {
+                @Override
+                public void onError (Request request, Exception e){
+                TUtils.showShort(ReadActivity.this, "服务器出问题了");
+                loadingIndicatorView.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject jsonObject = new JSONObject(response);
+                    String name = jsonObject.getString("title");
+                    readTitle.setText(name);
+                    pagetltle = name;
+                    ImgUrl = jsonObject.getString("image");
+                    body = jsonObject.getString("body");
+                    pageUrl = jsonObject.getString("share_url");
+                    readImgres.setText(jsonObject.getString("image_source"));
+                    cssadd = jsonObject.getJSONArray("css").getString(0);
+                    //开启一个子线程下载分享图片
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                shareBitmap = Glide.with(getApplicationContext()).load(ImgUrl)
+                                        .asBitmap().centerCrop()
+                                        .into(100, 100).get();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } catch (ExecutionException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
+                    handler.sendEmptyMessage(0);
+                    loadingIndicatorView.setVisibility(View.GONE);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    TUtils.showShort(ReadActivity.this, "json error");
+                    loadingIndicatorView.setVisibility(View.GONE);
+                }
+            }
+        });
     }
 
     /**
@@ -200,15 +260,13 @@ public class SectionReadActivity extends MySwipeActivity {
      *
      * @param flag(0:分享到微信好友，1：分享到微信朋友圈)
      */
-    private void wechatShare(int flag, String shareTitle, String shareUrl) {
+    private void wechatShare(int flag, String shareTitle, String shareUrl, Bitmap sBitmap) {
         WXWebpageObject webpage = new WXWebpageObject();
         webpage.webpageUrl = shareUrl;
         WXMediaMessage msg = new WXMediaMessage(webpage);
         msg.title = shareTitle;
         msg.description = "来自知乎日报 By Drizzle";
-        //这里替换一张自己工程里的图片资源
-        Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
-        msg.setThumbImage(thumb);
+        msg.setThumbImage(sBitmap);
         SendMessageToWX.Req req = new SendMessageToWX.Req();
         req.transaction = String.valueOf(System.currentTimeMillis());
         req.message = msg;
@@ -221,7 +279,6 @@ public class SectionReadActivity extends MySwipeActivity {
         outState.putInt(Config.READID, readid);
         super.onSaveInstanceState(outState);
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -238,9 +295,9 @@ public class SectionReadActivity extends MySwipeActivity {
                 break;
             case R.id.action_collect:
                 int savetime = (int) System.currentTimeMillis();
-                SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, MODE_PRIVATE);
                 final SharedPreferences.Editor editor = sharedPreferences.edit();
-                final CollectBean bean = new CollectBean(readid, pagetitle, 2, savetime);
+                final CollectBean bean = new CollectBean(readid, pagetltle, 1, savetime);
                 collectBeanSet.add(bean);
                 final Gson gson = new Gson();
                 editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
@@ -252,7 +309,7 @@ public class SectionReadActivity extends MySwipeActivity {
                                 collectBeanSet.remove(bean);
                                 editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
                                 editor.commit();
-                                TUtils.showShort(SectionReadActivity.this, "已取消收藏");
+                                TUtils.showShort(ReadActivity.this, "已取消收藏");
                             }
                         })
                         .withMessage("已收藏到本地文件夹。")

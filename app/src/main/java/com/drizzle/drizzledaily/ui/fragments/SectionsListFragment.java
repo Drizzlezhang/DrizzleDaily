@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -20,8 +20,8 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.MainActivity;
-import com.drizzle.drizzledaily.ui.SectionListActivity;
+import com.drizzle.drizzledaily.ui.activities.MainActivity;
+import com.drizzle.drizzledaily.ui.activities.SectionListActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;

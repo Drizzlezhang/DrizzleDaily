@@ -3,7 +3,7 @@
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
-             tools:context="com.drizzle.drizzledaily.fragments.SearchFragment">
+             tools:context=".ui.fragments.SearchFragment">
 
     <ListView
         android:id="@+id/search_list"

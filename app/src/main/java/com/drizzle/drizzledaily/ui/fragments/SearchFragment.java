@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.fragments;
+package com.drizzle.drizzledaily.ui.fragments;
 
 
 import android.content.Intent;
@@ -8,7 +8,6 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -17,8 +16,8 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.MainActivity;
-import com.drizzle.drizzledaily.ui.ReadActivity;
+import com.drizzle.drizzledaily.ui.activities.MainActivity;
+import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;

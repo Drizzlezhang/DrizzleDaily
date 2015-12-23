@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.ui.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

@@ -1,4 +1,4 @@
-package com.drizzle.drizzledaily.ui;
+package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import com.bm.library.PhotoView;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.fragments.SettingsFragment;
+import com.drizzle.drizzledaily.ui.fragments.SettingsFragment;
 import com.drizzle.drizzledaily.model.Config;
 
 import java.io.File;
