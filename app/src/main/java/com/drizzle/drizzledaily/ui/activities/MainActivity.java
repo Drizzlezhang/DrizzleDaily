@@ -184,56 +184,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onResume() {
-        initUser();
-        super.onResume();
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        switch (id) {
-            case R.id.action_share:
-                dialogPlus.show();
-                break;
-            case R.id.action_settings:
-                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-                startActivity(intent);
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * 微信分享 （这里仅提供一个分享网页的示例，其它请参看官网示例代码）
-     *
-     * @param flag(0:分享到微信好友，1：分享到微信朋友圈)
-     */
-    private void wechatShare(int flag) {
-        WXWebpageObject webpage = new WXWebpageObject();
-        webpage.webpageUrl = "http://fir.im/w7g1";
-        WXMediaMessage msg = new WXMediaMessage(webpage);
-        msg.title = "知乎日报By Drizzle";
-        msg.description = "from fir.im";
-        //这里替换一张自己工程里的图片资源
-        Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
-        msg.setThumbImage(thumb);
-        SendMessageToWX.Req req = new SendMessageToWX.Req();
-        req.transaction = String.valueOf(System.currentTimeMillis());
-        req.message = msg;
-        req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
-        wxApi.sendReq(req);
-    }
-
-    @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
             case R.id.drawer_menu_home:
@@ -455,6 +405,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             finish();
             System.exit(0);
         }
+    }
+
+    @Override
+    protected void onResume() {
+        initUser();
+        super.onResume();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_share:
+                dialogPlus.show();
+                break;
+            case R.id.action_settings:
+                Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+                startActivity(intent);
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 微信分享
+     *
+     * @param flag(0:分享到微信好友，1：分享到微信朋友圈)
+     */
+    private void wechatShare(int flag) {
+        WXWebpageObject webpage = new WXWebpageObject();
+        webpage.webpageUrl = "http://fir.im/w7g1";
+        WXMediaMessage msg = new WXMediaMessage(webpage);
+        msg.title = "知乎日报By Drizzle";
+        msg.description = "from fir.im";
+        //这里替换一张自己工程里的图片资源
+        Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
+        msg.setThumbImage(thumb);
+        SendMessageToWX.Req req = new SendMessageToWX.Req();
+        req.transaction = String.valueOf(System.currentTimeMillis());
+        req.message = msg;
+        req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
+        wxApi.sendReq(req);
     }
 
 }
