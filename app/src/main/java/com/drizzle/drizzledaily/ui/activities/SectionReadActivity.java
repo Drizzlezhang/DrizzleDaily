@@ -3,6 +3,7 @@ package com.drizzle.drizzledaily.ui.activities;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +12,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebView;
 
 import com.drizzle.drizzledaily.R;
@@ -54,7 +56,7 @@ import butterknife.ButterKnife;
  * 专栏日报阅读界面（没有大图提供,单开一个页面）
  */
 
-public class SectionReadActivity extends MySwipeActivity {
+public class SectionReadActivity extends BaseActivity {
 
 	@Bind(R.id.section_read_toolbar) Toolbar mToolbar;
 

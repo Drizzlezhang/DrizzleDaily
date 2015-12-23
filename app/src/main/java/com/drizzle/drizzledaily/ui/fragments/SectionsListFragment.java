@@ -77,15 +77,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), sectionsItems, R.layout.base_grid_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.grid_item_title, item.getTitle());
-                            helper.setImg(R.id.grid_item_img, item.getImgUrl());
-                            helper.setText(R.id.grid_item_describe, item.getDescribe());
-                        }
-                    };
-                    mGridView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                     mRefreshLayout.setRefreshing(false);
                     break;
                 default:
@@ -109,6 +101,15 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
                 startActivity(intent);
             }
         });
+        adapter = new CommonAdapter<BaseListItem>(getActivity(), sectionsItems, R.layout.base_grid_item) {
+            @Override
+            public void convert(ViewHolder helper, BaseListItem item) {
+                helper.setText(R.id.grid_item_title, item.getTitle());
+                helper.setImg(R.id.grid_item_img, item.getImgUrl());
+                helper.setText(R.id.grid_item_describe, item.getDescribe());
+            }
+        };
+        mGridView.setAdapter(adapter);
     }
 
 

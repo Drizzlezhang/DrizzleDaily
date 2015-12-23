@@ -16,7 +16,7 @@ import butterknife.ButterKnife;
 /**
  * 设置界面用于放置设置fragment
  */
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
     @Bind(R.id.settings_toolbar)
     Toolbar mToolbar;
 

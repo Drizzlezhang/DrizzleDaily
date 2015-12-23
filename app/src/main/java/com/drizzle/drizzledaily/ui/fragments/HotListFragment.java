@@ -79,6 +79,14 @@ public class HotListFragment extends BaseFragment
 				startActivity(intent);
 			}
 		});
+		adapter = new CommonAdapter<BaseListItem>(getActivity(), hotListItems, R.layout.base_list_item) {
+			@Override public void convert(ViewHolder helper, BaseListItem item) {
+				helper.setText(R.id.base_item_title, item.getTitle());
+				helper.setImg(R.id.base_item_img, item.getImgUrl());
+				helper.setText(R.id.base_item_date, "");
+			}
+		};
+		mListView.setAdapter(adapter);
 	}
 
 	@Override public void onRefresh() {
@@ -101,14 +109,7 @@ public class HotListFragment extends BaseFragment
 		@Override public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-					adapter = new CommonAdapter<BaseListItem>(getActivity(), hotListItems, R.layout.base_list_item) {
-						@Override public void convert(ViewHolder helper, BaseListItem item) {
-							helper.setText(R.id.base_item_title, item.getTitle());
-							helper.setImg(R.id.base_item_img, item.getImgUrl());
-							helper.setText(R.id.base_item_date, "");
-						}
-					};
-					mListView.setAdapter(adapter);
+					adapter.notifyDataSetChanged();
 					mRefreshLayout.setRefreshing(false);
 					break;
 				default:

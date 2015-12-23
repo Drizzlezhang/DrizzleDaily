@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 /**
  * 主题日报列表activity
  */
-public class ThemeListActivity extends MySwipeActivity {
+public class ThemeListActivity extends BaseActivity {
 
     private Toolbar mToolbar;
 

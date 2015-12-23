@@ -16,6 +16,7 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.bean.ShareBean;
+import com.drizzle.drizzledaily.ui.activities.BaseActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -36,7 +37,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * 个人管理界面,有用户缓存则提示登出和修改个人信息,没有则提示登录和注册
  */
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends BaseActivity {
 
     @Bind(R.id.user_toolbar)
     Toolbar mToolbar;

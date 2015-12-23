@@ -40,11 +40,11 @@
         android:icon="@mipmap/labal_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/BlackAppTheme">
+        android:theme="@style/MainBlackAppTheme">
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MainBlackAppTheme"></activity>
+            ></activity>
         <activity
             android:name=".ui.activities.GildeActivity"
             android:screenOrientation="portrait"
@@ -73,8 +73,7 @@
         <activity
             android:name=".ui.activities.SettingsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/MainBlackAppTheme"></activity>
-        <activity android:name=".ui.activities.MySwipeActivity"></activity>
+          ></activity>
 
         <activity
             android:name=".ui.RegisterActivity"
@@ -90,6 +89,12 @@
         </activity>
         <activity
             android:name=".ui.LogininActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainBlackAppTheme">
+
+        </activity>
+        <activity
+            android:name=".ui.activities.BaseActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainBlackAppTheme">
 
@@ -112,14 +117,6 @@
             android:name="cn.bmob.v3.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
 
-        <activity
-            android:name="me.iwf.photopicker.PhotoPickerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/PhotoBlackAppTheme"></activity>
-        <activity
-            android:name="me.iwf.photopicker.PhotoPagerActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/PhotoBlackAppTheme"></activity>
     </application>
 
 </manifest>

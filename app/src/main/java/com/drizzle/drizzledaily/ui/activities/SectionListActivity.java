@@ -37,7 +37,7 @@ import butterknife.ButterKnife;
 /**
  * 专栏列表activity
  */
-public class SectionListActivity extends MySwipeActivity {
+public class SectionListActivity extends BaseActivity {
 
 	private int sectionid;
 	private static final String SECTIONID = "sectionid";

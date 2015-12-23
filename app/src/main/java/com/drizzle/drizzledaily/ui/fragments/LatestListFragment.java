@@ -112,8 +112,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
             }
         });
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (baseListItems.get(position - 1).getViewType() == 0) {
                     //TODO
                 } else {
@@ -123,6 +122,8 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
                 }
             }
         });
+        latestAdapter = new LatestAdapter(getActivity(), baseListItems);
+        mListView.setAdapter(latestAdapter);
     }
 
     private Handler handler = new Handler() {
@@ -130,8 +131,6 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 0:
-                    latestAdapter = new LatestAdapter(getActivity(), baseListItems);
-                    mListView.setAdapter(latestAdapter);
                     final FragmentManager manager = getChildFragmentManager();
                     fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
                         @Override

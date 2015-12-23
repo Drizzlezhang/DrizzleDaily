@@ -76,6 +76,14 @@ public class SearchFragment extends BaseFragment implements MainActivity.OnToolb
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
         ((MainActivity) getActivity()).setToolbarClick(this);
+        adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
+            @Override
+            public void convert(ViewHolder helper, BaseListItem item) {
+                helper.setText(R.id.base_item_title, item.getTitle());
+                helper.setImg(R.id.base_item_img, item.getImgUrl());
+            }
+        };
+        mListView.setAdapter(adapter);
         if (NetUtils.isConnected(getActivity())) {
                 OkHttpUtils.get().url(Config.BEFORE_NEWS + id).build().execute(new StringCallback() {
                 @Override
@@ -110,7 +118,6 @@ public class SearchFragment extends BaseFragment implements MainActivity.OnToolb
             TUtils.showShort(getActivity(), "网络未连接");
             loadingIndicatorView.setVisibility(View.GONE);
         }
-
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -127,14 +134,7 @@ public class SearchFragment extends BaseFragment implements MainActivity.OnToolb
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case 1:
-                    adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
-                        @Override
-                        public void convert(ViewHolder helper, BaseListItem item) {
-                            helper.setText(R.id.base_item_title, item.getTitle());
-                            helper.setImg(R.id.base_item_img, item.getImgUrl());
-                        }
-                    };
-                    mListView.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                     break;
                 default:
                     break;

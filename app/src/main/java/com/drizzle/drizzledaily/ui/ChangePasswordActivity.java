@@ -11,6 +11,7 @@ import android.widget.Button;
 
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.MyUser;
+import com.drizzle.drizzledaily.ui.activities.BaseActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
@@ -22,7 +23,7 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.UpdateListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class ChangePasswordActivity extends AppCompatActivity {
+public class ChangePasswordActivity extends BaseActivity {
     @Bind(R.id.change_toolbar)
     Toolbar mToolbar;
 

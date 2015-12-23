@@ -15,8 +15,11 @@ import im.fir.sdk.FIR;
  * Created by user on 2015/10/16.
  */
 public class MyApplication extends Application {
+	private static Context mContext;
+
 	@Override public void onCreate() {
 		super.onCreate();
+		mContext = this;
 		OkHttpClient client = OkHttpUtils.getInstance().getOkHttpClient();
 		client.setConnectTimeout(100000, TimeUnit.MILLISECONDS);
 		FIR.init(this);
@@ -24,6 +27,6 @@ public class MyApplication extends Application {
 	}
 
 	public static Context getContext() {
-		return getContext();
+		return mContext;
 	}
 }

@@ -78,20 +78,21 @@ public class ThemeListFragment extends BaseFragment
 				startActivity(intent);
 			}
 		});
+		adapter = new CommonAdapter<BaseListItem>(getActivity(), themeItems, R.layout.base_grid_item) {
+			@Override public void convert(ViewHolder helper, BaseListItem item) {
+				helper.setText(R.id.grid_item_title, item.getTitle());
+				helper.setImg(R.id.grid_item_img, item.getImgUrl());
+				helper.setText(R.id.grid_item_describe, item.getDescribe());
+			}
+		};
+		mGridView.setAdapter(adapter);
 	}
 
 	private Handler handler = new Handler() {
 		@Override public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-					adapter = new CommonAdapter<BaseListItem>(getActivity(), themeItems, R.layout.base_grid_item) {
-						@Override public void convert(ViewHolder helper, BaseListItem item) {
-							helper.setText(R.id.grid_item_title, item.getTitle());
-							helper.setImg(R.id.grid_item_img, item.getImgUrl());
-							helper.setText(R.id.grid_item_describe, item.getDescribe());
-						}
-					};
-					mGridView.setAdapter(adapter);
+					adapter.notifyDataSetChanged();
 					mRefreshLayout.setRefreshing(false);
 					break;
 				default:

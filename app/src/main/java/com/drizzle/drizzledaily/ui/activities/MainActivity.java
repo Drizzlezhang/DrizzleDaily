@@ -60,7 +60,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * 主界面，管理多个列表fragment
  */
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener {
     @Bind(R.id.main_toolbar)
     Toolbar mToolbar;
 

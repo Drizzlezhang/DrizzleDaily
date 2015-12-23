@@ -18,6 +18,7 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.bean.ShareBean;
+import com.drizzle.drizzledaily.ui.activities.BaseActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -38,7 +39,7 @@ import de.hdodenhof.circleimageview.CircleImageView;
 /**
  * 注册界面
  */
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends BaseActivity {
     @Bind(R.id.register_toolbar)
     Toolbar mToolbar;
 

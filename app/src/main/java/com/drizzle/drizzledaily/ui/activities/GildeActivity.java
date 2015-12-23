@@ -53,7 +53,6 @@ public class GildeActivity extends AppCompatActivity {
 
 	@Bind(R.id.start_img) ImageView startImg;
 
-	private static final String TESTURL = "testurl";
 	private static final String STARTIMGCACHEURL = "shartimgurl";
 
 	/**
