@@ -22,9 +22,11 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
@@ -56,9 +58,7 @@ public class HotListFragment extends BaseFragment
 		View view = inflater.inflate(R.layout.hot_list_fragment, container, false);
 		ButterKnife.bind(this, view);
 		initViews();
-		SharedPreferences sharedPreferences =
-			getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-		String hotcachejson = sharedPreferences.getString(HOTCACHENAME, "");
+		String hotcachejson = PerferUtils.getString(HOTCACHENAME);
 		if (hotcachejson.equals("")) {
 			//TODO
 		} else {
@@ -142,18 +142,14 @@ public class HotListFragment extends BaseFragment
 	private void getLists(final String listUrl) {
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
-			new OkHttpRequest.Builder().url(listUrl).get(new ResultCallback<String>() {
+				OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
 				@Override public void onError(Request request, Exception e) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
 					mRefreshLayout.setRefreshing(false);
 				}
 
 				@Override public void onResponse(String response) {
-					SharedPreferences sharedPreferences =
-						getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-					SharedPreferences.Editor editor = sharedPreferences.edit();
-					editor.putString(HOTCACHENAME, response);
-					editor.commit();
+					PerferUtils.saveSth(HOTCACHENAME,response);
 					manageHotJson(response);
 				}
 			});

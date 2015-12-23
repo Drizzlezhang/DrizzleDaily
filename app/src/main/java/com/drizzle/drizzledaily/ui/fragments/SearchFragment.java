@@ -22,7 +22,8 @@ import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
@@ -76,7 +77,7 @@ public class SearchFragment extends BaseFragment implements MainActivity.OnToolb
         ButterKnife.bind(this, view);
         ((MainActivity) getActivity()).setToolbarClick(this);
         if (NetUtils.isConnected(getActivity())) {
-            new OkHttpRequest.Builder().url(Config.BEFORE_NEWS + id).get(new ResultCallback<String>() {
+                OkHttpUtils.get().url(Config.BEFORE_NEWS + id).build().execute(new StringCallback() {
                 @Override
                 public void onError(Request request, Exception e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");

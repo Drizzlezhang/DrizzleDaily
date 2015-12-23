@@ -26,9 +26,11 @@ import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
@@ -72,8 +74,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
         mListView.addHeaderView(headview);
         mCalendar = Calendar.getInstance();
         initViews();
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-        String latestcache = sharedPreferences.getString(LATESTCACHENAME, "");
+        String latestcache = PerferUtils.getString(LATESTCACHENAME);
         if (latestcache.equals("")) {
             //TODO
         } else {
@@ -93,8 +94,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
         // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-            @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            @Override public void onScrollStateChanged(AbsListView view, int scrollState) {
                 switch (scrollState) {
                     case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
                         if (view.getLastVisiblePosition() == view.getCount() - 1) {
@@ -171,7 +171,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
     private void getLists(final String listUrl) {
         swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
-            new OkHttpRequest.Builder().url(listUrl).get(new ResultCallback<String>() {
+                OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
                 @Override
                 public void onError(Request request, Exception e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
@@ -184,10 +184,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
                     try {
                         if (listUrl.equals(Config.LATEST_NEWS)) {
                             //如果请求成功,将请求到的数据保存并解析
-                            SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(LATESTCACHENAME, response);
-                            editor.commit();
+                            PerferUtils.saveSth(LATESTCACHENAME,response);
                             manageLatestJson(response);
                         } else {
                             data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));

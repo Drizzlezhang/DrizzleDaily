@@ -25,6 +25,7 @@ import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.gson.Gson;
@@ -39,7 +40,8 @@ import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
 import com.tencent.mm.sdk.openapi.IWXAPI;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
@@ -210,7 +212,7 @@ public class ReadActivity extends MySwipeActivity {
      * @param managerReadId
      */
     private void managerReadJson(int managerReadId) {
-            new OkHttpRequest.Builder().url(Config.NEWS_BODY + managerReadId).get(new ResultCallback<String>() {
+                OkHttpUtils.get().url(Config.NEWS_BODY + managerReadId).build().execute(new StringCallback() {
                 @Override
                 public void onError (Request request, Exception e){
                 TUtils.showShort(ReadActivity.this, "服务器出问题了");
@@ -295,20 +297,16 @@ public class ReadActivity extends MySwipeActivity {
                 break;
             case R.id.action_collect:
                 int savetime = (int) System.currentTimeMillis();
-                SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, MODE_PRIVATE);
-                final SharedPreferences.Editor editor = sharedPreferences.edit();
                 final CollectBean bean = new CollectBean(readid, pagetltle, 1, savetime);
                 collectBeanSet.add(bean);
                 final Gson gson = new Gson();
-                editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
-                editor.commit();
+                PerferUtils.saveSth(Config.COLLECTCACHE,gson.toJson(collectBeanSet));
                 new SnackBar.Builder(this)
                         .withOnClickListener(new SnackBar.OnMessageClickListener() {
                             @Override
                             public void onMessageClick(Parcelable token) {
                                 collectBeanSet.remove(bean);
-                                editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
-                                editor.commit();
+                                PerferUtils.saveSth(Config.COLLECTCACHE,gson.toJson(collectBeanSet));
                                 TUtils.showShort(ReadActivity.this, "已取消收藏");
                             }
                         })

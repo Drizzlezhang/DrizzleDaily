@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -24,10 +25,13 @@ import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.FileCallBack;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
@@ -61,46 +65,44 @@ public class GildeActivity extends AppCompatActivity {
 				case 1:
 					//TODO
 					if (NetUtils.isConnected(GildeActivity.this)) {
-						new OkHttpRequest.Builder().url(Config.START_IMAGE + "720*1184")
-							.get(new ResultCallback<String>() {
-								@Override public void onError(Request request, Exception e) {
-									TUtils.showShort(GildeActivity.this, "服务器出问题了");
-								}
+						OkHttpUtils.get().url(Config.START_IMAGE + "720*1184").build().execute(new StringCallback() {
+							@Override public void onError(Request request, Exception e) {
+								TUtils.showShort(GildeActivity.this, "服务器出问题了");
+							}
 
-								@Override public void onResponse(String response) {
-									try {
-										JSONObject jsonObject = new JSONObject(response);
-										String imgurl = jsonObject.getString("img");
-										Log.d("img", imgurl);
-										SharedPreferences sharedPreferences =
-											getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-										String cacheurl = sharedPreferences.getString(STARTIMGCACHEURL, "");
-										if (cacheurl.equals(imgurl)) {
-											Log.d("startimg", "exist");
-										} else {
-											SharedPreferences.Editor editor = sharedPreferences.edit();
-											editor.putString(STARTIMGCACHEURL, imgurl);
-											editor.commit();
-											//下载图片并覆盖
-											new OkHttpRequest.Builder().url(imgurl).
-												destFileDir(Config.START_PHOTO_FOLDER).
-												destFileName("startimg.jpg").
-												download(new ResultCallback<String>() {
+							@Override public void onResponse(String response) {
+								try {
+									JSONObject jsonObject = new JSONObject(response);
+									String imgurl = jsonObject.getString("img");
+									Log.d("img", imgurl);
+									String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
+									if (cacheurl.equals(imgurl)) {
+										Log.d("startimg", "exist");
+									} else {
+										PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
+										//下载图片并覆盖
+										OkHttpUtils.get().url(imgurl).build()
+											.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
+												{
+													@Override public void inProgress(float progress) {
+														Log.d("progress", progress + "");
+													}
+
 													@Override public void onError(Request request, Exception e) {
 														Log.d("startimg", "failed");
 													}
 
-													@Override public void onResponse(String o) {
+													@Override public void onResponse(File file) {
 														Log.d("startimg", "succeed");
 													}
 												});
-										}
-									} catch (JSONException e) {
-										e.printStackTrace();
-										TUtils.showShort(GildeActivity.this, "json error");
 									}
+								} catch (JSONException e) {
+									e.printStackTrace();
+									TUtils.showShort(GildeActivity.this, "json error");
 								}
-							});
+							}
+						});
 					} else {
 						TUtils.showShort(GildeActivity.this, "网络未连接");
 					}
@@ -133,19 +135,14 @@ public class GildeActivity extends AppCompatActivity {
 	 * 为之前已存放到数据库的用户服务，将数据转为json存入sharedperence
 	 */
 	private void initDatabase() {
-		SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-		int collectversion = sharedPreferences.getInt(Config.COLLECTVERSION, 0);
+		int collectversion = PerferUtils.getInt(Config.COLLECTVERSION);
 		if (collectversion == 0) {
 			CollectDB collectDB = CollectDB.getInstance(this);
 			Set<CollectBean> collectBeanSet = collectDB.findSetCollects();
 			Gson gson = new Gson();
 			String collectCache = gson.toJson(collectBeanSet);
-			SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putString(Config.COLLECTCACHE, collectCache);
-			editor.putInt(Config.COLLECTVERSION, 1);
-			editor.commit();
-		} else {
-			//TODO
+			PerferUtils.saveSth(Config.COLLECTCACHE, collectCache);
+			PerferUtils.saveSth(Config.COLLECTVERSION, 1);
 		}
 	}
 

@@ -23,9 +23,11 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.SectionListActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.callback.ResultCallback;
+import com.zhy.http.okhttp.OkHttpUtils;
+import com.zhy.http.okhttp.callback.StringCallback;
 import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONArray;
@@ -48,6 +50,8 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     @Bind(R.id.sections_grid)
     GridView mGridView;
 
+    private static String SECTIONCACHE = "sectionlistcache";
+
 
     private List<BaseListItem> sectionsItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
@@ -58,8 +62,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
         View view = inflater.inflate(R.layout.sections_list_fragment, container, false);
         ButterKnife.bind(this, view);
         initViews();
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-        String sectioncachejson = sharedPreferences.getString("sectionlistcache", "");
+        String sectioncachejson = PerferUtils.getString(SECTIONCACHE);
         if (sectioncachejson.equals("")) {
             //TODO
         } else {
@@ -100,8 +103,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
         ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setOnRefreshListener(this);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(getActivity(), SectionListActivity.class);
                 intent.putExtra("sectionid", sectionsItems.get(position).getId());
                 startActivity(intent);
@@ -137,8 +139,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
      */
     private void swipeRefresh(final boolean refresh) {
         mRefreshLayout.post(new Runnable() {
-            @Override
-            public void run() {
+            @Override public void run() {
                 if (refresh) {
                     mRefreshLayout.setRefreshing(true);
                 } else {
@@ -156,7 +157,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
     private void getLists(final String listUrl) {
         swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
-            new OkHttpRequest.Builder().url(listUrl).get(new ResultCallback<String>() {
+                OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
                 @Override
                 public void onError(Request request, Exception e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
@@ -165,10 +166,7 @@ public class SectionsListFragment extends Fragment implements SwipeRefreshLayout
 
                 @Override
                 public void onResponse(String response) {
-                    SharedPreferences sharedPreferences = getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("sectionlistcache", response);
-                    editor.commit();
+                    PerferUtils.saveSth(SECTIONCACHE,response);
                     manageSectionList(response);
                 }
             });

@@ -24,6 +24,7 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.ui.activities.SectionReadActivity;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -130,9 +131,7 @@ public class CollectListFragment extends BaseFragment implements MainActivity.On
                         @Override
                         public void onDeleteBtnclick(int pageid) {
                             collectBeanList.remove(new CollectBean(pageid, "", 1, 0));
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(Config.COLLECTCACHE, gson.toJson(collectBeanList));
-                            editor.commit();
+                            PerferUtils.saveSth(Config.COLLECTCACHE,gson.toJson(collectBeanList));
                             handler.sendEmptyMessage(1);
                         }
                     });
@@ -219,10 +218,7 @@ public class CollectListFragment extends BaseFragment implements MainActivity.On
                             }.getType());
                             //数据合并转换为json存储到本地
                             cloudcollectset.addAll(oldcollectset);
-                            String newcollcetjson = gson.toJson(cloudcollectset);
-                            SharedPreferences.Editor editor = sharedPreferences.edit();
-                            editor.putString(Config.COLLECTCACHE, newcollcetjson);
-                            editor.commit();
+                            PerferUtils.saveSth(Config.COLLECTCACHE,gson.toJson(cloudcollectset));
                             handler.sendEmptyMessage(1);
                             TUtils.showShort(getActivity(), "同步成功");
                             progressDialog.dismiss();

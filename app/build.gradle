@@ -50,7 +50,7 @@ dependencies {
     compile files('libs/Bughd_android_sdk_v1.3.3.jar')
     //bmob-sdk ：Bmob的android sdk包
     compile 'cn.bmob.android:bmob-sdk:3.4.3'
-    compile files('libs/okhttputils.jar')
+    compile 'com.zhy:okhttputils:2.0.2'
 }
 
 
