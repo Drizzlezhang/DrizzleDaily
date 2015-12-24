@@ -30,11 +30,11 @@ import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
+import com.hanks.htextview.HTextView;
 import com.squareup.okhttp.Request;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,8 +46,6 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import rx.Observable;
-import rx.functions.Func1;
 
 /**
  * 引导页
@@ -56,6 +54,8 @@ import rx.functions.Func1;
 public class GildeActivity extends AppCompatActivity {
 
 	@Bind(R.id.start_img) ImageView startImg;
+
+	@Bind(R.id.htext) HTextView hText;
 
 	private static final String STARTIMGCACHEURL = "shartimgurl";
 
@@ -110,7 +110,9 @@ public class GildeActivity extends AppCompatActivity {
 					if (!cacheurl.equals(imgurl)) {
 						PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
 						//下载图片并覆盖
-						OkHttpUtils.get().url(imgurl).build()
+						OkHttpUtils.get()
+							.url(imgurl)
+							.build()
 							.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
 							{
 								@Override public void inProgress(float progress) {
@@ -185,5 +187,6 @@ public class GildeActivity extends AppCompatActivity {
 				finish();
 			}
 		});
+		hText.animateText("DrizzleDaily");
 	}
 }

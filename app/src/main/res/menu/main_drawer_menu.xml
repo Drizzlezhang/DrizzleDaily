@@ -1,5 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/drawer_menu_home1"
+            android:icon="@mipmap/home"
+            android:title="首页"/>
+        <item
+            android:id="@+id/drawer_menu_hot1"
+            android:icon="@mipmap/hot"
+            android:title="热门"/>
+        <item
+            android:id="@+id/drawer_menu_theme1"
+            android:icon="@mipmap/star"
+            android:title="主题日报"/>
+        <item
+            android:id="@+id/drawer_menu_section1"
+            android:icon="@mipmap/section"
+            android:title="专栏"/>
+    </group>
 
     <group android:checkableBehavior="single">
         <item

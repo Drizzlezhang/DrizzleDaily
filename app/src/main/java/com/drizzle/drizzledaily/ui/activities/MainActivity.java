@@ -21,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.drizzle.drizzledaily.R;
@@ -67,9 +68,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 	@Bind(R.id.main_nav_view) NavigationView navigationView;
 
-	@Bind(R.id.drawer_touxiang) CircleImageView mainTouxiang;
-
-	@Bind(R.id.drawer_name) TextView nameText;
+	private TextView nameText;
+	private CircleImageView mainTouxiang;
 
 	private DialogPlus dialogPlus;
 	private CommonAdapter<ShareBean> adapter;
@@ -128,6 +128,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 				cilckListener.onClickToolbar();
 			}
 		});
+		nameText = (TextView) findViewById(R.id.drawer_name1);
+		mainTouxiang = (CircleImageView) findViewById(R.id.drawer_touxiang1);
+		mainTouxiang.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View v) {
+				mDrawerLayout.closeDrawer(GravityCompat.START);
+				startActivity(new Intent(MainActivity.this, UserActivity.class));
+			}
+		});
 		ActionBarDrawerToggle toggle =
 			new ActionBarDrawerToggle(this, mDrawerLayout, mToolbar, R.string.navigation_drawer_open,
 				R.string.navigation_drawer_close);
@@ -150,12 +158,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 			.setCancelable(true)
 			.setPadding(20, 30, 20, 20)
 			.create();
-		mainTouxiang.setOnClickListener(new View.OnClickListener() {
-			@Override public void onClick(View v) {
-				mDrawerLayout.closeDrawer(GravityCompat.START);
-				startActivity(new Intent(MainActivity.this, UserActivity.class));
-			}
-		});
 	}
 
 	/**

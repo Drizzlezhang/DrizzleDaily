@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="220dp"
               android:background="@mipmap/head_img"
@@ -7,17 +8,16 @@
               android:orientation="vertical">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/drawer_touxiang"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/drawer_touxiang1"
         android:layout_width="70dp"
         android:layout_height="70dp"
         android:layout_gravity="center_vertical"
         android:layout_marginLeft="30dp"
         android:src="@mipmap/touxiang"
-        app:border_width="1dp"/>
+       />
 
     <TextView
-        android:id="@+id/drawer_name"
+        android:id="@+id/drawer_name1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="15dp"
