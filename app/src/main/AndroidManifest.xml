@@ -2,12 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.drizzle.drizzledaily">
 
-    <!-- 微信分享签名 test3-->
-    <!-- 7a078a92b08e93c4b88d761a97457aaf -->
+    <!--微信APPID:wx370c315141dbd99b-->
+    <!--AppSecret：8dfea2ca12b74b351ef75eb4bfb316a5-->
 
-
-    <!-- AppID：wxcdfd8ea3dceaf767 -->
-    <!-- AppSecret：ecec4e070dbc08e808835e45b3ff2727 -->
 
 
     <!-- fir.fm API TOKEN -->
@@ -111,8 +108,7 @@
         <activity
             android:name=".wxapi.WXEntryActivity"
             android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name="cn.bmob.v3.update.UpdateDialogActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar"></activity>

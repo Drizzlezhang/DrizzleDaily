@@ -77,7 +77,6 @@ public class SectionReadActivity extends BaseActivity {
 	private DialogPlus dialogPlus;
 	private CommonAdapter<ShareBean> adapter;
 	private List<ShareBean> shareBeanList = new ArrayList<>();
-	private IWXAPI wxApi;
 
 	private Handler handler = new Handler() {
 		@Override public void handleMessage(Message msg) {
@@ -107,8 +106,6 @@ public class SectionReadActivity extends BaseActivity {
 			readid = getIntent().getIntExtra(Config.READID, -1);
 		}
 		initViews();
-		wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
-		wxApi.registerApp(Config.WXAPPID);
 		if (NetUtils.isConnected(SectionReadActivity.this)) {
 			OkHttpUtils.get().url(Config.NEWS_BODY + readid).build().execute(new StringCallback() {
 				@Override public void onError(Request request, Exception e) {
@@ -178,9 +175,9 @@ public class SectionReadActivity extends BaseActivity {
 			.setOnItemClickListener(new OnItemClickListener() {
 				@Override public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
 					if (position == 1) {
-						wechatShare(1, pagetitle, pageUrl); //分享到朋友圈
+						wechatShare(1, pagetitle, pageUrl,null); //分享到朋友圈
 					} else if (position == 2) {
-						wechatShare(0, pagetitle, pageUrl);//分享给微信好友
+						wechatShare(0, pagetitle, pageUrl,null);//分享给微信好友
 					}
 					dialogPlus.dismiss();
 				}
@@ -190,24 +187,6 @@ public class SectionReadActivity extends BaseActivity {
 			.create();
 	}
 
-	/**
-	 * 微信分享 （这里仅提供一个分享网页的示例，其它请参看官网示例代码）
-	 */
-	private void wechatShare(int flag, String shareTitle, String shareUrl) {
-		WXWebpageObject webpage = new WXWebpageObject();
-		webpage.webpageUrl = shareUrl;
-		WXMediaMessage msg = new WXMediaMessage(webpage);
-		msg.title = shareTitle;
-		msg.description = "来自知乎日报 By Drizzle";
-		//这里替换一张自己工程里的图片资源
-		Bitmap thumb = BitmapFactory.decodeResource(getResources(), R.mipmap.labal_icon);
-		msg.setThumbImage(thumb);
-		SendMessageToWX.Req req = new SendMessageToWX.Req();
-		req.transaction = String.valueOf(System.currentTimeMillis());
-		req.message = msg;
-		req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
-		wxApi.sendReq(req);
-	}
 
 	@Override protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(Config.READID, readid);

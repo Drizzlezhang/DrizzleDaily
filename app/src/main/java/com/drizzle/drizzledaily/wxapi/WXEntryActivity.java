@@ -19,7 +19,6 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  */
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
 
-    // IWXAPI 是第三方app和微信通信的openapi接口
     private IWXAPI api;
 
     @Override
@@ -27,7 +26,7 @@ public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHan
         SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
         int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
         ThemeUtils.onActivityCreateSetTheme(this, themeid);
-        api = WXAPIFactory.createWXAPI(this, "wxcdfd8ea3dceaf767", false);
+        api = WXAPIFactory.createWXAPI(this, Config.WXAPPID, false);
         api.handleIntent(getIntent(), this);
         super.onCreate(savedInstanceState);
     }

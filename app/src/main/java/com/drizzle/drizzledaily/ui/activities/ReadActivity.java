@@ -87,7 +87,6 @@ public class ReadActivity extends BaseActivity {
 	private Set<CollectBean> collectBeanSet;
 	private List<ShareBean> shareBeanList = new ArrayList<>();
 	private Bitmap shareBitmap;
-	private IWXAPI wxApi;
 
 	private static final String APP_CACHE_DIRNAME = "/webcache"; // web缓存目录
 
@@ -186,8 +185,6 @@ public class ReadActivity extends BaseActivity {
 			.setCancelable(true)
 			.setPadding(20, 30, 20, 20)
 			.create();
-		wxApi = WXAPIFactory.createWXAPI(this, Config.WXAPPID);
-		wxApi.registerApp(Config.WXAPPID);
 		if (NetUtils.isConnected(ReadActivity.this)) {
 			managerReadJson(readid);
 		} else {
@@ -243,23 +240,6 @@ public class ReadActivity extends BaseActivity {
 				}
 			}
 		});
-	}
-
-	/**
-	 * 微信分享 （这里仅提供一个分享网页的示例，其它请参看官网示例代码）
-	 */
-	private void wechatShare(int flag, String shareTitle, String shareUrl, Bitmap sBitmap) {
-		WXWebpageObject webpage = new WXWebpageObject();
-		webpage.webpageUrl = shareUrl;
-		WXMediaMessage msg = new WXMediaMessage(webpage);
-		msg.title = shareTitle;
-		msg.description = "来自知乎日报 By Drizzle";
-		msg.setThumbImage(sBitmap);
-		SendMessageToWX.Req req = new SendMessageToWX.Req();
-		req.transaction = String.valueOf(System.currentTimeMillis());
-		req.message = msg;
-		req.scene = flag == 0 ? SendMessageToWX.Req.WXSceneSession : SendMessageToWX.Req.WXSceneTimeline;
-		wxApi.sendReq(req);
 	}
 
 	@Override protected void onSaveInstanceState(Bundle outState) {

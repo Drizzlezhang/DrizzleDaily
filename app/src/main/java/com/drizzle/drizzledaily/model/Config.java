@@ -22,7 +22,7 @@ public class Config {
     /**
      * 申请到的微信id,fir token,bugtestid
      */
-    public static final String WXAPPID = "wxcdfd8ea3dceaf767";
+    public static final String WXAPPID = "wx370c315141dbd99b";
     public static final String FIRTOKEN = "0907463c4425f95f233aa8ed32d7880f";
     public static final String BUGTESTID = "73e619a25cafd56c1119b8800ddc7697";
     /**
