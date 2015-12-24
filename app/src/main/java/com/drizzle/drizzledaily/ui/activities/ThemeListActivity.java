@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -53,11 +54,8 @@ public class ThemeListActivity extends BaseActivity {
     @Bind(R.id.theme_list_headimg)
     ImageView mImageView;
 
-    @Bind(R.id.theme_list_title)
-    TextView mTextView;
-
-    @Bind(R.id.theme_list_des)
-    TextView themeDes;
+    @Bind(R.id.theme_toolbar_layout)
+    CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Bind(R.id.theme_list_progress)
     AVLoadingIndicatorView loadingIndicatorView;
@@ -93,9 +91,8 @@ public class ThemeListActivity extends BaseActivity {
                             try {
                                 JSONObject jsonObject = new JSONObject(response);
                                 String name = jsonObject.getString("name");
-                                mTextView.setText(name);
+                                collapsingToolbarLayout.setTitle(name);
                                 imgUrl = jsonObject.getString("background");
-                                themeDes.setText(jsonObject.getString("description"));
                                 JSONArray stories = jsonObject.getJSONArray("stories");
                                 for (int i = 0; i < stories.length(); i++) {
                                     JSONObject story = stories.getJSONObject(i);
@@ -181,7 +178,6 @@ public class ThemeListActivity extends BaseActivity {
     public static void setListViewHeightBasedOnChildren(ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         if (listAdapter == null) {
-            // pre-condition
             return;
         }
         int totalHeight = 0;
@@ -197,7 +193,6 @@ public class ThemeListActivity extends BaseActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_single, menu);
         return true;
     }

@@ -139,4 +139,12 @@
 	<style name="AppTheme.PopupOverlay"
 		parent="ThemeOverlay.AppCompat.Dark"/>
 
+	<style name="TextAppearance.Collapsing"
+		parent="TextAppearance.AppCompat">
+		<item name="android:textColor">@color/white</item>
+		<item name="android:textSize">@dimen/collsping_text_size</item>
+		<item name="android:ellipsize">none</item>
+		<item name="android:singleLine">false</item>
+	</style>
+
 </resources>

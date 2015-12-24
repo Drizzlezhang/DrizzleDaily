@@ -23,8 +23,6 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.bean.CollectBean;
-import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
@@ -36,6 +34,8 @@ import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.FileCallBack;
 import com.zhy.http.okhttp.callback.StringCallback;
 
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -47,8 +47,9 @@ import java.util.Set;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.Observable;
-import rx.Scheduler;
 import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -73,12 +74,7 @@ public class GildeActivity extends AppCompatActivity {
 		}
 		setContentView(R.layout.activity_gilde);
 		ButterKnife.bind(this);
-		File file = new File(Config.START_PHOTO_FOLDER);
-		if (!file.exists()) {
-			file.mkdirs();
-		}
-		initDatabase();
-		handler.sendEmptyMessageDelayed(1, 1000);
+		handler.sendEmptyMessage(1);
 		playAnim();
 	}
 
@@ -115,28 +111,6 @@ public class GildeActivity extends AppCompatActivity {
 					JSONObject jsonObject = new JSONObject(response);
 					final String imgurl = jsonObject.getString("img");
 					final String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
-					//if (!cacheurl.equals(imgurl)) {
-					//	PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
-					//	//下载图片并覆盖
-					//	OkHttpUtils.get()
-					//		.url(imgurl)
-					//		.build()
-					//		.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
-					//		{
-					//			@Override public void inProgress(float progress) {
-					//				Log.d("progress", progress + "");
-					//			}
-					//
-					//			@Override public void onError(Request request, Exception e) {
-					//				Log.d("startimg", "failed");
-					//			}
-					//
-					//			@Override public void onResponse(File file) {
-					//				Log.d("startimg", "succeed");
-					//			}
-					//		});
-					//}
-
 					Observable.just(imgurl).filter(new Func1<String, Boolean>() {
 						@Override public Boolean call(String s) {
 							return !s.equals(cacheurl);
@@ -189,56 +163,63 @@ public class GildeActivity extends AppCompatActivity {
 	}
 
 	/**
-	 * 为之前已存放到数据库的用户服务，将数据转为json存入sharedperence
-	 */
-	private void initDatabase() {
-		int collectversion = PerferUtils.getInt(Config.COLLECTVERSION);
-		if (collectversion == 0) {
-			CollectDB collectDB = CollectDB.getInstance(this);
-			Set<CollectBean> collectBeanSet = collectDB.findSetCollects();
-			Gson gson = new Gson();
-			String collectCache = gson.toJson(collectBeanSet);
-			PerferUtils.saveSth(Config.COLLECTCACHE, collectCache);
-			PerferUtils.saveSth(Config.COLLECTVERSION, 1);
-		}
-	}
-
-	/**
 	 * 引导页图片动画效果
 	 */
 	private void playAnim() {
-		File file = new File(Config.START_PHOTO_FOLDER, "startimg.jpg");
-		if (file.exists()) {
-			FileInputStream inputStream = null;
-			try {
-				inputStream = new FileInputStream(file);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-			startImg.setImageBitmap(bitmap);
-		} else {
-			Glide.with(this)
-				.load(R.mipmap.start_img)
-				.diskCacheStrategy(DiskCacheStrategy.NONE)
-				.centerCrop()
-				.placeholder(R.mipmap.start_img)
-				.error(R.mipmap.start_img)
-				.crossFade()
-				.into(startImg);
+		File filefolder = new File(Config.START_PHOTO_FOLDER);
+		if (!filefolder.exists()) {
+			filefolder.mkdirs();
 		}
-		ObjectAnimator alpha = ObjectAnimator.ofFloat(startImg, "alpha", 1f, 0.8f);
-		ObjectAnimator scalex = ObjectAnimator.ofFloat(startImg, "scaleX", 1f, 1.1f);
-		ObjectAnimator scaley = ObjectAnimator.ofFloat(startImg, "scaleY", 1f, 1.1f);
-		AnimatorSet animator = new AnimatorSet();
-		animator.play(alpha).with(scalex).with(scaley);
-		animator.setDuration(2000).start();
-		animator.addListener(new AnimatorListenerAdapter() {
-			@Override public void onAnimationEnd(Animator animation) {
-				startActivity(new Intent(GildeActivity.this, MainActivity.class));
-				finish();
+		final File file = new File(Config.START_PHOTO_FOLDER, "startimg.jpg");
+		Observable.just(file).map(new Func1<File, Boolean>() {
+			@Override public Boolean call(File file) {
+				return file.exists();
+			}
+		}).map(new Func1<Boolean, Void>() {
+			@Override public Void call(Boolean aBoolean) {
+				if (aBoolean) {
+					FileInputStream inputStream = null;
+					try {
+						inputStream = new FileInputStream(file);
+					} catch (FileNotFoundException e) {
+						e.printStackTrace();
+					}
+					Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+					startImg.setImageBitmap(bitmap);
+				} else {
+					Glide.with(GildeActivity.this)
+						.load(R.mipmap.start_img)
+						.diskCacheStrategy(DiskCacheStrategy.NONE)
+						.centerCrop()
+						.placeholder(R.mipmap.start_img)
+						.error(R.mipmap.start_img)
+						.crossFade()
+						.into(startImg);
+				}
+				return null;
+			}
+		  }).map(new Func1<Void, Void>() {
+			@Override public Void call(Void aVoid) {
+				ObjectAnimator alpha = ObjectAnimator.ofFloat(startImg, "alpha", 1f, 0.8f);
+				ObjectAnimator scalex = ObjectAnimator.ofFloat(startImg, "scaleX", 1f, 1.1f);
+				ObjectAnimator scaley = ObjectAnimator.ofFloat(startImg, "scaleY", 1f, 1.1f);
+				AnimatorSet animator = new AnimatorSet();
+				animator.play(alpha).with(scalex).with(scaley);
+				animator.setDuration(2000).start();
+				animator.addListener(new AnimatorListenerAdapter() {
+					@Override public void onAnimationEnd(Animator animation) {
+						startActivity(new Intent(GildeActivity.this, MainActivity.class));
+						finish();
+					}
+				});
+				return null;
+			}
+		  }).delay(888, TimeUnit.MILLISECONDS)
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Action1<Void>() {
+			@Override public void call(Void aLong) {
+				hText.animateText("DrizzleDaily");
 			}
 		});
-		hText.animateText("DrizzleDaily");
 	}
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.Parcelable;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -73,11 +74,11 @@ public class ReadActivity extends BaseActivity {
 
 	@Bind(R.id.read_headimg) ImageView headImg;
 
-	@Bind(R.id.read_title) TextView readTitle;
-
 	@Bind(R.id.read_imgres) TextView readImgres;
 
 	@Bind(R.id.read_webview) WebView readWeb;
+
+	@Bind(R.id.read_collapsing) CollapsingToolbarLayout collapsingToolbarLayout;
 
 	@Bind(R.id.read_progress) AVLoadingIndicatorView loadingIndicatorView;
 
@@ -211,7 +212,7 @@ public class ReadActivity extends BaseActivity {
 				try {
 					JSONObject jsonObject = new JSONObject(response);
 					String name = jsonObject.getString("title");
-					readTitle.setText(name);
+					collapsingToolbarLayout.setTitle(name);
 					pagetltle = name;
 					ImgUrl = jsonObject.getString("image");
 					body = jsonObject.getString("body");
@@ -222,8 +223,12 @@ public class ReadActivity extends BaseActivity {
 					new Thread(new Runnable() {
 						@Override public void run() {
 							try {
-								shareBitmap = Glide.with(getApplicationContext()).load(ImgUrl)
-									.asBitmap().centerCrop().into(100, 100).get();
+								shareBitmap = Glide.with(getApplicationContext())
+									.load(ImgUrl)
+									.asBitmap()
+									.centerCrop()
+									.into(100, 100)
+									.get();
 							} catch (InterruptedException e) {
 								e.printStackTrace();
 							} catch (ExecutionException e) {

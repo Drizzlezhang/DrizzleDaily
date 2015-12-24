@@ -20,7 +20,6 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
-import com.drizzle.drizzledaily.db.CollectDB;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
@@ -32,15 +31,9 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.squareup.okhttp.Request;
-import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.wang.avi.AVLoadingIndicatorView;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.OkHttpRequest;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -69,7 +62,6 @@ public class SectionReadActivity extends BaseActivity {
 	private int themeid;
 	private String themename;
 	private String pagetitle;
-	private CollectDB collectDB;
 	private String cssadd;
 	private String pageUrl;
 	private Set<CollectBean> collectBeanSet;
@@ -99,7 +91,6 @@ public class SectionReadActivity extends BaseActivity {
 		setContentView(R.layout.activity_section_read);
 		ButterKnife.bind(this);
 		initData();
-		collectDB = CollectDB.getInstance(this);
 		if (savedInstanceState != null) {
 			readid = savedInstanceState.getInt(Config.READID);
 		} else {
