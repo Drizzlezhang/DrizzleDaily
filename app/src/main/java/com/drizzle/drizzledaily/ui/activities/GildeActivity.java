@@ -46,6 +46,11 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.Scheduler;
+import rx.Subscriber;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 引导页
@@ -96,6 +101,9 @@ public class GildeActivity extends AppCompatActivity {
 		}
 	};
 
+	/**
+	 * 更新首页图片,RxJava实验
+	 */
 	private void updateStartImg() {
 		OkHttpUtils.get().url(Config.START_IMAGE + "720*1184").build().execute(new StringCallback() {
 			@Override public void onError(Request request, Exception e) {
@@ -105,29 +113,73 @@ public class GildeActivity extends AppCompatActivity {
 			@Override public void onResponse(String response) {
 				try {
 					JSONObject jsonObject = new JSONObject(response);
-					String imgurl = jsonObject.getString("img");
-					String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
-					if (!cacheurl.equals(imgurl)) {
-						PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
-						//下载图片并覆盖
-						OkHttpUtils.get()
-							.url(imgurl)
-							.build()
-							.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
-							{
-								@Override public void inProgress(float progress) {
-									Log.d("progress", progress + "");
-								}
+					final String imgurl = jsonObject.getString("img");
+					final String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
+					//if (!cacheurl.equals(imgurl)) {
+					//	PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
+					//	//下载图片并覆盖
+					//	OkHttpUtils.get()
+					//		.url(imgurl)
+					//		.build()
+					//		.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
+					//		{
+					//			@Override public void inProgress(float progress) {
+					//				Log.d("progress", progress + "");
+					//			}
+					//
+					//			@Override public void onError(Request request, Exception e) {
+					//				Log.d("startimg", "failed");
+					//			}
+					//
+					//			@Override public void onResponse(File file) {
+					//				Log.d("startimg", "succeed");
+					//			}
+					//		});
+					//}
 
-								@Override public void onError(Request request, Exception e) {
-									Log.d("startimg", "failed");
-								}
+					Observable.just(imgurl).filter(new Func1<String, Boolean>() {
+						@Override public Boolean call(String s) {
+							return !s.equals(cacheurl);
+						}
+					}).map(new Func1<String, String>() {
+						@Override public String call(String s) {
+							PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
+							return s;
+						}
+					}).map(new Func1<String, Void>() {
+						@Override public Void call(String s) {
+							//下载图片并覆盖
+							OkHttpUtils.get()
+								.url(s)
+								.build()
+								.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg") {
+									@Override public void inProgress(float progress) {
+										Log.d("progress", progress + "");
+									}
 
-								@Override public void onResponse(File file) {
-									Log.d("startimg", "succeed");
-								}
-							});
-					}
+									@Override public void onError(Request request, Exception e) {
+										//	Log.d("startimg", "failed");
+									}
+
+									@Override public void onResponse(File file) {
+										//	Log.d("startimg", "succeed");
+									}
+								});
+							return null;
+						}
+					}).subscribeOn(Schedulers.io()).subscribe(new Subscriber<Void>() {
+						@Override public void onCompleted() {
+							Log.d("startimg", "succeed");
+						}
+
+						@Override public void onError(Throwable e) {
+							Log.d("startimg", "failed");
+						}
+
+						@Override public void onNext(Void aBoolean) {
+
+						}
+					});
 				} catch (JSONException e) {
 					e.printStackTrace();
 					TUtils.showShort(GildeActivity.this, "json error");
