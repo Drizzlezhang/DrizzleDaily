@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -44,6 +46,8 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import rx.Observable;
+import rx.functions.Func1;
 
 /**
  * 引导页
@@ -54,63 +58,6 @@ public class GildeActivity extends AppCompatActivity {
 	@Bind(R.id.start_img) ImageView startImg;
 
 	private static final String STARTIMGCACHEURL = "shartimgurl";
-
-	/**
-	 * 开启一个handler请求图片并下载,记录图片url,如果重复则使用已有的
-	 */
-	private android.os.Handler handler = new android.os.Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 1:
-					//TODO
-					if (NetUtils.isConnected(GildeActivity.this)) {
-						OkHttpUtils.get().url(Config.START_IMAGE + "720*1184").build().execute(new StringCallback() {
-							@Override public void onError(Request request, Exception e) {
-								TUtils.showShort(GildeActivity.this, "服务器出问题了");
-							}
-
-							@Override public void onResponse(String response) {
-								try {
-									JSONObject jsonObject = new JSONObject(response);
-									String imgurl = jsonObject.getString("img");
-									Log.d("img", imgurl);
-									String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
-									if (cacheurl.equals(imgurl)) {
-										Log.d("startimg", "exist");
-									} else {
-										PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
-										//下载图片并覆盖
-										OkHttpUtils.get().url(imgurl).build()
-											.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
-												{
-													@Override public void inProgress(float progress) {
-														Log.d("progress", progress + "");
-													}
-
-													@Override public void onError(Request request, Exception e) {
-														Log.d("startimg", "failed");
-													}
-
-													@Override public void onResponse(File file) {
-														Log.d("startimg", "succeed");
-													}
-												});
-									}
-								} catch (JSONException e) {
-									e.printStackTrace();
-									TUtils.showShort(GildeActivity.this, "json error");
-								}
-							}
-						});
-					} else {
-						TUtils.showShort(GildeActivity.this, "网络未连接");
-					}
-					break;
-				default:
-					break;
-			}
-		}
-	};
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -128,6 +75,63 @@ public class GildeActivity extends AppCompatActivity {
 		initDatabase();
 		handler.sendEmptyMessageDelayed(1, 1000);
 		playAnim();
+	}
+
+	/**
+	 * 开启一个handler请求图片并下载,记录图片url,如果重复则使用已有的
+	 */
+	private Handler handler = new android.os.Handler() {
+		@Override public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case 1:
+					if (NetUtils.isConnected(GildeActivity.this)) {
+						updateStartImg();
+					} else {
+						TUtils.showShort(GildeActivity.this, "网络未连接");
+					}
+					break;
+				default:
+					break;
+			}
+		}
+	};
+
+	private void updateStartImg() {
+		OkHttpUtils.get().url(Config.START_IMAGE + "720*1184").build().execute(new StringCallback() {
+			@Override public void onError(Request request, Exception e) {
+				TUtils.showShort(GildeActivity.this, "服务器出问题了");
+			}
+
+			@Override public void onResponse(String response) {
+				try {
+					JSONObject jsonObject = new JSONObject(response);
+					String imgurl = jsonObject.getString("img");
+					String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
+					if (!cacheurl.equals(imgurl)) {
+						PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
+						//下载图片并覆盖
+						OkHttpUtils.get().url(imgurl).build()
+							.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg")//
+							{
+								@Override public void inProgress(float progress) {
+									Log.d("progress", progress + "");
+								}
+
+								@Override public void onError(Request request, Exception e) {
+									Log.d("startimg", "failed");
+								}
+
+								@Override public void onResponse(File file) {
+									Log.d("startimg", "succeed");
+								}
+							});
+					}
+				} catch (JSONException e) {
+					e.printStackTrace();
+					TUtils.showShort(GildeActivity.this, "json error");
+				}
+			}
+		});
 	}
 
 	/**
