@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 /**
  * 专栏列表
  */
-public class SectionsListFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+public class SectionsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
     @Bind(R.id.sections_grid_refresh)
     SwipeRefreshLayout mRefreshLayout;
 

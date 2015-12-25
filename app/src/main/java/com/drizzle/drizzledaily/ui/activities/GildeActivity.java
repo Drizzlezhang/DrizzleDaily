@@ -163,7 +163,7 @@ public class GildeActivity extends AppCompatActivity {
 	}
 
 	/**
-	 * 引导页图片动画效果
+	 * 引导页动画效果
 	 */
 	private void playAnim() {
 		File filefolder = new File(Config.START_PHOTO_FOLDER);
@@ -198,7 +198,7 @@ public class GildeActivity extends AppCompatActivity {
 				}
 				return null;
 			}
-		  }).map(new Func1<Void, Void>() {
+		}).map(new Func1<Void, Void>() {
 			@Override public Void call(Void aVoid) {
 				ObjectAnimator alpha = ObjectAnimator.ofFloat(startImg, "alpha", 1f, 0.8f);
 				ObjectAnimator scalex = ObjectAnimator.ofFloat(startImg, "scaleX", 1f, 1.1f);
@@ -214,9 +214,7 @@ public class GildeActivity extends AppCompatActivity {
 				});
 				return null;
 			}
-		  }).delay(888, TimeUnit.MILLISECONDS)
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Action1<Void>() {
+		}).delay(888, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Void>() {
 			@Override public void call(Void aLong) {
 				hText.animateText("DrizzleDaily");
 			}
