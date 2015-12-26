@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
 /**
  * 专栏列表
  */
-public class SectionsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+public class SectionsListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.sections_grid_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -92,7 +92,6 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
     }
 
     private void initViews() {
-        ((MainActivity) getActivity()).setToolbarClick(this);
         mRefreshLayout.setOnRefreshListener(this);
         mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

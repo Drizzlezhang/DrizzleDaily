@@ -43,7 +43,7 @@ import cn.bmob.v3.listener.UpdateListener;
 /**
  * 收藏夹列表
  */
-public class CollectListFragment extends BaseFragment implements MainActivity.OnToolbarCilckListener {
+public class CollectListFragment extends BaseFragment{
     @Bind(R.id.collect_listview)
     ListView listView;
 
@@ -64,7 +64,6 @@ public class CollectListFragment extends BaseFragment implements MainActivity.On
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_collect_list, container, false);
         ButterKnife.bind(this, view);
         handler.sendEmptyMessage(1);
@@ -74,7 +73,6 @@ public class CollectListFragment extends BaseFragment implements MainActivity.On
 
 
     private void initViews() {
-        ((MainActivity) getActivity()).setToolbarClick(this);
         //根据收藏文章的type决定跳转的阅读页面activity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override

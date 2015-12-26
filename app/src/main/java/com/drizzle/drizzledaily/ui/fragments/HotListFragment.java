@@ -43,7 +43,7 @@ import butterknife.ButterKnife;
  * 今日热门列表
  */
 public class HotListFragment extends BaseFragment
-	implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+	implements SwipeRefreshLayout.OnRefreshListener{
 
 	@Bind(R.id.hot_list_refresh) SwipeRefreshLayout mRefreshLayout;
 
@@ -59,9 +59,7 @@ public class HotListFragment extends BaseFragment
 		ButterKnife.bind(this, view);
 		initViews();
 		String hotcachejson = PerferUtils.getString(HOTCACHENAME);
-		if (hotcachejson.equals("")) {
-			//TODO
-		} else {
+		if (!hotcachejson.equals("")) {
 			manageHotJson(hotcachejson);
 		}
 		getLists(Config.Hot_NEWS);
@@ -69,7 +67,6 @@ public class HotListFragment extends BaseFragment
 	}
 
 	private void initViews() {
-		((MainActivity) getActivity()).setToolbarClick(this);
 		mRefreshLayout.setOnRefreshListener(this);
 		mListView.setDivider(null);
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -143,14 +140,14 @@ public class HotListFragment extends BaseFragment
 	private void getLists(final String listUrl) {
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
-				OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
+			OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
 				@Override public void onError(Request request, Exception e) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
 					mRefreshLayout.setRefreshing(false);
 				}
 
 				@Override public void onResponse(String response) {
-					PerferUtils.saveSth(HOTCACHENAME,response);
+					PerferUtils.saveSth(HOTCACHENAME, response);
 					manageHotJson(response);
 				}
 			});

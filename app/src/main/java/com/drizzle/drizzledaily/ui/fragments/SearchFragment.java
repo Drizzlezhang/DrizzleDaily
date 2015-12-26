@@ -39,7 +39,7 @@ import butterknife.ButterKnife;
 /**
  * 用于显示根据日期查找到的日报数据
  */
-public class SearchFragment extends BaseFragment implements MainActivity.OnToolbarCilckListener {
+public class SearchFragment extends BaseFragment {
 
     @Bind(R.id.search_list)
     ListView mListView;
@@ -75,7 +75,6 @@ public class SearchFragment extends BaseFragment implements MainActivity.OnToolb
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         ButterKnife.bind(this, view);
-        ((MainActivity) getActivity()).setToolbarClick(this);
         adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
             @Override
             public void convert(ViewHolder helper, BaseListItem item) {

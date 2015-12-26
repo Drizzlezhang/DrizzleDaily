@@ -48,7 +48,7 @@ import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 /**
  * 首页列表fragment，包括一个viewpager和一个listview
  */
-public class LatestListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener, MainActivity.OnToolbarCilckListener {
+public class LatestListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener{
     @Bind(R.id.latest_list_refresh)
     SwipeRefreshLayout mRefreshLayout;
 
@@ -90,8 +90,6 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
     }
 
     private void initViews() {
-        ((MainActivity) getActivity()).setToolbarClick(this);
-        // mRefreshLayout.setColorScheme(R.color.colorPrimary, R.color.black, R.color.colorAccent);
         mRefreshLayout.setOnRefreshListener(this);
         mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override public void onScrollStateChanged(AbsListView view, int scrollState) {
