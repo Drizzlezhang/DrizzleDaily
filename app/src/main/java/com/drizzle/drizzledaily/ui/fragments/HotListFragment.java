@@ -1,13 +1,12 @@
 package com.drizzle.drizzledaily.ui.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +16,21 @@ import android.widget.ListView;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.HotNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.squareup.okhttp.Request;
+import com.squareup.okhttp.ResponseBody;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.OkHttpRequest;
 
+import java.io.IOException;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -38,12 +40,13 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
 
 /**
  * 今日热门列表
  */
-public class HotListFragment extends BaseFragment
-	implements SwipeRefreshLayout.OnRefreshListener{
+public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 
 	@Bind(R.id.hot_list_refresh) SwipeRefreshLayout mRefreshLayout;
 
@@ -58,17 +61,16 @@ public class HotListFragment extends BaseFragment
 		View view = inflater.inflate(R.layout.hot_list_fragment, container, false);
 		ButterKnife.bind(this, view);
 		initViews();
-		String hotcachejson = PerferUtils.getString(HOTCACHENAME);
-		if (!hotcachejson.equals("")) {
-			manageHotJson(hotcachejson);
-		}
-		getLists(Config.Hot_NEWS);
+		//String hotcachejson = PerferUtils.getString(HOTCACHENAME);
+		//if (!hotcachejson.equals("")) {
+		//	manageHotJson(hotcachejson);
+		//}
+		getLists();
 		return view;
 	}
 
 	private void initViews() {
 		mRefreshLayout.setOnRefreshListener(this);
-		mListView.setDivider(null);
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(getActivity(), ReadActivity.class);
@@ -87,7 +89,7 @@ public class HotListFragment extends BaseFragment
 	}
 
 	@Override public void onRefresh() {
-		getLists(Config.Hot_NEWS);
+		getLists();
 	}
 
 	/**
@@ -137,18 +139,22 @@ public class HotListFragment extends BaseFragment
 	/**
 	 * 请求数据并存入list
 	 */
-	private void getLists(final String listUrl) {
+	private void getLists() {
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
-			OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
-				@Override public void onError(Request request, Exception e) {
-					TUtils.showShort(getActivity(), "服务器出问题了");
-					mRefreshLayout.setRefreshing(false);
+			ApiBuilder.create(MyApi.class).hot().enqueue(new Callback<HotNews>() {
+				@Override public void onResponse(Response<HotNews> response) {
+					for (HotNews.RecentEntity recent : response.body().getRecent()) {
+						BaseListItem baseListItem =
+							new BaseListItem(recent.getNews_id(), recent.getTitle(), recent.getThumbnail(), false, "");
+						hotListItems.add(baseListItem);
+					}
+					handler.sendEmptyMessage(0);
 				}
 
-				@Override public void onResponse(String response) {
-					PerferUtils.saveSth(HOTCACHENAME, response);
-					manageHotJson(response);
+				@Override public void onFailure(Throwable t) {
+					TUtils.showShort(getActivity(), t.getMessage());
+					mRefreshLayout.setRefreshing(false);
 				}
 			});
 		} else {
@@ -157,27 +163,27 @@ public class HotListFragment extends BaseFragment
 		}
 	}
 
-	/**
-	 * 处理请求到和或者缓存的最新数据
-	 */
-	private void manageHotJson(String hotJson) {
-		try {
-			hotListItems.clear();
-			JSONObject jsonObject = new JSONObject(hotJson);
-			JSONArray recent = jsonObject.getJSONArray("recent");
-			for (int i = 0; i < recent.length(); i++) {
-				JSONObject story = recent.getJSONObject(i);
-				int id = story.getInt("news_id");
-				String title = story.getString("title");
-				String imgUrl = story.getString("thumbnail");
-				BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-				hotListItems.add(baseListItem);
-			}
-			handler.sendEmptyMessage(0);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			TUtils.showShort(getActivity(), "Json数据解析错误");
-			mRefreshLayout.setRefreshing(false);
-		}
-	}
+	///**
+	// * 处理请求到和或者缓存的最新数据
+	// */
+	//private void manageHotJson(String hotJson) {
+	//	try {
+	//		hotListItems.clear();
+	//		JSONObject jsonObject = new JSONObject(hotJson);
+	//		JSONArray recent = jsonObject.getJSONArray("recent");
+	//		for (int i = 0; i < recent.length(); i++) {
+	//			JSONObject story = recent.getJSONObject(i);
+	//			int id = story.getInt("news_id");
+	//			String title = story.getString("title");
+	//			String imgUrl = story.getString("thumbnail");
+	//			BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
+	//			hotListItems.add(baseListItem);
+	//		}
+	//		handler.sendEmptyMessage(0);
+	//	} catch (JSONException e) {
+	//		e.printStackTrace();
+	//		TUtils.showShort(getActivity(), "Json数据解析错误");
+	//		mRefreshLayout.setRefreshing(false);
+	//	}
+	//}
 }

@@ -2,16 +2,20 @@ package com.drizzle.drizzledaily.ui.activities;
 
 import android.app.FragmentManager;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.ui.fragments.SettingsFragment;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
 
 /**
  * 设置界面用于放置设置fragment

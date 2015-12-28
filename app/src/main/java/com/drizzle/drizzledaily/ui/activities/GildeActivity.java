@@ -23,6 +23,9 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.StartImg;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
@@ -46,6 +49,8 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -101,63 +106,57 @@ public class GildeActivity extends AppCompatActivity {
 	 * 更新首页图片,RxJava实验
 	 */
 	private void updateStartImg() {
-		OkHttpUtils.get().url(Config.START_IMAGE + "720*1184").build().execute(new StringCallback() {
-			@Override public void onError(Request request, Exception e) {
-				TUtils.showShort(GildeActivity.this, "服务器出问题了");
+		ApiBuilder.create(MyApi.class).startImage("1080*1776").enqueue(new Callback<StartImg>() {
+			@Override public void onResponse(Response<StartImg> response) {
+				final String imgurl = response.body().getImg();
+				final String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
+				Observable.just(imgurl).filter(new Func1<String, Boolean>() {
+					@Override public Boolean call(String s) {
+						return !s.equals(cacheurl);
+					}
+				}).map(new Func1<String, String>() {
+					@Override public String call(String s) {
+						PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
+						return s;
+					}
+				}).map(new Func1<String, Void>() {
+					@Override public Void call(String s) {
+						//下载图片并覆盖
+						OkHttpUtils.get()
+							.url(s)
+							.build()
+							.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg") {
+								@Override public void inProgress(float progress) {
+									Log.d("progress", progress + "");
+								}
+
+								@Override public void onError(Request request, Exception e) {
+									//	Log.d("startimg", "failed");
+								}
+
+								@Override public void onResponse(File file) {
+									//	Log.d("startimg", "succeed");
+								}
+							});
+						return null;
+					}
+				}).subscribeOn(Schedulers.io()).subscribe(new Subscriber<Void>() {
+					@Override public void onCompleted() {
+						Log.d("startimg", "succeed");
+					}
+
+					@Override public void onError(Throwable e) {
+						Log.d("startimg", "failed");
+					}
+
+					@Override public void onNext(Void aBoolean) {
+
+					}
+				});
 			}
 
-			@Override public void onResponse(String response) {
-				try {
-					JSONObject jsonObject = new JSONObject(response);
-					final String imgurl = jsonObject.getString("img");
-					final String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
-					Observable.just(imgurl).filter(new Func1<String, Boolean>() {
-						@Override public Boolean call(String s) {
-							return !s.equals(cacheurl);
-						}
-					}).map(new Func1<String, String>() {
-						@Override public String call(String s) {
-							PerferUtils.saveSth(STARTIMGCACHEURL, imgurl);
-							return s;
-						}
-					}).map(new Func1<String, Void>() {
-						@Override public Void call(String s) {
-							//下载图片并覆盖
-							OkHttpUtils.get()
-								.url(s)
-								.build()
-								.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg") {
-									@Override public void inProgress(float progress) {
-										Log.d("progress", progress + "");
-									}
+			@Override public void onFailure(Throwable t) {
 
-									@Override public void onError(Request request, Exception e) {
-										//	Log.d("startimg", "failed");
-									}
-
-									@Override public void onResponse(File file) {
-										//	Log.d("startimg", "succeed");
-									}
-								});
-							return null;
-						}
-					}).subscribeOn(Schedulers.io()).subscribe(new Subscriber<Void>() {
-						@Override public void onCompleted() {
-							Log.d("startimg", "succeed");
-						}
-
-						@Override public void onError(Throwable e) {
-							Log.d("startimg", "failed");
-						}
-
-						@Override public void onNext(Void aBoolean) {
-
-						}
-					});
-				} catch (JSONException e) {
-					e.printStackTrace();
-					TUtils.showShort(GildeActivity.this, "json error");
-				}
 			}
 		});
 	}

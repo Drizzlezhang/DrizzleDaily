@@ -18,6 +18,9 @@ import android.widget.GridView;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.Sections;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.MainActivity;
@@ -39,6 +42,8 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
 
 /**
  * 专栏列表
@@ -62,13 +67,13 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
         View view = inflater.inflate(R.layout.sections_list_fragment, container, false);
         ButterKnife.bind(this, view);
         initViews();
-        String sectioncachejson = PerferUtils.getString(SECTIONCACHE);
-        if (sectioncachejson.equals("")) {
-            //TODO
-        } else {
-            manageSectionList(sectioncachejson);
-        }
-        getLists(Config.SECTION_LIST);
+        //String sectioncachejson = PerferUtils.getString(SECTIONCACHE);
+        //if (sectioncachejson.equals("")) {
+        //    //TODO
+        //} else {
+        //    manageSectionList(sectioncachejson);
+        //}
+        getLists();
         return view;
     }
 
@@ -114,7 +119,7 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 
     @Override
     public void onRefresh() {
-        getLists(Config.SECTION_LIST);
+        getLists();
     }
 
     /**
@@ -152,22 +157,24 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
     /**
      * 请求数据并存入list
      *
-     * @param listUrl
+     *
      */
-    private void getLists(final String listUrl) {
+    private void getLists() {
         swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
-                OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
-                @Override
-                public void onError(Request request, Exception e) {
-                    TUtils.showShort(getActivity(), "服务器出问题了");
-                    mRefreshLayout.setRefreshing(false);
+            ApiBuilder.create(MyApi.class).sections().enqueue(new Callback<Sections>() {
+                @Override public void onResponse(Response<Sections> response) {
+                    for (Sections.DataEntity data:response.body().getData()){
+                        BaseListItem baseListItem =
+                            new BaseListItem(data.getId(), data.getName(), data.getThumbnail(), false, "", data.getDescription());
+                        sectionsItems.add(baseListItem);
+                    }
+                    handler.sendEmptyMessage(0);
                 }
 
-                @Override
-                public void onResponse(String response) {
-                    PerferUtils.saveSth(SECTIONCACHE,response);
-                    manageSectionList(response);
+                @Override public void onFailure(Throwable t) {
+                    TUtils.showShort(getActivity(), "服务器出问题了");
+                    mRefreshLayout.setRefreshing(false);
                 }
             });
         } else {
@@ -176,26 +183,26 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
         }
     }
 
-    private void manageSectionList(String sectionsJson) {
-        try {
-            sectionsItems.clear();
-            JSONObject jsonObject = new JSONObject(sectionsJson);
-            JSONArray data = jsonObject.getJSONArray("data");
-            for (int i = 0; i < data.length(); i++) {
-                JSONObject story = data.getJSONObject(i);
-                int id = story.getInt("id");
-                String title = story.getString("name");
-                String imgUrl = story.getString("thumbnail");
-                String describe = story.getString("description");
-                BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
-                sectionsItems.add(baseListItem);
-            }
-            handler.sendEmptyMessage(0);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            TUtils.showShort(getActivity(), "Json数据解析错误");
-            mRefreshLayout.setRefreshing(false);
-        }
-    }
+    //private void manageSectionList(String sectionsJson) {
+    //    try {
+    //        sectionsItems.clear();
+    //        JSONObject jsonObject = new JSONObject(sectionsJson);
+    //        JSONArray data = jsonObject.getJSONArray("data");
+    //        for (int i = 0; i < data.length(); i++) {
+    //            JSONObject story = data.getJSONObject(i);
+    //            int id = story.getInt("id");
+    //            String title = story.getString("name");
+    //            String imgUrl = story.getString("thumbnail");
+    //            String describe = story.getString("description");
+    //            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
+    //            sectionsItems.add(baseListItem);
+    //        }
+    //        handler.sendEmptyMessage(0);
+    //    } catch (JSONException e) {
+    //        e.printStackTrace();
+    //        TUtils.showShort(getActivity(), "Json数据解析错误");
+    //        mRefreshLayout.setRefreshing(false);
+    //    }
+    //}
 }
 

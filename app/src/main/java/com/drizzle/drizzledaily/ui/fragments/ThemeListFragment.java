@@ -15,6 +15,9 @@ import android.widget.GridView;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.Themes;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ThemeListActivity;
@@ -33,12 +36,14 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
 
 /**
  * 主题日报列表
  */
-public class ThemeListFragment extends BaseFragment
-	implements SwipeRefreshLayout.OnRefreshListener{
+public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
+
 	@Bind(R.id.theme_grid_refresh) SwipeRefreshLayout mRefreshLayout;
 
 	@Bind(R.id.theme_grid) GridView mGridView;
@@ -51,13 +56,13 @@ public class ThemeListFragment extends BaseFragment
 		View view = inflater.inflate(R.layout.theme_list_fragment, container, false);
 		ButterKnife.bind(this, view);
 		initViews();
-		String themecachejson = PerferUtils.getString(THEMECACHE);
-		if (themecachejson.equals("")) {
-			//TODO
-		} else {
-			manageThemeJson(themecachejson);
-		}
-		getLists(Config.THEME_LIST);
+		//String themecachejson = PerferUtils.getString(THEMECACHE);
+		//if (themecachejson.equals("")) {
+		//	//TODO
+		//} else {
+		//	manageThemeJson(themecachejson);
+		//}
+		getLists();
 		return view;
 	}
 
@@ -98,7 +103,7 @@ public class ThemeListFragment extends BaseFragment
 	};
 
 	@Override public void onRefresh() {
-		getLists(Config.THEME_LIST);
+		getLists();
 	}
 
 	/**
@@ -131,18 +136,22 @@ public class ThemeListFragment extends BaseFragment
 	/**
 	 * 请求数据并存入list
 	 */
-	private void getLists(final String listUrl) {
+	private void getLists() {
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
-			OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
-				@Override public void onError(Request request, Exception e) {
-					TUtils.showShort(getActivity(), "服务器出问题了");
-					mRefreshLayout.setRefreshing(false);
+			ApiBuilder.create(MyApi.class).themes().enqueue(new Callback<Themes>() {
+				@Override public void onResponse(Response<Themes> response) {
+					for (Themes.OthersEntity others:response.body().getOthers()){
+						BaseListItem baseListItem =
+							new BaseListItem(others.getId(), others.getName(), others.getThumbnail(), false, "", others.getDescription());
+						themeItems.add(baseListItem);
+					}
+					handler.sendEmptyMessage(0);
 				}
 
-				@Override public void onResponse(String response) {
-					PerferUtils.saveSth(THEMECACHE,response);
-					manageThemeJson(response);
+				@Override public void onFailure(Throwable t) {
+					TUtils.showShort(getActivity(), "服务器出问题了");
+					mRefreshLayout.setRefreshing(false);
 				}
 			});
 		} else {
@@ -151,28 +160,28 @@ public class ThemeListFragment extends BaseFragment
 		}
 	}
 
-	/**
-	 * 处理json数据
-	 */
-	private void manageThemeJson(String themeJson) {
-		try {
-			themeItems.clear();
-			JSONObject jsonObject = new JSONObject(themeJson);
-			JSONArray others = jsonObject.getJSONArray("others");
-			for (int i = 0; i < others.length(); i++) {
-				JSONObject story = others.getJSONObject(i);
-				int id = story.getInt("id");
-				String title = story.getString("name");
-				String imgUrl = story.getString("thumbnail");
-				String describe = story.getString("description");
-				BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
-				themeItems.add(baseListItem);
-			}
-			handler.sendEmptyMessage(0);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			TUtils.showShort(getActivity(), "Json数据解析错误");
-			mRefreshLayout.setRefreshing(false);
-		}
-	}
+	///**
+	// * 处理json数据
+	// */
+	//private void manageThemeJson(String themeJson) {
+	//	try {
+	//		themeItems.clear();
+	//		JSONObject jsonObject = new JSONObject(themeJson);
+	//		JSONArray others = jsonObject.getJSONArray("others");
+	//		for (int i = 0; i < others.length(); i++) {
+	//			JSONObject story = others.getJSONObject(i);
+	//			int id = story.getInt("id");
+	//			String title = story.getString("name");
+	//			String imgUrl = story.getString("thumbnail");
+	//			String describe = story.getString("description");
+	//			BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
+	//			themeItems.add(baseListItem);
+	//		}
+	//		handler.sendEmptyMessage(0);
+	//	} catch (JSONException e) {
+	//		e.printStackTrace();
+	//		TUtils.showShort(getActivity(), "Json数据解析错误");
+	//		mRefreshLayout.setRefreshing(false);
+	//	}
+	//}
 }
