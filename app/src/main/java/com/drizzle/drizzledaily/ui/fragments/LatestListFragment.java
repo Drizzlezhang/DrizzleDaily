@@ -20,6 +20,7 @@ import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.LatestAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.LatestNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
@@ -94,7 +95,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 					case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
 						if (view.getLastVisiblePosition() == view.getCount() - 1) {
 							String time = DateUtils.printCalendar(mCalendar);
-							getLists(Config.BEFORE_NEWS + time);
+							getBeforeNews(time);
 						}
 						break;
 					default:
@@ -155,6 +156,9 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		}
 	};
 
+	/**
+	 * 获取当天新闻
+	 */
 	private void getTodayNews() {
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
@@ -182,7 +186,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 
 				@Override public void onFailure(Throwable t) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
-					mRefreshLayout.setRefreshing(false);
+					swipeRefresh(false);
 				}
 			});
 		} else {
@@ -192,53 +196,37 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 	}
 
 	/**
-	 * 请求数据并存入list，先判断有没有网，有网就用
+	 * 获取往日新闻
 	 */
-	private void getLists(final String listUrl) {
+	private void getBeforeNews(String time) {
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
-			OkHttpUtils.get().url(listUrl).build().execute(new StringCallback() {
-				@Override public void onError(Request request, Exception e) {
-					TUtils.showShort(getActivity(), "服务器出问题了");
-					mRefreshLayout.setRefreshing(false);
+			ApiBuilder.create(MyApi.class).before(time).enqueue(new Callback<BeforeNews>() {
+				@Override public void onResponse(Response<BeforeNews> response) {
+					String data = "";
+					data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
+					BaseListItem onedayNews = new BaseListItem();
+					onedayNews.setViewType(0);
+					onedayNews.setDate(data);
+					baseListItems.add(onedayNews);
+					mCalendar = DateUtils.getAfterDay(mCalendar);
+					for (BeforeNews.StoriesEntity story : response.body().getStories()) {
+						BaseListItem baseListItem =
+							new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, data);
+						baseListItems.add(baseListItem);
+					}
+					handler.sendEmptyMessage(1);
+					mCalendar = DateUtils.getBeforeDay(mCalendar);
 				}
 
-				@Override public void onResponse(String response) {
-					String data = "";
-					try {
-						if (listUrl.equals(Config.LATEST_NEWS)) {
-							//如果请求成功,将请求到的数据保存并解析
-							PerferUtils.saveSth(LATESTCACHENAME, response);
-							manageLatestJson(response);
-						} else {
-							data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
-							BaseListItem onedayNews = new BaseListItem();
-							onedayNews.setViewType(0);
-							onedayNews.setDate(data);
-							baseListItems.add(onedayNews);
-							mCalendar = DateUtils.getAfterDay(mCalendar);
-							JSONObject jsonObject = new JSONObject(response);
-							JSONArray stories = jsonObject.getJSONArray("stories");
-							for (int i = 0; i < stories.length(); i++) {
-								JSONObject story = stories.getJSONObject(i);
-								int id = story.getInt("id");
-								String title = story.getString("title");
-								String imgUrl = story.getJSONArray("images").getString(0);
-								BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, data);
-								baseListItems.add(baseListItem);
-							}
-							handler.sendEmptyMessage(1);
-							mCalendar = DateUtils.getBeforeDay(mCalendar);
-						}
-					} catch (JSONException e) {
-						e.printStackTrace();
-						TUtils.showShort(getActivity(), "Json数据解析错误");
-						mRefreshLayout.setRefreshing(false);
-					}
+				@Override public void onFailure(Throwable t) {
+					TUtils.showShort(getActivity(), "服务器出问题了");
+					swipeRefresh(false);
 				}
 			});
 		} else {
-
+			TUtils.showShort(getActivity(), "网络未连接");
+			swipeRefresh(false);
 		}
 	}
 
@@ -275,43 +263,5 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 				}
 			}
 		});
-	}
-
-	/**
-	 * 处理请求到或者缓存的最新数据(仅解析今日热闻)
-	 */
-	private void manageLatestJson(String jsonResponse) {
-		try {
-			baseListItems.clear();
-			headpagerItems.clear();
-			BaseListItem todayNews = new BaseListItem();
-			todayNews.setViewType(0);
-			todayNews.setDate("今日热闻");
-			baseListItems.add(todayNews);
-			String date = DateUtils.printDate(mCalendar);
-			JSONObject jsonObject = new JSONObject(jsonResponse);
-			JSONArray stories = jsonObject.getJSONArray("stories");
-			for (int i = 0; i < stories.length(); i++) {
-				JSONObject story = stories.getJSONObject(i);
-				int id = story.getInt("id");
-				String title = story.getString("title");
-				String imgUrl = story.getJSONArray("images").getString(0);
-				BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, date);
-				baseListItems.add(baseListItem);
-			}
-			JSONArray topstories = jsonObject.getJSONArray("top_stories");
-			for (int i = 0; i < topstories.length(); i++) {
-				JSONObject headstory = topstories.getJSONObject(i);
-				int headid = headstory.getInt("id");
-				String headtitle = headstory.getString("title");
-				String headimgUrl = headstory.getString("image");
-				BaseListItem headbaseListItem = new BaseListItem(headid, headtitle, headimgUrl, false, "");
-				headpagerItems.add(headbaseListItem);
-			}
-			handler.sendEmptyMessage(0);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			TUtils.showShort(getActivity(), "json error");
-		}
 	}
 }
