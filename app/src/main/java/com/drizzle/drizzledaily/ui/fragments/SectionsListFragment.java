@@ -182,27 +182,5 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
             TUtils.showShort(getActivity(), "网络未连接");
         }
     }
-
-    //private void manageSectionList(String sectionsJson) {
-    //    try {
-    //        sectionsItems.clear();
-    //        JSONObject jsonObject = new JSONObject(sectionsJson);
-    //        JSONArray data = jsonObject.getJSONArray("data");
-    //        for (int i = 0; i < data.length(); i++) {
-    //            JSONObject story = data.getJSONObject(i);
-    //            int id = story.getInt("id");
-    //            String title = story.getString("name");
-    //            String imgUrl = story.getString("thumbnail");
-    //            String describe = story.getString("description");
-    //            BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
-    //            sectionsItems.add(baseListItem);
-    //        }
-    //        handler.sendEmptyMessage(0);
-    //    } catch (JSONException e) {
-    //        e.printStackTrace();
-    //        TUtils.showShort(getActivity(), "Json数据解析错误");
-    //        mRefreshLayout.setRefreshing(false);
-    //    }
-    //}
 }
 

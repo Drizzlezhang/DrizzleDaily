@@ -160,28 +160,4 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 		}
 	}
 
-	///**
-	// * 处理json数据
-	// */
-	//private void manageThemeJson(String themeJson) {
-	//	try {
-	//		themeItems.clear();
-	//		JSONObject jsonObject = new JSONObject(themeJson);
-	//		JSONArray others = jsonObject.getJSONArray("others");
-	//		for (int i = 0; i < others.length(); i++) {
-	//			JSONObject story = others.getJSONObject(i);
-	//			int id = story.getInt("id");
-	//			String title = story.getString("name");
-	//			String imgUrl = story.getString("thumbnail");
-	//			String describe = story.getString("description");
-	//			BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "", describe);
-	//			themeItems.add(baseListItem);
-	//		}
-	//		handler.sendEmptyMessage(0);
-	//	} catch (JSONException e) {
-	//		e.printStackTrace();
-	//		TUtils.showShort(getActivity(), "Json数据解析错误");
-	//		mRefreshLayout.setRefreshing(false);
-	//	}
-	//}
 }

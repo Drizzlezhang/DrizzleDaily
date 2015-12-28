@@ -162,28 +162,4 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 			swipeRefresh(false);
 		}
 	}
-
-	///**
-	// * 处理请求到和或者缓存的最新数据
-	// */
-	//private void manageHotJson(String hotJson) {
-	//	try {
-	//		hotListItems.clear();
-	//		JSONObject jsonObject = new JSONObject(hotJson);
-	//		JSONArray recent = jsonObject.getJSONArray("recent");
-	//		for (int i = 0; i < recent.length(); i++) {
-	//			JSONObject story = recent.getJSONObject(i);
-	//			int id = story.getInt("news_id");
-	//			String title = story.getString("title");
-	//			String imgUrl = story.getString("thumbnail");
-	//			BaseListItem baseListItem = new BaseListItem(id, title, imgUrl, false, "");
-	//			hotListItems.add(baseListItem);
-	//		}
-	//		handler.sendEmptyMessage(0);
-	//	} catch (JSONException e) {
-	//		e.printStackTrace();
-	//		TUtils.showShort(getActivity(), "Json数据解析错误");
-	//		mRefreshLayout.setRefreshing(false);
-	//	}
-	//}
 }
