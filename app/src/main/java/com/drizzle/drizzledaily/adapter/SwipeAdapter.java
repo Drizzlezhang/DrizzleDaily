@@ -19,59 +19,52 @@ import java.util.List;
  */
 public class SwipeAdapter extends BaseSwipeAdapter {
 
-    private List<CollectBean> collectBeanList = new ArrayList<>();
-    private Context mContext;
-    CallDeleteBack callDeleteBack = null;
+	private List<CollectBean> collectBeanList = new ArrayList<>();
+	private Context mContext;
+	CallDeleteBack callDeleteBack = null;
 
-    public interface CallDeleteBack {
-        void onDeleteBtnclick(int pageid);
-    }
+	public interface CallDeleteBack {
+		void onDeleteBtnclick(int pageid);
+	}
 
-    public void setOnDeleteClick(CallDeleteBack deleteClick) {
-        callDeleteBack = deleteClick;
-    }
+	public void setOnDeleteClick(CallDeleteBack deleteClick) {
+		callDeleteBack = deleteClick;
+	}
 
-    public SwipeAdapter(Context mContext, List<CollectBean> collectBeanList) {
-        this.mContext = mContext;
-        this.collectBeanList = collectBeanList;
-    }
+	public SwipeAdapter(Context mContext, List<CollectBean> collectBeanList) {
+		this.mContext = mContext;
+		this.collectBeanList = collectBeanList;
+	}
 
-    @Override
-    public int getSwipeLayoutResourceId(int position) {
-        return R.id.swipe;
-    }
+	@Override public int getSwipeLayoutResourceId(int position) {
+		return R.id.swipe;
+	}
 
-    @Override
-    public void fillValues(int position, View convertView) {
-        TextView t = (TextView) convertView.findViewById(R.id.collect_item_title);
-        t.setText(collectBeanList.get(position).getTitle());
-    }
+	@Override public void fillValues(int position, View convertView) {
+		TextView t = (TextView) convertView.findViewById(R.id.collect_item_title);
+		t.setText(collectBeanList.get(position).getTitle());
+	}
 
-    @Override
-    public View generateView(final int position, ViewGroup parent) {
-        View v = LayoutInflater.from(mContext).inflate(R.layout.swipe_listview_item, null);
-        SwipeLayout swipeLayout = (SwipeLayout) v.findViewById(getSwipeLayoutResourceId(position));
-        v.findViewById(R.id.delete_collect_item).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                callDeleteBack.onDeleteBtnclick(collectBeanList.get(position).getId());
-            }
-        });
-        return v;
-    }
+	@Override public View generateView(final int position, ViewGroup parent) {
+		View v = LayoutInflater.from(mContext).inflate(R.layout.swipe_listview_item, null);
+		SwipeLayout swipeLayout = (SwipeLayout) v.findViewById(getSwipeLayoutResourceId(position));
+		v.findViewById(R.id.delete_collect_item).setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View view) {
+				callDeleteBack.onDeleteBtnclick(collectBeanList.get(position).getId());
+			}
+		});
+		return v;
+	}
 
-    @Override
-    public int getCount() {
-        return collectBeanList.size();
-    }
+	@Override public int getCount() {
+		return collectBeanList.size();
+	}
 
-    @Override
-    public Object getItem(int position) {
-        return collectBeanList.get(position);
-    }
+	@Override public Object getItem(int position) {
+		return collectBeanList.get(position);
+	}
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+	@Override public long getItemId(int position) {
+		return position;
+	}
 }

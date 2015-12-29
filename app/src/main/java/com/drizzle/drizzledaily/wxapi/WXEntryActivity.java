@@ -19,41 +19,36 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  */
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
 
-    private IWXAPI api;
+	private IWXAPI api;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
-        int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
-        ThemeUtils.onActivityCreateSetTheme(this, themeid);
-        api = WXAPIFactory.createWXAPI(this, Config.WXAPPID, false);
-        api.handleIntent(getIntent(), this);
-        super.onCreate(savedInstanceState);
-    }
+	@Override protected void onCreate(Bundle savedInstanceState) {
+		SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
+		int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
+		ThemeUtils.onActivityCreateSetTheme(this, themeid);
+		api = WXAPIFactory.createWXAPI(this, Config.WXAPPID, false);
+		api.handleIntent(getIntent(), this);
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public void onReq(BaseReq arg0) {
-    }
+	@Override public void onReq(BaseReq arg0) {
+	}
 
-    @Override
-    public void onResp(BaseResp resp) {
-        switch (resp.errCode) {
-            case BaseResp.ErrCode.ERR_OK:
-                TUtils.showShort(this, "分享成功"); //分享成功
-                finish();
-                break;
-            case BaseResp.ErrCode.ERR_USER_CANCEL:
-                TUtils.showShort(this, "分享取消"); //分享取消
-                finish();
-                break;
-            case BaseResp.ErrCode.ERR_AUTH_DENIED:
-                TUtils.showShort(this, "分享被拒绝");//分享拒绝
-                finish();
-                break;
-            default:
-                break;
-        }
-    }
-
-
+	@Override public void onResp(BaseResp resp) {
+		switch (resp.errCode) {
+			case BaseResp.ErrCode.ERR_OK:
+				TUtils.showShort(this, "分享成功"); //分享成功
+				finish();
+				break;
+			case BaseResp.ErrCode.ERR_USER_CANCEL:
+				TUtils.showShort(this, "分享取消"); //分享取消
+				finish();
+				break;
+			case BaseResp.ErrCode.ERR_AUTH_DENIED:
+				TUtils.showShort(this, "分享被拒绝");//分享拒绝
+				finish();
+				break;
+			default:
+				break;
+		}
+	}
 }

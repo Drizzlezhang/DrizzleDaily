@@ -10,7 +10,9 @@ import retrofit.Retrofit;
 
 /**
  * Created by drizzle on 15/12/28.
+ * 网络请求基类
  */
+
 public class ApiBuilder {
 
 	public static final OkHttpClient client = new OkHttpClient();

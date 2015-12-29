@@ -7,31 +7,31 @@ import cn.bmob.v3.BmobUser;
  */
 public class MyUser extends BmobUser {
 
-    private int touxiangId = 6;
-    private String collectJson = "[]";
-    private int sex;
+	private int touxiangId = 6;
+	private String collectJson = "[]";
+	private int sex;
 
-    public int getTouxiangId() {
-        return touxiangId;
-    }
+	public int getTouxiangId() {
+		return touxiangId;
+	}
 
-    public void setTouxiangId(int touxiangId) {
-        this.touxiangId = touxiangId;
-    }
+	public void setTouxiangId(int touxiangId) {
+		this.touxiangId = touxiangId;
+	}
 
-    public String getCollectJson() {
-        return collectJson;
-    }
+	public String getCollectJson() {
+		return collectJson;
+	}
 
-    public void setCollectJson(String collectJson) {
-        this.collectJson = collectJson;
-    }
+	public void setCollectJson(String collectJson) {
+		this.collectJson = collectJson;
+	}
 
-    public int getSex() {
-        return sex;
-    }
+	public int getSex() {
+		return sex;
+	}
 
-    public void setSex(int sex) {
-        this.sex = sex;
-    }
+	public void setSex(int sex) {
+		this.sex = sex;
+	}
 }
