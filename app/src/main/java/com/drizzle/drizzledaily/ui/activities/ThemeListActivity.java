@@ -36,6 +36,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 主题日报列表activity
@@ -76,7 +77,7 @@ public class ThemeListActivity extends BaseActivity {
 	private void getLists() {
 		if (NetUtils.isConnected(ThemeListActivity.this)) {
 			ApiBuilder.create(MyApi.class).themelist(themeId).enqueue(new Callback<ThemeList>() {
-				@Override public void onResponse(Response<ThemeList> response) {
+				@Override public void onResponse(Response<ThemeList> response, Retrofit retrofit) {
 					for (ThemeList.StoriesEntity stories : response.body().getStories()) {
 						BaseListItem baseListItem =
 							new BaseListItem(stories.getId(), stories.getTitle(), "", false, "");

@@ -44,6 +44,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -100,7 +101,7 @@ public class GildeActivity extends AppCompatActivity {
 	 */
 	private void updateStartImg() {
 		ApiBuilder.create(MyApi.class).startImage("1080*1776").enqueue(new Callback<StartImg>() {
-			@Override public void onResponse(Response<StartImg> response) {
+			@Override public void onResponse(Response<StartImg> response, Retrofit retrofit) {
 				final String imgurl = response.body().getImg();
 				final String cacheurl = PerferUtils.getString(STARTIMGCACHEURL);
 				Observable.just(imgurl).filter(new Func1<String, Boolean>() {

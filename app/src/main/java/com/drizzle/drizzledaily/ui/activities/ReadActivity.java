@@ -51,6 +51,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 import retrofit.http.Body;
 
 /**
@@ -198,7 +199,7 @@ public class ReadActivity extends BaseActivity {
 	 */
 	private void getAtrical(int managerReadId) {
 		ApiBuilder.create(MyApi.class).story(managerReadId).enqueue(new Callback<Story>() {
-			@Override public void onResponse(Response<Story> response) {
+			@Override public void onResponse(Response<Story> response, Retrofit retrofit) {
 				Story story = response.body();
 				String name = story.getTitle();
 				collapsingToolbarLayout.setTitle(name);

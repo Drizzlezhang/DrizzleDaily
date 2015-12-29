@@ -33,6 +33,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 专栏列表
@@ -152,7 +153,7 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
         swipeRefresh(true);
         if (NetUtils.isConnected(getActivity())) {
             ApiBuilder.create(MyApi.class).sections().enqueue(new Callback<Sections>() {
-                @Override public void onResponse(Response<Sections> response) {
+                @Override public void onResponse(Response<Sections> response, Retrofit retrofit) {
                     for (Sections.DataEntity data:response.body().getData()){
                         BaseListItem baseListItem =
                             new BaseListItem(data.getId(), data.getName(), data.getThumbnail(), false, "", data.getDescription());

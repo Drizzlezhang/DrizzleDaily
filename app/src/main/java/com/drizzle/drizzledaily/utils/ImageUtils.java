@@ -56,7 +56,7 @@ public class Imageutils {
 		}
 		try {
 			FileOutputStream out = new FileOutputStream(f);
-			bitmap.compress(Bitmap.CompressFormat.JPEG, 80, out);
+			bitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
 			out.flush();
 			out.close();
 		} catch (FileNotFoundException e) {

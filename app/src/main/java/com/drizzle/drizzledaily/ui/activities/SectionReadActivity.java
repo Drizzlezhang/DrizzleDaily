@@ -44,6 +44,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 专栏日报阅读界面（没有大图提供,单开一个页面）
@@ -128,7 +129,7 @@ public class SectionReadActivity extends BaseActivity {
 	 */
 	private void getAtrical(int managerReadId) {
 		ApiBuilder.create(MyApi.class).story(managerReadId).enqueue(new Callback<Story>() {
-			@Override public void onResponse(Response<Story> response) {
+			@Override public void onResponse(Response<Story> response, Retrofit retrofit) {
 				Story story = response.body();
 				String name = story.getTitle();
 				mToolbar.setTitle(name);

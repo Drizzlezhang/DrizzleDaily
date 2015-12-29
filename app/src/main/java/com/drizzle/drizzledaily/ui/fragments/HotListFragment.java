@@ -19,6 +19,7 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.HotNews;
+import com.drizzle.drizzledaily.api.model.LatestNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
@@ -31,6 +32,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
+import rx.Observable;
 
 /**
  * 今日热门列表
@@ -132,7 +135,7 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
 			ApiBuilder.create(MyApi.class).hot().enqueue(new Callback<HotNews>() {
-				@Override public void onResponse(Response<HotNews> response) {
+				@Override public void onResponse(Response<HotNews> response, Retrofit retrofit) {
 					for (HotNews.RecentEntity recent : response.body().getRecent()) {
 						BaseListItem baseListItem =
 							new BaseListItem(recent.getNews_id(), recent.getTitle(), recent.getThumbnail(), false, "");

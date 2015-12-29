@@ -39,6 +39,7 @@ import butterknife.ButterKnife;
 import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 首页列表fragment，包括一个viewpager和一个listview
@@ -156,7 +157,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
 			ApiBuilder.create(MyApi.class).latest().enqueue(new Callback<LatestNews>() {
-				@Override public void onResponse(Response<LatestNews> response) {
+				@Override public void onResponse(Response<LatestNews> response, Retrofit retrofit) {
 					baseListItems.clear();
 					headpagerItems.clear();
 					BaseListItem todayNews = new BaseListItem();
@@ -195,7 +196,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
 			ApiBuilder.create(MyApi.class).before(time).enqueue(new Callback<BeforeNews>() {
-				@Override public void onResponse(Response<BeforeNews> response) {
+				@Override public void onResponse(Response<BeforeNews> response,Retrofit retrofit) {
 					String data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
 					BaseListItem onedayNews = new BaseListItem();
 					onedayNews.setViewType(0);

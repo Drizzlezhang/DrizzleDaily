@@ -32,6 +32,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 主题日报列表
@@ -134,7 +135,7 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 		swipeRefresh(true);
 		if (NetUtils.isConnected(getActivity())) {
 			ApiBuilder.create(MyApi.class).themes().enqueue(new Callback<Themes>() {
-				@Override public void onResponse(Response<Themes> response) {
+				@Override public void onResponse(Response<Themes> response, Retrofit retrofit) {
 					for (Themes.OthersEntity others:response.body().getOthers()){
 						BaseListItem baseListItem =
 							new BaseListItem(others.getId(), others.getName(), others.getThumbnail(), false, "", others.getDescription());

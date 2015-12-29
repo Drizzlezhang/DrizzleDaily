@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 用于显示根据日期查找到的日报数据
@@ -89,7 +90,7 @@ public class SearchFragment extends BaseFragment {
 	private void getLists(){
 		if (NetUtils.isConnected(getActivity())) {
 			ApiBuilder.create(MyApi.class).before(id).enqueue(new Callback<BeforeNews>() {
-				@Override public void onResponse(Response<BeforeNews> response) {
+				@Override public void onResponse(Response<BeforeNews> response, Retrofit retrofit) {
 					for (BeforeNews.StoriesEntity stories:response.body().getStories()){
 						BaseListItem baseListItem =
 							new BaseListItem(stories.getId(), stories.getTitle(), stories.getImages().get(0), false, "");

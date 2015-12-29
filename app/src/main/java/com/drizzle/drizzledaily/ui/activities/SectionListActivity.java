@@ -29,6 +29,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
+import retrofit.Retrofit;
 
 /**
  * 专栏列表activity
@@ -92,7 +93,7 @@ public class SectionListActivity extends BaseActivity {
 	private void getList() {
 		if (NetUtils.isConnected(SectionListActivity.this)) {
 			ApiBuilder.create(MyApi.class).sectionlist(sectionid).enqueue(new Callback<SectionList>() {
-				@Override public void onResponse(Response<SectionList> response) {
+				@Override public void onResponse(Response<SectionList> response, Retrofit retrofit) {
 					for (SectionList.StoriesEntity stories : response.body().getStories()) {
 						BaseListItem baseListItem =
 							new BaseListItem(stories.getId(), stories.getTitle(), stories.getImages().get(0), false,
