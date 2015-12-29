@@ -24,6 +24,9 @@ import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.Story;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
@@ -36,19 +39,8 @@ import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.squareup.okhttp.Request;
-import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.OkHttpRequest;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +49,9 @@ import java.util.concurrent.ExecutionException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
+import retrofit.http.Body;
 
 /**
  * 阅读文章主界面
@@ -187,7 +182,7 @@ public class ReadActivity extends BaseActivity {
 			.setPadding(20, 30, 20, 20)
 			.create();
 		if (NetUtils.isConnected(ReadActivity.this)) {
-			managerReadJson(readid);
+			getAtrical(readid);
 		} else {
 			TUtils.showShort(ReadActivity.this, "网络未连接");
 			loadingIndicatorView.setVisibility(View.GONE);
@@ -201,48 +196,42 @@ public class ReadActivity extends BaseActivity {
 	/**
 	 * 处理readjson数据
 	 */
-	private void managerReadJson(int managerReadId) {
-		OkHttpUtils.get().url(Config.NEWS_BODY + managerReadId).build().execute(new StringCallback() {
-			@Override public void onError(Request request, Exception e) {
-				TUtils.showShort(ReadActivity.this, "服务器出问题了");
+	private void getAtrical(int managerReadId) {
+		ApiBuilder.create(MyApi.class).story(managerReadId).enqueue(new Callback<Story>() {
+			@Override public void onResponse(Response<Story> response) {
+				Story story = response.body();
+				String name = story.getTitle();
+				collapsingToolbarLayout.setTitle(name);
+				pagetltle = name;
+				ImgUrl = story.getImage();
+				body = story.getBody();
+				pageUrl = story.getShare_url();
+				readImgres.setText(story.getImage_source());
+				cssadd = story.getCss().get(0);
+				//开启一个子线程下载分享图片
+				new Thread(new Runnable() {
+					@Override public void run() {
+						try {
+							shareBitmap = Glide.with(getApplicationContext())
+								.load(ImgUrl)
+								.asBitmap()
+								.centerCrop()
+								.into(100, 100)
+								.get();
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						} catch (ExecutionException e) {
+							e.printStackTrace();
+						}
+					}
+				}).start();
+				handler.sendEmptyMessage(0);
 				loadingIndicatorView.setVisibility(View.GONE);
 			}
 
-			@Override public void onResponse(String response) {
-				try {
-					JSONObject jsonObject = new JSONObject(response);
-					String name = jsonObject.getString("title");
-					collapsingToolbarLayout.setTitle(name);
-					pagetltle = name;
-					ImgUrl = jsonObject.getString("image");
-					body = jsonObject.getString("body");
-					pageUrl = jsonObject.getString("share_url");
-					readImgres.setText(jsonObject.getString("image_source"));
-					cssadd = jsonObject.getJSONArray("css").getString(0);
-					//开启一个子线程下载分享图片
-					new Thread(new Runnable() {
-						@Override public void run() {
-							try {
-								shareBitmap = Glide.with(getApplicationContext())
-									.load(ImgUrl)
-									.asBitmap()
-									.centerCrop()
-									.into(100, 100)
-									.get();
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							} catch (ExecutionException e) {
-								e.printStackTrace();
-							}
-						}
-					}).start();
-					handler.sendEmptyMessage(0);
-					loadingIndicatorView.setVisibility(View.GONE);
-				} catch (JSONException e) {
-					e.printStackTrace();
-					TUtils.showShort(ReadActivity.this, "json error");
-					loadingIndicatorView.setVisibility(View.GONE);
-				}
+			@Override public void onFailure(Throwable t) {
+				TUtils.showShort(ReadActivity.this, "服务器出问题了");
+				loadingIndicatorView.setVisibility(View.GONE);
 			}
 		});
 	}

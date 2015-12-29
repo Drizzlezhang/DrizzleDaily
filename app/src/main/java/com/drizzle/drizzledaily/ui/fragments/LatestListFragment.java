@@ -29,13 +29,6 @@ import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -203,8 +196,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		if (NetUtils.isConnected(getActivity())) {
 			ApiBuilder.create(MyApi.class).before(time).enqueue(new Callback<BeforeNews>() {
 				@Override public void onResponse(Response<BeforeNews> response) {
-					String data = "";
-					data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
+					String data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
 					BaseListItem onedayNews = new BaseListItem();
 					onedayNews.setViewType(0);
 					onedayNews.setDate(data);

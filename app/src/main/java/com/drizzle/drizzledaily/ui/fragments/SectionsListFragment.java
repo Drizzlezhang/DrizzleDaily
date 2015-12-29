@@ -22,21 +22,10 @@ import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.Sections;
 import com.drizzle.drizzledaily.bean.BaseListItem;
-import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.SectionListActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
-import com.drizzle.drizzledaily.utils.PerferUtils;
+
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
-import com.zhy.http.okhttp.request.OkHttpRequest;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 

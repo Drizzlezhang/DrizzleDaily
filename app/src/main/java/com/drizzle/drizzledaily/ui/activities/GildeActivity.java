@@ -4,15 +4,11 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
@@ -30,22 +26,19 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.google.gson.Gson;
 import com.hanks.htextview.HTextView;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.FileCallBack;
-import com.zhy.http.okhttp.callback.StringCallback;
 
-import java.sql.Time;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -59,7 +52,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * 引导页
+ * 引导页(RxJava实验)
  */
 
 public class GildeActivity extends AppCompatActivity {
@@ -122,22 +115,7 @@ public class GildeActivity extends AppCompatActivity {
 				}).map(new Func1<String, Void>() {
 					@Override public Void call(String s) {
 						//下载图片并覆盖
-						OkHttpUtils.get()
-							.url(s)
-							.build()
-							.execute(new FileCallBack(Config.START_PHOTO_FOLDER, "startimg.jpg") {
-								@Override public void inProgress(float progress) {
-									Log.d("progress", progress + "");
-								}
-
-								@Override public void onError(Request request, Exception e) {
-									//	Log.d("startimg", "failed");
-								}
-
-								@Override public void onResponse(File file) {
-									//	Log.d("startimg", "succeed");
-								}
-							});
+						downFile(s);
 						return null;
 					}
 				}).subscribeOn(Schedulers.io()).subscribe(new Subscriber<Void>() {
@@ -218,5 +196,57 @@ public class GildeActivity extends AppCompatActivity {
 				hText.animateText("DrizzleDaily");
 			}
 		});
+	}
+
+	/**
+	 * 下载文件方法
+	 * @param url
+	 */
+	private void downFile(String url) {
+		OkHttpClient mOkHttpClient = new OkHttpClient();
+		final Request request = new Request.Builder().url(url).build();
+		Call call = mOkHttpClient.newCall(request);
+		call.enqueue(new com.squareup.okhttp.Callback() {
+			@Override public void onFailure(Request request, IOException e) {
+
+			}
+
+			@Override public void onResponse(com.squareup.okhttp.Response response) throws IOException {
+				saveFile(response, Config.START_PHOTO_FOLDER, "startimg.jpg");
+			}
+		});
+	}
+
+	private File saveFile(com.squareup.okhttp.Response response, String destFileDir, String destFileName)
+		throws IOException {
+		InputStream is = null;
+		byte[] buf = new byte[2048];
+		int len = 0;
+		FileOutputStream fos = null;
+		try {
+			is = response.body().byteStream();
+
+			File dir = new File(destFileDir);
+			if (!dir.exists()) {
+				dir.mkdirs();
+			}
+			File file = new File(dir, destFileName);
+			fos = new FileOutputStream(file);
+			while ((len = is.read(buf)) != -1) {
+				fos.write(buf, 0, len);
+			}
+			fos.flush();
+
+			return file;
+		} finally {
+			try {
+				if (is != null) is.close();
+			} catch (IOException e) {
+			}
+			try {
+				if (fos != null) fos.close();
+			} catch (IOException e) {
+			}
+		}
 	}
 }

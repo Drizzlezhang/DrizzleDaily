@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import com.squareup.okhttp.OkHttpClient;
 
-import com.zhy.http.okhttp.OkHttpUtils;
 import java.util.concurrent.TimeUnit;
 
 import cn.bmob.v3.Bmob;
@@ -20,8 +19,6 @@ public class MyApplication extends Application {
 	@Override public void onCreate() {
 		super.onCreate();
 		mContext = this;
-		OkHttpClient client = OkHttpUtils.getInstance().getOkHttpClient();
-		client.setConnectTimeout(100000, TimeUnit.MILLISECONDS);
 		FIR.init(this);
 		Bmob.initialize(this, "7674bc5c8d85e763b58e487eab5627a5");
 	}

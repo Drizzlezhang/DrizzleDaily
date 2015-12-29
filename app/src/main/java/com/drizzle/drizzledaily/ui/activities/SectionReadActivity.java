@@ -15,9 +15,13 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
 
+import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.api.ApiBuilder;
+import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.Story;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
@@ -30,13 +34,7 @@ import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.squareup.okhttp.Request;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.zhy.http.okhttp.OkHttpUtils;
-import com.zhy.http.okhttp.callback.StringCallback;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +42,8 @@ import java.util.Set;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.Response;
 
 /**
  * 专栏日报阅读界面（没有大图提供,单开一个页面）
@@ -98,33 +98,7 @@ public class SectionReadActivity extends BaseActivity {
 		}
 		initViews();
 		if (NetUtils.isConnected(SectionReadActivity.this)) {
-			OkHttpUtils.get().url(Config.NEWS_BODY + readid).build().execute(new StringCallback() {
-				@Override public void onError(Request request, Exception e) {
-					TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
-					loadingIndicatorView.setVisibility(View.GONE);
-				}
-
-				@Override public void onResponse(String response) {
-					try {
-						JSONObject jsonObject = new JSONObject(response);
-						String name = jsonObject.getString("title");
-						mToolbar.setTitle(name);
-						pagetitle = name;
-						body = jsonObject.getString("body");
-						JSONObject theme = jsonObject.getJSONObject("theme");
-						themeid = theme.getInt("id");
-						themename = theme.getString("name");
-						cssadd = jsonObject.getJSONArray("css").getString(0);
-						pageUrl = jsonObject.getString("share_url");
-						handler.sendEmptyMessage(0);
-						loadingIndicatorView.setVisibility(View.GONE);
-					} catch (JSONException e) {
-						e.printStackTrace();
-						TUtils.showShort(SectionReadActivity.this, "json error");
-						loadingIndicatorView.setVisibility(View.GONE);
-					}
-				}
-			});
+			getAtrical(readid);
 		} else {
 			TUtils.showShort(SectionReadActivity.this, "网络未连接");
 			loadingIndicatorView.setVisibility(View.GONE);
@@ -149,6 +123,30 @@ public class SectionReadActivity extends BaseActivity {
 		};
 	}
 
+	/**
+	 * 处理readjson数据
+	 */
+	private void getAtrical(int managerReadId) {
+		ApiBuilder.create(MyApi.class).story(managerReadId).enqueue(new Callback<Story>() {
+			@Override public void onResponse(Response<Story> response) {
+				Story story = response.body();
+				String name = story.getTitle();
+				mToolbar.setTitle(name);
+				pagetitle = name;
+				body = story.getBody();
+				pageUrl = story.getShare_url();
+				cssadd = story.getCss().get(0);
+				handler.sendEmptyMessage(0);
+				loadingIndicatorView.setVisibility(View.GONE);
+			}
+
+			@Override public void onFailure(Throwable t) {
+				TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
+				loadingIndicatorView.setVisibility(View.GONE);
+			}
+		});
+	}
+
 	private void initViews() {
 		mToolbar.setTitle("载入中");
 		setSupportActionBar(mToolbar);
@@ -166,9 +164,9 @@ public class SectionReadActivity extends BaseActivity {
 			.setOnItemClickListener(new OnItemClickListener() {
 				@Override public void onItemClick(DialogPlus dialog, Object item, View view, int position) {
 					if (position == 1) {
-						wechatShare(1, pagetitle, pageUrl,null); //分享到朋友圈
+						wechatShare(1, pagetitle, pageUrl, null); //分享到朋友圈
 					} else if (position == 2) {
-						wechatShare(0, pagetitle, pageUrl,null);//分享给微信好友
+						wechatShare(0, pagetitle, pageUrl, null);//分享给微信好友
 					}
 					dialogPlus.dismiss();
 				}
@@ -177,7 +175,6 @@ public class SectionReadActivity extends BaseActivity {
 			.setPadding(20, 30, 20, 20)
 			.create();
 	}
-
 
 	@Override protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(Config.READID, readid);

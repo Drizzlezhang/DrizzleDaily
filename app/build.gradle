@@ -34,6 +34,7 @@ dependencies {
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.squareup.retrofit:retrofit:2.0.0-beta1'
     compile 'com.squareup.retrofit:converter-gson:2.0.0-beta1'
+    compile 'io.reactivex:rxandroid:1.0.1'
 
 
     compile 'com.afollestad.material-dialogs:core:0.8.4.2@aar'
@@ -47,13 +48,12 @@ dependencies {
     compile('cn.trinea.android.view.autoscrollviewpager:android-auto-scroll-view-pager:1.1.2') {
         exclude module: 'support-v4'
     }
+    compile 'hanks.xyz:htextview-library:0.1.1'
+
     compile files('libs/libammsdk.jar')
     compile files('libs/Bughd_android_sdk_v1.3.3.jar')
     //bmob-sdk ：Bmob的android sdk包
     compile 'cn.bmob.android:bmob-sdk:3.4.3'
-    compile 'com.zhy:okhttputils:2.0.2'
-    compile 'io.reactivex:rxandroid:1.0.1'
-    compile 'hanks.xyz:htextview-library:0.1.1'
 }
 
 
