@@ -2,8 +2,6 @@ package com.drizzle.drizzledaily.ui.activities;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;

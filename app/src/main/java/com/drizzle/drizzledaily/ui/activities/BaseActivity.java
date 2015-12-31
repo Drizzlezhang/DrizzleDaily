@@ -2,10 +2,8 @@ package com.drizzle.drizzledaily.ui.activities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.WindowManager;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.model.Config;
 import com.tencent.mm.sdk.modelmsg.SendMessageToWX;

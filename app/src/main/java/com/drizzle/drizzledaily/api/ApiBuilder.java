@@ -9,7 +9,6 @@ import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
 
 /**
- * Created by drizzle on 15/12/28.
  * 网络请求基类
  */
 

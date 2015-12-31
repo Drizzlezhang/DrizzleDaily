@@ -17,19 +17,19 @@ public class PerferUtils {
 	public static void saveSth(String key, String sth) {
 		SharedPreferences.Editor editor = getSharedPerference(Config.CACHE_DATA).edit();
 		editor.putString(key, sth);
-		editor.commit();
+		editor.apply();
 	}
 
 	public static void saveSth(String key, int sth) {
 		SharedPreferences.Editor editor = getSharedPerference(Config.CACHE_DATA).edit();
 		editor.putInt(key, sth);
-		editor.commit();
+		editor.apply();
 	}
 
 	public static void deleteSth(String key) {
 		SharedPreferences.Editor editor = getSharedPerference(Config.CACHE_DATA).edit();
 		editor.remove(key);
-		editor.commit();
+		editor.apply();
 	}
 
 	public static String getString(String key) {

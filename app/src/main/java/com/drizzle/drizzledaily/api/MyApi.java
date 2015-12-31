@@ -9,9 +9,7 @@ import com.drizzle.drizzledaily.api.model.StartImg;
 import com.drizzle.drizzledaily.api.model.Story;
 import com.drizzle.drizzledaily.api.model.ThemeList;
 import com.drizzle.drizzledaily.api.model.Themes;
-import com.squareup.okhttp.ResponseBody;
 import retrofit.Call;
-import retrofit.http.Body;
 import retrofit.http.GET;
 import retrofit.http.Path;
 
