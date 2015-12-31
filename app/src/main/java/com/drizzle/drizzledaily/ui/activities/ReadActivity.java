@@ -26,10 +26,13 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.Story;
+import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -41,7 +44,7 @@ import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.wang.avi.AVLoadingIndicatorView;
 
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -53,6 +56,12 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import retrofit.http.Body;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 阅读文章主界面
@@ -91,16 +100,7 @@ public class ReadActivity extends BaseActivity {
 		@Override public void handleMessage(Message msg) {
 			switch (msg.what) {
 				case 0:
-					Glide.with(getApplicationContext())
-						.load(ImgUrl)
-						.centerCrop()
-						.error(R.mipmap.place_img)
-						.crossFade()
-						.into(headImg);
-					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
-					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
-					html = html.replace("<div class=\"img-place-holder\">", "");
-					readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+
 					break;
 				default:
 					break;
@@ -153,11 +153,6 @@ public class ReadActivity extends BaseActivity {
 				mNestedScrollView.smoothScrollTo(0, 0);
 			}
 		});
-		if (NetUtils.isConnected(ReadActivity.this)) {
-			initWebView(true);
-		} else {
-			initWebView(false);
-		}
 		dialogPlus = DialogPlus.newDialog(ReadActivity.this)
 			.setAdapter(adapter)
 			.setHeader(R.layout.share_head)
@@ -183,8 +178,10 @@ public class ReadActivity extends BaseActivity {
 			.setPadding(20, 30, 20, 20)
 			.create();
 		if (NetUtils.isConnected(ReadActivity.this)) {
+			initWebView(true);
 			getAtrical(readid);
 		} else {
+			initWebView(false);
 			TUtils.showShort(ReadActivity.this, "网络未连接");
 			loadingIndicatorView.setVisibility(View.GONE);
 		}
@@ -198,43 +195,69 @@ public class ReadActivity extends BaseActivity {
 	 * 处理readjson数据
 	 */
 	private void getAtrical(int managerReadId) {
-		ApiBuilder.create(MyApi.class).story(managerReadId).enqueue(new Callback<Story>() {
-			@Override public void onResponse(Response<Story> response, Retrofit retrofit) {
-				Story story = response.body();
-				String name = story.getTitle();
-				collapsingToolbarLayout.setTitle(name);
-				pagetltle = name;
-				ImgUrl = story.getImage();
-				body = story.getBody();
-				pageUrl = story.getShare_url();
-				readImgres.setText(story.getImage_source());
-				cssadd = story.getCss().get(0);
-				//开启一个子线程下载分享图片
-				new Thread(new Runnable() {
-					@Override public void run() {
-						try {
-							shareBitmap = Glide.with(getApplicationContext())
-								.load(ImgUrl)
-								.asBitmap()
-								.centerCrop()
-								.into(100, 100)
-								.get();
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							e.printStackTrace();
-						}
+		ApiBuilder.create(MyApi.class).story(managerReadId)
+			.filter(new Func1<Story, Boolean>() {
+				@Override public Boolean call(Story story) {
+					return NetUtils.isConnected(ReadActivity.this);
+				}
+			})
+			.subscribeOn(Schedulers.io())
+			.observeOn(Schedulers.newThread())
+			.map(new Func1<Story, Story>() {
+				@Override public Story call(Story story) {
+					ImgUrl = story.getImage();
+					try {
+						shareBitmap = Glide.with(getApplicationContext())
+							.load(ImgUrl)
+							.asBitmap()
+							.centerCrop()
+							.into(100, 100)
+							.get();
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} catch (ExecutionException e) {
+						e.printStackTrace();
 					}
-				}).start();
-				handler.sendEmptyMessage(0);
-				loadingIndicatorView.setVisibility(View.GONE);
-			}
+					return story;
+				}
+			})
+			.observeOn(Schedulers.io())
+			.map(new Func1<Story, Story>() {
+				@Override public Story call(Story story) {
+					String name = story.getTitle();
+					pagetltle = name;
+					body = story.getBody();
+					pageUrl = story.getShare_url();
+					cssadd = story.getCss().get(0);
+					return story;
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<Story>() {
+				@Override public void onCompleted() {
+					loadingIndicatorView.setVisibility(View.GONE);
+				}
 
-			@Override public void onFailure(Throwable t) {
-				TUtils.showShort(ReadActivity.this, "服务器出问题了");
-				loadingIndicatorView.setVisibility(View.GONE);
-			}
-		});
+				@Override public void onError(Throwable e) {
+					TUtils.showShort(ReadActivity.this, e.toString());
+					loadingIndicatorView.setVisibility(View.GONE);
+				}
+
+				@Override public void onNext(Story story) {
+					Glide.with(getApplicationContext())
+						.load(ImgUrl)
+						.centerCrop()
+						.error(R.mipmap.place_img)
+						.crossFade()
+						.into(headImg);
+					collapsingToolbarLayout.setTitle(pagetltle);
+					readImgres.setText(story.getImage_source());
+					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
+					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
+					html = html.replace("<div class=\"img-place-holder\">", "");
+					readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+				}
+			});
 	}
 
 	@Override protected void onSaveInstanceState(Bundle outState) {

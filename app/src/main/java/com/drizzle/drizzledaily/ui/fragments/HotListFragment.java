@@ -20,6 +20,7 @@ import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.HotNews;
 import com.drizzle.drizzledaily.api.model.LatestNews;
+import com.drizzle.drizzledaily.api.model.Themes;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
@@ -34,6 +35,11 @@ import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
 import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 今日热门列表
@@ -96,19 +102,6 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 		super.onHiddenChanged(hidden);
 	}
 
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 0:
-					adapter.notifyDataSetChanged();
-					mRefreshLayout.setRefreshing(false);
-					break;
-				default:
-					break;
-			}
-		}
-	};
-
 	/**
 	 * swiperefresh在主线程中无法消失，需要新开线程
 	 */
@@ -132,26 +125,43 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 	 * 请求数据并存入list
 	 */
 	private void getLists() {
-		swipeRefresh(true);
-		if (NetUtils.isConnected(getActivity())) {
-			ApiBuilder.create(MyApi.class).hot().enqueue(new Callback<HotNews>() {
-				@Override public void onResponse(Response<HotNews> response, Retrofit retrofit) {
-					for (HotNews.RecentEntity recent : response.body().getRecent()) {
+		ApiBuilder.create(MyApi.class).hot()
+			.filter(new Func1<HotNews, Boolean>() {
+				@Override public Boolean call(HotNews hotNews) {
+					return NetUtils.isConnected(getActivity());
+				}
+			})
+			.doOnSubscribe(new Action0() {
+				@Override public void call() {
+					swipeRefresh(true);
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.map(new Func1<HotNews, HotNews>() {
+				@Override public HotNews call(HotNews hotNews) {
+					for (HotNews.RecentEntity recent : hotNews.getRecent()) {
 						BaseListItem baseListItem =
 							new BaseListItem(recent.getNews_id(), recent.getTitle(), recent.getThumbnail(), false, "");
 						hotListItems.add(baseListItem);
 					}
-					handler.sendEmptyMessage(0);
+					return hotNews;
+				}
+			})
+			.subscribeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<HotNews>() {
+				@Override public void onCompleted() {
+					swipeRefresh(false);
 				}
 
-				@Override public void onFailure(Throwable t) {
-					TUtils.showShort(getActivity(), t.getMessage());
-					mRefreshLayout.setRefreshing(false);
+				@Override public void onError(Throwable e) {
+					TUtils.showShort(getActivity(), "服务器出问题了");
+					swipeRefresh(false);
+				}
+
+				@Override public void onNext(HotNews hotNews) {
+					adapter.notifyDataSetChanged();
 				}
 			});
-		} else {
-			TUtils.showShort(getActivity(), "网络未连接");
-			swipeRefresh(false);
-		}
 	}
 }

@@ -12,6 +12,7 @@ import com.drizzle.drizzledaily.api.model.Themes;
 import retrofit.Call;
 import retrofit.http.GET;
 import retrofit.http.Path;
+import rx.Observable;
 
 /**
  * Created by drizzle on 15/12/28.
@@ -22,26 +23,26 @@ public interface MyApi {
 	Call<StartImg> startImage( @Path("imgsize") String size);
 
 	@GET("news/{pageid}")
-	Call<Story> story(@Path("pageid") int pageid);
+	Observable<Story> story(@Path("pageid") int pageid);
 
 	@GET("news/latest")
-	Call<LatestNews> latest();
+	Observable<LatestNews> latest();
 
 	@GET("news/hot")
-	Call<HotNews> hot();
+	Observable<HotNews> hot();
 
 	@GET("news/before/{date}")
-	Call<BeforeNews> before(@Path("date") String date);
+	Observable<BeforeNews> before(@Path("date") String date);
 
 	@GET("themes")
-	Call<Themes> themes();
+	Observable<Themes> themes();
 
 	@GET("theme/{themeid}")
-	Call<ThemeList> themelist(@Path("themeid") int themeid);
+	Observable<ThemeList> themelist(@Path("themeid") int themeid);
 
     @GET("sections")
-	Call<Sections> sections();
+	Observable<Sections> sections();
 
 	@GET("section/{sectionid}")
-	Call<SectionList> sectionlist(@Path("sectionid") int sectionid);
+	Observable<SectionList> sectionlist(@Path("sectionid") int sectionid);
 }

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -22,8 +23,10 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.ThemeList;
 import com.drizzle.drizzledaily.bean.BaseListItem;
+import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 
@@ -37,6 +40,10 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 主题日报列表activity
@@ -75,29 +82,50 @@ public class ThemeListActivity extends BaseActivity {
 	}
 
 	private void getLists() {
-		if (NetUtils.isConnected(ThemeListActivity.this)) {
-			ApiBuilder.create(MyApi.class).themelist(themeId).enqueue(new Callback<ThemeList>() {
-				@Override public void onResponse(Response<ThemeList> response, Retrofit retrofit) {
-					for (ThemeList.StoriesEntity stories : response.body().getStories()) {
+		ApiBuilder.create(MyApi.class).themelist(themeId)
+			.subscribeOn(Schedulers.io())
+			.filter(new Func1<ThemeList, Boolean>() {
+				@Override public Boolean call(ThemeList themeList) {
+					return NetUtils.isConnected(ThemeListActivity.this);
+				}
+			})
+			.observeOn(Schedulers.io())
+			.map(new Func1<ThemeList, ThemeList>() {
+				@Override public ThemeList call(ThemeList list) {
+					for (ThemeList.StoriesEntity stories : list.getStories()) {
 						BaseListItem baseListItem =
 							new BaseListItem(stories.getId(), stories.getTitle(), "", false, "");
 						themeList.add(baseListItem);
 					}
-					imgUrl = response.body().getImage();
-					title = response.body().getName();
-					handler.sendEmptyMessage(0);
+					imgUrl = list.getImage();
+					title = list.getName();
+					return list;
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<ThemeList>() {
+				@Override public void onCompleted() {
+					Glide.with(getApplicationContext())
+						.load(imgUrl)
+						.centerCrop()
+						.error(R.mipmap.place_img)
+						.crossFade()
+						.into(mImageView);
+					collapsingToolbarLayout.setTitle(title);
+					adapter.notifyDataSetChanged();
+					setListViewHeightBasedOnChildren(mListView);
+
+				}
+
+				@Override public void onError(Throwable e) {
+					TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
 					loadingIndicatorView.setVisibility(View.GONE);
 				}
 
-				@Override public void onFailure(Throwable t) {
-					TUtils.showShort(ThemeListActivity.this, "服务器出了点问题");
+				@Override public void onNext(ThemeList list) {
 					loadingIndicatorView.setVisibility(View.GONE);
 				}
 			});
-		} else {
-			TUtils.showShort(ThemeListActivity.this, "网络未连接");
-			loadingIndicatorView.setVisibility(View.GONE);
-		}
 	}
 
 	private void initViews() {
@@ -126,25 +154,6 @@ public class ThemeListActivity extends BaseActivity {
 		mListView.setAdapter(adapter);
 	}
 
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 0:
-					Glide.with(getApplicationContext())
-						.load(imgUrl)
-						.centerCrop()
-						.error(R.mipmap.place_img)
-						.crossFade()
-						.into(mImageView);
-					collapsingToolbarLayout.setTitle(title);
-					adapter.notifyDataSetChanged();
-					setListViewHeightBasedOnChildren(mListView);
-					break;
-				default:
-					break;
-			}
-		}
-	};
 
 	@Override protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(THEMEID, themeId);

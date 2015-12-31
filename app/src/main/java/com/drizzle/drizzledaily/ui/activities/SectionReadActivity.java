@@ -21,10 +21,13 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.Story;
+import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -45,6 +48,11 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 专栏日报阅读界面（没有大图提供,单开一个页面）
@@ -71,22 +79,6 @@ public class SectionReadActivity extends BaseActivity {
 	private CommonAdapter<ShareBean> adapter;
 	private List<ShareBean> shareBeanList = new ArrayList<>();
 
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 0:
-					//webview加载css和html
-					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
-					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
-					html = html.replace("<div class=\"img-place-holder\">", "");
-					sectionWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
-					break;
-				default:
-					break;
-			}
-		}
-	};
-
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_section_read);
@@ -104,48 +96,6 @@ public class SectionReadActivity extends BaseActivity {
 			TUtils.showShort(SectionReadActivity.this, "网络未连接");
 			loadingIndicatorView.setVisibility(View.GONE);
 		}
-	}
-
-	private void initData() {
-		SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, MODE_PRIVATE);
-		String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
-		Gson gson = new Gson();
-		collectBeanSet = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
-		}.getType());
-		ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
-		ShareBean bean2 = new ShareBean(R.mipmap.weixin, "微信好友");
-		shareBeanList.add(bean1);
-		shareBeanList.add(bean2);
-		adapter = new CommonAdapter<ShareBean>(this, shareBeanList, R.layout.share_list_item) {
-			@Override public void convert(ViewHolder helper, ShareBean item) {
-				helper.setText(R.id.share_item_text, item.getText());
-				helper.setImgByid(R.id.share_item_img, item.getImgId());
-			}
-		};
-	}
-
-	/**
-	 * 处理readjson数据
-	 */
-	private void getAtrical(int managerReadId) {
-		ApiBuilder.create(MyApi.class).story(managerReadId).enqueue(new Callback<Story>() {
-			@Override public void onResponse(Response<Story> response, Retrofit retrofit) {
-				Story story = response.body();
-				String name = story.getTitle();
-				mToolbar.setTitle(name);
-				pagetitle = name;
-				body = story.getBody();
-				pageUrl = story.getShare_url();
-				cssadd = story.getCss().get(0);
-				handler.sendEmptyMessage(0);
-				loadingIndicatorView.setVisibility(View.GONE);
-			}
-
-			@Override public void onFailure(Throwable t) {
-				TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
-				loadingIndicatorView.setVisibility(View.GONE);
-			}
-		});
 	}
 
 	private void initViews() {
@@ -175,6 +125,61 @@ public class SectionReadActivity extends BaseActivity {
 			.setCancelable(true)
 			.setPadding(20, 30, 20, 20)
 			.create();
+	}
+
+	private void initData() {
+		SharedPreferences sharedPreferences = getSharedPreferences(Config.CACHE_DATA, MODE_PRIVATE);
+		String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+		Gson gson = new Gson();
+		collectBeanSet = gson.fromJson(collectcache, new TypeToken<Set<CollectBean>>() {
+		}.getType());
+		ShareBean bean1 = new ShareBean(R.mipmap.frends, "朋友圈");
+		ShareBean bean2 = new ShareBean(R.mipmap.weixin, "微信好友");
+		shareBeanList.add(bean1);
+		shareBeanList.add(bean2);
+		adapter = new CommonAdapter<ShareBean>(this, shareBeanList, R.layout.share_list_item) {
+			@Override public void convert(ViewHolder helper, ShareBean item) {
+				helper.setText(R.id.share_item_text, item.getText());
+				helper.setImgByid(R.id.share_item_img, item.getImgId());
+			}
+		};
+	}
+
+	/**
+	 * 处理readjson数据
+	 */
+	private void getAtrical(int managerReadId) {
+		ApiBuilder.create(MyApi.class).story(managerReadId)
+			.filter(new Func1<Story, Boolean>() {
+				@Override public Boolean call(Story story) {
+					return NetUtils.isConnected(SectionReadActivity.this);
+				}
+			})
+			.subscribeOn(Schedulers.io())
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<Story>() {
+				@Override public void onCompleted() {
+					loadingIndicatorView.setVisibility(View.GONE);
+				}
+
+				@Override public void onError(Throwable e) {
+					TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
+					loadingIndicatorView.setVisibility(View.GONE);
+				}
+
+				@Override public void onNext(Story story) {
+					String name = story.getTitle();
+					mToolbar.setTitle(name);
+					pagetitle = name;
+					body = story.getBody();
+					pageUrl = story.getShare_url();
+					cssadd = story.getCss().get(0);
+					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
+					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
+					html = html.replace("<div class=\"img-place-holder\">", "");
+					sectionWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+				}
+			});
 	}
 
 	@Override protected void onSaveInstanceState(Bundle outState) {

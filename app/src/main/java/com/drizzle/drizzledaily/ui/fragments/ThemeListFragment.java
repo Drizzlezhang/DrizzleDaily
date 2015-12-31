@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,7 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.Sections;
 import com.drizzle.drizzledaily.api.model.Themes;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
@@ -33,6 +36,11 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 主题日报列表
@@ -84,19 +92,6 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 		mGridView.setAdapter(adapter);
 	}
 
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 0:
-					adapter.notifyDataSetChanged();
-					mRefreshLayout.setRefreshing(false);
-					break;
-				default:
-					break;
-			}
-		}
-	};
-
 	@Override public void onRefresh() {
 		getLists();
 	}
@@ -132,27 +127,45 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 	 * 请求数据并存入list
 	 */
 	private void getLists() {
-		swipeRefresh(true);
-		if (NetUtils.isConnected(getActivity())) {
-			ApiBuilder.create(MyApi.class).themes().enqueue(new Callback<Themes>() {
-				@Override public void onResponse(Response<Themes> response, Retrofit retrofit) {
-					for (Themes.OthersEntity others:response.body().getOthers()){
+		ApiBuilder.create(MyApi.class).themes()
+			.filter(new Func1<Themes, Boolean>() {
+				@Override public Boolean call(Themes themes) {
+					return NetUtils.isConnected(getActivity());
+				}
+			})
+			.doOnSubscribe(new Action0() {
+				@Override public void call() {
+					swipeRefresh(true);
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.map(new Func1<Themes, Themes>() {
+				@Override public Themes call(Themes themes) {
+					for (Themes.OthersEntity others :themes.getOthers()) {
 						BaseListItem baseListItem =
-							new BaseListItem(others.getId(), others.getName(), others.getThumbnail(), false, "", others.getDescription());
+							new BaseListItem(others.getId(), others.getName(), others.getThumbnail(), false, "",
+								others.getDescription());
 						themeItems.add(baseListItem);
 					}
-					handler.sendEmptyMessage(0);
+					return themes;
+				}
+			})
+			.subscribeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<Themes>() {
+				@Override public void onCompleted() {
+					swipeRefresh(false);
 				}
 
-				@Override public void onFailure(Throwable t) {
+				@Override public void onError(Throwable e) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
-					mRefreshLayout.setRefreshing(false);
+					swipeRefresh(false);
+				}
+
+				@Override public void onNext(Themes themes) {
+					adapter.notifyDataSetChanged();
 				}
 			});
-		} else {
-			TUtils.showShort(getActivity(), "网络未连接");
-			swipeRefresh(false);
-		}
-	}
 
+	}
 }

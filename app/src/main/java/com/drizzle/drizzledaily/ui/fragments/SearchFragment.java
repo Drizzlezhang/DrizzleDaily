@@ -19,6 +19,7 @@ import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
+import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.wang.avi.AVLoadingIndicatorView;
@@ -30,6 +31,11 @@ import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 用于显示根据日期查找到的日报数据
@@ -88,40 +94,41 @@ public class SearchFragment extends BaseFragment {
 	}
 
 	private void getLists(){
-		if (NetUtils.isConnected(getActivity())) {
-			ApiBuilder.create(MyApi.class).before(id).enqueue(new Callback<BeforeNews>() {
-				@Override public void onResponse(Response<BeforeNews> response, Retrofit retrofit) {
-					for (BeforeNews.StoriesEntity stories:response.body().getStories()){
+		ApiBuilder.create(MyApi.class).before(id)
+			.filter(new Func1<BeforeNews, Boolean>() {
+				@Override public Boolean call(BeforeNews beforeNews) {
+					return NetUtils.isConnected(getActivity());
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.map(new Func1<BeforeNews, BeforeNews>() {
+				@Override public BeforeNews call(BeforeNews beforeNews) {
+					for (BeforeNews.StoriesEntity stories : beforeNews.getStories()) {
 						BaseListItem baseListItem =
-							new BaseListItem(stories.getId(), stories.getTitle(), stories.getImages().get(0), false, "");
+							new BaseListItem(stories.getId(), stories.getTitle(), stories.getImages().get(0), false,
+								"");
 						baseListItems.add(baseListItem);
 					}
+					return beforeNews;
+				}
+			})
+			.subscribeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<BeforeNews>() {
+				@Override public void onCompleted() {
 					loadingIndicatorView.setVisibility(View.GONE);
-					handler.sendEmptyMessage(1);
 				}
 
-				@Override public void onFailure(Throwable t) {
+				@Override public void onError(Throwable e) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
 					loadingIndicatorView.setVisibility(View.GONE);
 				}
-			});
-		} else {
-			TUtils.showShort(getActivity(), "网络未连接");
-			loadingIndicatorView.setVisibility(View.GONE);
-		}
-	}
 
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 1:
+				@Override public void onNext(BeforeNews beforeNews) {
 					adapter.notifyDataSetChanged();
-					break;
-				default:
-					break;
-			}
-		}
-	};
+				}
+			});
+	}
 
 	@Override public void onSaveInstanceState(Bundle outState) {
 		outState.putString(TIMEID, id);

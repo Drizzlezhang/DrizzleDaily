@@ -1,13 +1,10 @@
 package com.drizzle.drizzledaily.ui.fragments;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +17,7 @@ import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
+import com.drizzle.drizzledaily.api.model.SectionList;
 import com.drizzle.drizzledaily.api.model.Sections;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.ui.activities.SectionListActivity;
@@ -31,9 +29,11 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 专栏列表
@@ -46,7 +46,6 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
     GridView mGridView;
 
     private static String SECTIONCACHE = "sectionlistcache";
-
 
     private List<BaseListItem> sectionsItems = new ArrayList<>();
     private CommonAdapter<BaseListItem> adapter;
@@ -67,19 +66,6 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
         return view;
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    adapter.notifyDataSetChanged();
-                    mRefreshLayout.setRefreshing(false);
-                    break;
-                default:
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onClickToolbar() {
@@ -150,27 +136,44 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
      *
      */
     private void getLists() {
-        swipeRefresh(true);
-        if (NetUtils.isConnected(getActivity())) {
-            ApiBuilder.create(MyApi.class).sections().enqueue(new Callback<Sections>() {
-                @Override public void onResponse(Response<Sections> response, Retrofit retrofit) {
-                    for (Sections.DataEntity data:response.body().getData()){
+        ApiBuilder.create(MyApi.class).sections()
+            .filter(new Func1<Sections, Boolean>() {
+                @Override public Boolean call(Sections sections) {
+                    return NetUtils.isConnected(getActivity());
+                }
+            })
+            .doOnSubscribe(new Action0() {
+                @Override public void call() {
+                    swipeRefresh(true);
+                }
+            })
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .map(new Func1<Sections, Sections>() {
+                @Override public Sections call(Sections sections) {
+                    for (Sections.DataEntity data : sections.getData()) {
                         BaseListItem baseListItem =
-                            new BaseListItem(data.getId(), data.getName(), data.getThumbnail(), false, "", data.getDescription());
+                            new BaseListItem(data.getId(), data.getName(), data.getThumbnail(), false, "",
+                                data.getDescription());
                         sectionsItems.add(baseListItem);
                     }
-                    handler.sendEmptyMessage(0);
+                    return sections;
+                }
+            })
+            .subscribeOn(AndroidSchedulers.mainThread())
+            .subscribe(new Observer<Sections>() {
+                @Override public void onCompleted() {
+                    swipeRefresh(false);
                 }
 
-                @Override public void onFailure(Throwable t) {
+                @Override public void onError(Throwable e) {
                     TUtils.showShort(getActivity(), "服务器出问题了");
-                    mRefreshLayout.setRefreshing(false);
+                    swipeRefresh(false);
+                }
+
+                @Override public void onNext(Sections sections) {
+                    adapter.notifyDataSetChanged();
                 }
             });
-        } else {
-            swipeRefresh(false);
-            TUtils.showShort(getActivity(), "网络未连接");
-        }
     }
 }
-

@@ -2,8 +2,6 @@ package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,9 +25,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 专栏列表activity
@@ -91,43 +90,43 @@ public class SectionListActivity extends BaseActivity {
 	}
 
 	private void getList() {
-		if (NetUtils.isConnected(SectionListActivity.this)) {
-			ApiBuilder.create(MyApi.class).sectionlist(sectionid).enqueue(new Callback<SectionList>() {
-				@Override public void onResponse(Response<SectionList> response, Retrofit retrofit) {
-					for (SectionList.StoriesEntity stories : response.body().getStories()) {
+		ApiBuilder.create(MyApi.class).sectionlist(sectionid)
+			.filter(new Func1<SectionList, Boolean>() {
+				@Override public Boolean call(SectionList list) {
+					return NetUtils.isConnected(SectionListActivity.this);
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.map(new Func1<SectionList, SectionList>() {
+				@Override public SectionList call(SectionList list) {
+					for (SectionList.StoriesEntity stories : list.getStories()) {
 						BaseListItem baseListItem =
 							new BaseListItem(stories.getId(), stories.getTitle(), stories.getImages().get(0), false,
 								stories.getDate());
 						sectionList.add(baseListItem);
 					}
-					title = response.body().getName();
-					handler.sendEmptyMessage(0);
+					title = list.getName();
+					return list;
+				}
+			})
+			.subscribeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<SectionList>() {
+				@Override public void onCompleted() {
+					loadingIndicatorView.setVisibility(View.GONE);
 				}
 
-				@Override public void onFailure(Throwable t) {
+				@Override public void onError(Throwable e) {
 					TUtils.showShort(SectionListActivity.this, "服务器出问题了");
 					loadingIndicatorView.setVisibility(View.GONE);
 				}
-			});
-		} else {
-			TUtils.showShort(SectionListActivity.this, "网络未连接");
-			loadingIndicatorView.setVisibility(View.GONE);
-		}
-	}
 
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 0:
+				@Override public void onNext(SectionList list) {
 					mToolbar.setTitle(title);
 					adapter.notifyDataSetChanged();
-					loadingIndicatorView.setVisibility(View.GONE);
-					break;
-				default:
-					break;
-			}
-		}
-	};
+				}
+			});
+	}
 
 	@Override public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_single, menu);
@@ -147,4 +146,5 @@ public class SectionListActivity extends BaseActivity {
 		outState.putInt(SECTIONID, sectionid);
 		super.onSaveInstanceState(outState);
 	}
+
 }

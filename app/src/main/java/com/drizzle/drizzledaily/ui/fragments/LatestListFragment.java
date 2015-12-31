@@ -40,6 +40,12 @@ import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
+import rx.Observable;
+import rx.Observer;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
+import rx.functions.Func1;
+import rx.schedulers.Schedulers;
 
 /**
  * 首页列表fragment，包括一个viewpager和一个listview
@@ -119,7 +125,35 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 	private Handler handler = new Handler() {
 		@Override public void handleMessage(Message msg) {
 			switch (msg.what) {
-				case 0:
+				case 1:
+					latestAdapter.notifyDataSetChanged();
+					mRefreshLayout.setRefreshing(false);
+					break;
+				default:
+					break;
+			}
+		}
+	};
+
+	/**
+	 * 获取当天新闻
+	 */
+	private void getTodayNews() {
+		ApiBuilder.create(MyApi.class).latest()
+			.filter(new Func1<LatestNews, Boolean>() {
+				@Override public Boolean call(LatestNews latestNews) {
+					return NetUtils.isConnected(getActivity());
+				}
+			})
+			.doOnSubscribe(new Action0() {
+				@Override public void call() {
+					swipeRefresh(true);
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Observer<LatestNews>() {
+				@Override public void onCompleted() {
 					final FragmentManager manager = getChildFragmentManager();
 					fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
 						@Override public Fragment getItem(int position) {
@@ -139,25 +173,14 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 					mViewPager.setAdapter(fragmentStatePagerAdapter);
 					mViewPager.startAutoScroll(5000);
 					handler.sendEmptyMessageDelayed(1, 100);
-					break;
-				case 1:
-					latestAdapter.notifyDataSetChanged();
-					mRefreshLayout.setRefreshing(false);
-					break;
-				default:
-					break;
-			}
-		}
-	};
+				}
 
-	/**
-	 * 获取当天新闻
-	 */
-	private void getTodayNews() {
-		swipeRefresh(true);
-		if (NetUtils.isConnected(getActivity())) {
-			ApiBuilder.create(MyApi.class).latest().enqueue(new Callback<LatestNews>() {
-				@Override public void onResponse(Response<LatestNews> response, Retrofit retrofit) {
+				@Override public void onError(Throwable e) {
+					TUtils.showShort(getActivity(), "服务器出问题了");
+					swipeRefresh(false);
+				}
+
+				@Override public void onNext(LatestNews latestNews) {
 					baseListItems.clear();
 					headpagerItems.clear();
 					BaseListItem todayNews = new BaseListItem();
@@ -165,62 +188,69 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 					todayNews.setDate("今日热闻");
 					baseListItems.add(todayNews);
 					String date = DateUtils.printDate(mCalendar);
-					for (LatestNews.TopStoriesEntity topStory : response.body().getTop_stories()) {
+					for (LatestNews.TopStoriesEntity topStory : latestNews.getTop_stories()) {
 						BaseListItem headbaseListItem =
 							new BaseListItem(topStory.getId(), topStory.getTitle(), topStory.getImage(), false, "");
 						headpagerItems.add(headbaseListItem);
 					}
-					for (LatestNews.StoriesEntity story : response.body().getStories()) {
+					for (LatestNews.StoriesEntity story : latestNews.getStories()) {
 						BaseListItem baseListItem =
 							new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, date);
 						baseListItems.add(baseListItem);
 					}
-					handler.sendEmptyMessage(0);
-				}
-
-				@Override public void onFailure(Throwable t) {
-					TUtils.showShort(getActivity(), "服务器出问题了");
-					swipeRefresh(false);
 				}
 			});
-		} else {
-			TUtils.showShort(getActivity(), "网络未连接");
-			swipeRefresh(false);
-		}
 	}
 
 	/**
 	 * 获取往日新闻
 	 */
 	private void getBeforeNews(String time) {
-		swipeRefresh(true);
-		if (NetUtils.isConnected(getActivity())) {
-			ApiBuilder.create(MyApi.class).before(time).enqueue(new Callback<BeforeNews>() {
-				@Override public void onResponse(Response<BeforeNews> response,Retrofit retrofit) {
+		ApiBuilder.create(MyApi.class).before(time)
+			.filter(new Func1<BeforeNews, Boolean>() {
+				@Override public Boolean call(BeforeNews beforeNews) {
+					return NetUtils.isConnected(getActivity());
+				}
+			})
+			.doOnSubscribe(new Action0() {
+				@Override public void call() {
+					swipeRefresh(true);
+				}
+			})
+			.observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.map(new Func1<BeforeNews, BeforeNews>() {
+				@Override public BeforeNews call(BeforeNews beforeNews) {
 					String data = DateUtils.printDate(DateUtils.getBeforeDay(mCalendar));
 					BaseListItem onedayNews = new BaseListItem();
 					onedayNews.setViewType(0);
 					onedayNews.setDate(data);
 					baseListItems.add(onedayNews);
 					mCalendar = DateUtils.getAfterDay(mCalendar);
-					for (BeforeNews.StoriesEntity story : response.body().getStories()) {
+					for (BeforeNews.StoriesEntity story : beforeNews.getStories()) {
 						BaseListItem baseListItem =
 							new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, data);
 						baseListItems.add(baseListItem);
 					}
-					handler.sendEmptyMessage(1);
 					mCalendar = DateUtils.getBeforeDay(mCalendar);
+					return beforeNews;
+				}
+			})
+			.subscribeOn(AndroidSchedulers.mainThread())
+			.subscribe(new Observer<BeforeNews>() {
+				@Override public void onCompleted() {
+					swipeRefresh(false);
 				}
 
-				@Override public void onFailure(Throwable t) {
+				@Override public void onError(Throwable e) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
 					swipeRefresh(false);
 				}
+
+				@Override public void onNext(BeforeNews beforeNews) {
+					latestAdapter.notifyDataSetChanged();
+				}
 			});
-		} else {
-			TUtils.showShort(getActivity(), "网络未连接");
-			swipeRefresh(false);
-		}
 	}
 
 	/**
