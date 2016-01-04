@@ -83,7 +83,6 @@ public class SectionListActivity extends BaseActivity {
 			@Override public void convert(ViewHolder helper, BaseListItem item) {
 				helper.setText(R.id.base_item_title, item.getTitle());
 				helper.setImg(R.id.base_item_img, item.getImgUrl());
-				helper.setText(R.id.base_item_date, item.getDate());
 			}
 		};
 		mListView.setAdapter(adapter);
@@ -113,7 +112,7 @@ public class SectionListActivity extends BaseActivity {
 			.subscribeOn(AndroidSchedulers.mainThread())
 			.subscribe(new Observer<SectionList>() {
 				@Override public void onCompleted() {
-					loadingIndicatorView.setVisibility(View.GONE);
+					adapter.notifyDataSetChanged();
 				}
 
 				@Override public void onError(Throwable e) {
@@ -123,7 +122,7 @@ public class SectionListActivity extends BaseActivity {
 
 				@Override public void onNext(SectionList list) {
 					mToolbar.setTitle(title);
-					adapter.notifyDataSetChanged();
+					loadingIndicatorView.setVisibility(View.GONE);
 				}
 			});
 	}

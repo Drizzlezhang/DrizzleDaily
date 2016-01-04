@@ -244,18 +244,18 @@ public class ReadActivity extends BaseActivity {
 				}
 
 				@Override public void onNext(Story story) {
-					Glide.with(getApplicationContext())
-						.load(ImgUrl)
-						.centerCrop()
-						.error(R.mipmap.place_img)
-						.crossFade()
-						.into(headImg);
 					collapsingToolbarLayout.setTitle(pagetltle);
 					readImgres.setText(story.getImage_source());
 					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
 					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
 					html = html.replace("<div class=\"img-place-holder\">", "");
 					readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+					Glide.with(getApplicationContext())
+						.load(ImgUrl)
+						.centerCrop()
+						.error(R.mipmap.place_img)
+						.crossFade()
+						.into(headImg);
 				}
 			});
 	}

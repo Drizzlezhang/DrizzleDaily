@@ -116,7 +116,7 @@ public class SearchFragment extends BaseFragment {
 			.subscribeOn(AndroidSchedulers.mainThread())
 			.subscribe(new Observer<BeforeNews>() {
 				@Override public void onCompleted() {
-					loadingIndicatorView.setVisibility(View.GONE);
+					adapter.notifyDataSetChanged();
 				}
 
 				@Override public void onError(Throwable e) {
@@ -125,7 +125,7 @@ public class SearchFragment extends BaseFragment {
 				}
 
 				@Override public void onNext(BeforeNews beforeNews) {
-					adapter.notifyDataSetChanged();
+					loadingIndicatorView.setVisibility(View.GONE);
 				}
 			});
 	}

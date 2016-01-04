@@ -105,15 +105,15 @@ public class ThemeListActivity extends BaseActivity {
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(new Observer<ThemeList>() {
 				@Override public void onCompleted() {
+					collapsingToolbarLayout.setTitle(title);
+					adapter.notifyDataSetChanged();
+					setListViewHeightBasedOnChildren(mListView);
 					Glide.with(getApplicationContext())
 						.load(imgUrl)
 						.centerCrop()
 						.error(R.mipmap.place_img)
 						.crossFade()
 						.into(mImageView);
-					collapsingToolbarLayout.setTitle(title);
-					adapter.notifyDataSetChanged();
-					setListViewHeightBasedOnChildren(mListView);
 
 				}
 
