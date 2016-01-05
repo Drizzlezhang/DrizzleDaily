@@ -5,6 +5,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.squareup.okhttp.OkHttpClient;
+import java.util.concurrent.TimeUnit;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
@@ -31,6 +32,8 @@ public class ApiBuilder {
 
 
 	public static <T> T create(Class<T> clazz) {
+		client.setConnectTimeout(8888, TimeUnit.MILLISECONDS);
+		client.setRetryOnConnectionFailure(true);
 		return retrofit.create(clazz);
 	}
 

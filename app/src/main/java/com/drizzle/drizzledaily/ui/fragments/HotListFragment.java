@@ -19,8 +19,6 @@ import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.HotNews;
-import com.drizzle.drizzledaily.api.model.LatestNews;
-import com.drizzle.drizzledaily.api.model.Themes;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;

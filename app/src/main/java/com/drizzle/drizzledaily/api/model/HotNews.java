@@ -7,7 +7,6 @@ import java.util.List;
  */
 public class HotNews {
 
-
 	private List<RecentEntity> recent;
 
 	public void setRecent(List<RecentEntity> recent) {
