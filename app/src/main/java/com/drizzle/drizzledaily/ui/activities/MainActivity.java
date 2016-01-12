@@ -126,6 +126,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 				cilckListener.onClickToolbar();
 			}
 		});
+        //获取控件的高度
+		int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		mToolbar.measure(w, h);
+		int height = mToolbar.getMeasuredHeight();
+		int width = mToolbar.getMeasuredWidth();
+		mToolbar.setTranslationY(-height);
+		mToolbar.animate().translationY(0).setDuration(1000).setStartDelay(888);
 		nameText = (TextView) findViewById(R.id.drawer_name1);
 		mainTouxiang = (CircleImageView) findViewById(R.id.drawer_touxiang1);
 		mainTouxiang.setOnClickListener(new View.OnClickListener() {

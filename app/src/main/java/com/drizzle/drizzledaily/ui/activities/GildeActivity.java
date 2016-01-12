@@ -53,7 +53,7 @@ import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 /**
- * 引导页(RxJava实验)
+ * 引导页
  */
 
 public class GildeActivity extends AppCompatActivity {

@@ -1,6 +1,5 @@
 package com.drizzle.drizzledaily.api;
 
-import com.drizzle.drizzledaily.api.model.SectionList;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -9,7 +8,6 @@ import java.util.concurrent.TimeUnit;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
-import rx.Observable;
 
 /**
  * 网络请求基类
