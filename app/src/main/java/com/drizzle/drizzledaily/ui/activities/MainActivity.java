@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PersistableBundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +19,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -34,18 +36,14 @@ import com.drizzle.drizzledaily.ui.fragments.LatestListFragment;
 import com.drizzle.drizzledaily.ui.fragments.SearchFragment;
 import com.drizzle.drizzledaily.ui.fragments.SectionsListFragment;
 import com.drizzle.drizzledaily.ui.fragments.ThemeListFragment;
-import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.UserActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
+import com.drizzle.drizzledaily.utils.FabClickEvent;
+import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.tencent.mm.sdk.modelmsg.SendMessageToWX;
-import com.tencent.mm.sdk.modelmsg.WXMediaMessage;
-import com.tencent.mm.sdk.modelmsg.WXWebpageObject;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-
+import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -66,8 +64,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
 	@Bind(R.id.main_nav_view) NavigationView navigationView;
 
+	@Bind(R.id.up_fab) FloatingActionButton upFab;
+
 	private TextView nameText;
 	private CircleImageView mainTouxiang;
+	private static boolean isFabShowing = false;
 
 	private DialogPlus dialogPlus;
 	private CommonAdapter<ShareBean> adapter;
@@ -95,6 +96,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		ButterKnife.bind(this);
+		EventBus.getDefault().register(this);
 		initData();
 		initViews();
 		BmobUpdateAgent.update(this);
@@ -121,19 +123,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	private void initViews() {
 		mToolbar.setTitle("知乎日报");
 		setSupportActionBar(mToolbar);
-		mToolbar.setOnClickListener(new View.OnClickListener() {
-			@Override public void onClick(View v) {
-				cilckListener.onClickToolbar();
-			}
-		});
-        //获取控件的高度
+		//获取控件的高度
 		int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 		int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
 		mToolbar.measure(w, h);
 		int height = mToolbar.getMeasuredHeight();
 		int width = mToolbar.getMeasuredWidth();
 		mToolbar.setTranslationY(-height);
-		mToolbar.animate().translationY(0).setDuration(1000).setStartDelay(888);
+		mToolbar.animate().translationY(0).setDuration(600).setStartDelay(600);
 		nameText = (TextView) findViewById(R.id.drawer_name1);
 		mainTouxiang = (CircleImageView) findViewById(R.id.drawer_touxiang1);
 		mainTouxiang.setOnClickListener(new View.OnClickListener() {
@@ -164,6 +161,43 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 			.setCancelable(true)
 			.setPadding(20, 30, 20, 20)
 			.create();
+		upFab.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View v) {
+				EventBus.getDefault().post(new FabClickEvent(fragmentID));
+			}
+		});
+		upFab.setScaleX(0f);
+		upFab.setScaleY(0f);
+	}
+
+	public void showUpFab() {
+		if (isFabShowing) {
+			//TODO
+		} else {
+			isFabShowing = true;
+			upFab.animate()
+				.scaleX(1f)
+				.scaleY(1f)
+				.setDuration(200)
+				.setInterpolator(new AccelerateInterpolator())
+				.setStartDelay(100)
+				.start();
+		}
+	}
+
+	public void hideUpFab() {
+		if (!isFabShowing) {
+			//TODO
+		} else {
+			isFabShowing = false;
+			upFab.animate()
+				.scaleX(0f)
+				.scaleY(0f)
+				.setDuration(200)
+				.setInterpolator(new AccelerateInterpolator())
+				.setStartDelay(100)
+				.start();
+		}
 	}
 
 	/**
@@ -197,6 +231,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 					}
 					mToolbar.setTitle("知乎日报");
 					fragmentID = 1;
+					showUpFab();
 				}
 				break;
 			case R.id.drawer_menu_hot:
@@ -214,6 +249,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 					}
 					mToolbar.setTitle("大家都在看");
 					fragmentID = 2;
+					showUpFab();
 				}
 				break;
 			case R.id.drawer_menu_theme:
@@ -231,6 +267,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 					}
 					mToolbar.setTitle("主题日报");
 					fragmentID = 3;
+					showUpFab();
 				}
 				break;
 			case R.id.drawer_menu_section:
@@ -248,9 +285,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 					}
 					mToolbar.setTitle("专栏");
 					fragmentID = 4;
+					showUpFab();
 				}
 				break;
 			case R.id.drawer_menu_like:
+				hideUpFab();
 				if (fragmentID == 5) {
 					//TODO
 				} else {
@@ -277,6 +316,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 				datePickerDialog.show();
 				break;
 			case R.id.drawer_menu_drizzle:
+				hideUpFab();
 				if (fragmentID == 7) {
 					//TODO
 				} else {
@@ -315,19 +355,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	}
 
 	/**
-	 * 设置Mainactivity的Toolbar点击回调
-	 */
-	OnToolbarCilckListener cilckListener;
-
-	public interface OnToolbarCilckListener {
-		void onClickToolbar();
-	}
-
-	public void setToolbarClick(OnToolbarCilckListener listener) {
-		this.cilckListener = listener;
-	}
-
-	/**
 	 * 根据选择的日期获取当天的日报内容
 	 */
 	private DatePickerDialog.OnDateSetListener dateSetListener = new DatePickerDialog.OnDateSetListener() {
@@ -345,6 +372,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 			}
 			mToolbar.setTitle(titleTime);
 			fragmentID = 6;
+			showUpFab();
 		}
 	};
 
@@ -374,6 +402,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		} else if (dialogPlus.isShowing()) {
 			dialogPlus.dismiss();
 		} else if (fragmentID != 1) {
+			showUpFab();
 			if (latestListFragment == null) {
 				latestListFragment = new LatestListFragment();
 			}
@@ -398,6 +427,20 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	@Override protected void onResume() {
 		initUser();
 		super.onResume();
+	}
+
+	@Override protected void onDestroy() {
+		super.onDestroy();
+		EventBus.getDefault().unregister(this);
+	}
+
+	public void onEvent(FabEvent fabEvent) {
+		boolean flag = fabEvent.getIsShowFab();
+		if (flag) {
+			showUpFab();
+		} else {
+			hideUpFab();
+		}
 	}
 
 	@Override public boolean onCreateOptionsMenu(Menu menu) {

@@ -71,7 +71,6 @@ public class SectionListActivity extends BaseActivity {
 				mListView.smoothScrollToPosition(0);
 			}
 		});
-		mListView.setDivider(null);
 		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(SectionListActivity.this, ReadActivity.class);

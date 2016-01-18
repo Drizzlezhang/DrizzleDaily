@@ -11,6 +11,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -24,10 +25,13 @@ import com.drizzle.drizzledaily.api.model.Themes;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ThemeListActivity;
+import com.drizzle.drizzledaily.utils.FabClickEvent;
+import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 
+import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,10 +73,6 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 		return view;
 	}
 
-	@Override public void onClickToolbar() {
-		mGridView.smoothScrollToPosition(0);
-	}
-
 	private void initViews() {
 		mRefreshLayout.setOnRefreshListener(this);
 		mGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -80,6 +80,27 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 				Intent intent = new Intent(getActivity(), ThemeListActivity.class);
 				intent.putExtra("themeid", themeItems.get(position).getId());
 				startActivity(intent);
+			}
+		});
+		mGridView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override public void onScrollStateChanged(AbsListView view, int scrollState) {
+				switch (scrollState) {
+					case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
+						EventBus.getDefault().post(new FabEvent(true));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					default:
+						break;
+				}
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			}
 		});
 		adapter = new CommonAdapter<BaseListItem>(getActivity(), themeItems, R.layout.base_grid_item) {
@@ -167,5 +188,11 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 				}
 			});
 
+	}
+
+	public void onEvent(FabClickEvent fabClickEvent) {
+		if (fabClickEvent.getFragmentId() == 3) {
+			mGridView.smoothScrollToPosition(0);
+		}
 	}
 }

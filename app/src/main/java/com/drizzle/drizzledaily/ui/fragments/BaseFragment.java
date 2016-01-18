@@ -8,15 +8,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import com.drizzle.drizzledaily.ui.activities.MainActivity;
+import de.greenrobot.event.EventBus;
 
 /**
  * Created by drizzle on 15/12/21.
  */
-public class BaseFragment extends Fragment implements MainActivity.OnToolbarCilckListener {
+public class BaseFragment extends Fragment  {
 
 	@Override public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		EventBus.getDefault().register(this);
 	}
 
 	@Nullable @Override
@@ -26,7 +27,6 @@ public class BaseFragment extends Fragment implements MainActivity.OnToolbarCilc
 
 	@Override public void onActivityCreated(@Nullable Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		((MainActivity) getActivity()).setToolbarClick(this);
 	}
 
 	@Override public Animation onCreateAnimation(int transit, boolean enter, int nextAnim) {
@@ -41,7 +41,8 @@ public class BaseFragment extends Fragment implements MainActivity.OnToolbarCilc
 		return animation;
 	}
 
-	@Override public void onClickToolbar() {
-
+	@Override public void onDestroy() {
+		super.onDestroy();
+		EventBus.getDefault().unregister(this);
 	}
 }

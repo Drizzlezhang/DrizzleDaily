@@ -1,6 +1,7 @@
 package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
+import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,12 +25,17 @@ import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.LatestNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
+import com.drizzle.drizzledaily.utils.FabClickEvent;
+import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 
+import com.drizzle.drizzledaily.view.PageScrollingIndicator;
+import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -83,10 +89,6 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		return view;
 	}
 
-	@Override public void onClickToolbar() {
-		mListView.smoothScrollToPosition(0);
-	}
-
 	private void initViews() {
 		mRefreshLayout.setOnRefreshListener(this);
 		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
@@ -97,6 +99,13 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 							String time = DateUtils.printCalendar(mCalendar);
 							getBeforeNews(time);
 						}
+						EventBus.getDefault().post(new FabEvent(true));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+						EventBus.getDefault().post(new FabEvent(false));
 						break;
 					default:
 						break;
@@ -139,74 +148,70 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 	 * 获取当天新闻
 	 */
 	private void getTodayNews() {
-		ApiBuilder.create(MyApi.class).latest()
-			.filter(new Func1<LatestNews, Boolean>() {
-				@Override public Boolean call(LatestNews latestNews) {
-					return NetUtils.isConnected(getActivity());
-				}
-			})
-			.doOnSubscribe(new Action0() {
-				@Override public void call() {
-					swipeRefresh(true);
-				}
-			})
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribeOn(Schedulers.io())
-			.subscribe(new Observer<LatestNews>() {
-				@Override public void onCompleted() {
-					final FragmentManager manager = getChildFragmentManager();
-					fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
-						@Override public Fragment getItem(int position) {
-							BaseListItem baseListItem = headpagerItems.get(position);
-							HeadPagerFragment pagerFragment =
-								HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(),
-									baseListItem.getId());
-							return pagerFragment;
-						}
-
-						@Override public int getCount() {
-							return headpagerItems.size();
-						}
-					};
-					mViewPager.setInterval(4000);
-					mViewPager.setStopScrollWhenTouch(true);
-					mViewPager.setAdapter(fragmentStatePagerAdapter);
-					mViewPager.startAutoScroll(5000);
-					handler.sendEmptyMessageDelayed(1, 100);
-				}
-
-				@Override public void onError(Throwable e) {
-					TUtils.showShort(getActivity(), "服务器出问题了");
-					swipeRefresh(false);
-				}
-
-				@Override public void onNext(LatestNews latestNews) {
-					baseListItems.clear();
-					headpagerItems.clear();
-					BaseListItem todayNews = new BaseListItem();
-					todayNews.setViewType(0);
-					todayNews.setDate("今日热闻");
-					baseListItems.add(todayNews);
-					String date = DateUtils.printDate(mCalendar);
-					for (LatestNews.TopStoriesEntity topStory : latestNews.getTop_stories()) {
-						BaseListItem headbaseListItem =
-							new BaseListItem(topStory.getId(), topStory.getTitle(), topStory.getImage(), false, "");
-						headpagerItems.add(headbaseListItem);
+		ApiBuilder.create(MyApi.class).latest().filter(new Func1<LatestNews, Boolean>() {
+			@Override public Boolean call(LatestNews latestNews) {
+				return NetUtils.isConnected(getActivity());
+			}
+		}).doOnSubscribe(new Action0() {
+			@Override public void call() {
+				swipeRefresh(true);
+			}
+		}).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<LatestNews>() {
+			@Override public void onCompleted() {
+				final FragmentManager manager = getChildFragmentManager();
+				fragmentStatePagerAdapter = new FragmentStatePagerAdapter(manager) {
+					@Override public Fragment getItem(int position) {
+						BaseListItem baseListItem = headpagerItems.get(position);
+						HeadPagerFragment pagerFragment =
+							HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(),
+								baseListItem.getId());
+						return pagerFragment;
 					}
-					for (LatestNews.StoriesEntity story : latestNews.getStories()) {
-						BaseListItem baseListItem =
-							new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, date);
-						baseListItems.add(baseListItem);
+
+					@Override public int getCount() {
+						return headpagerItems.size();
 					}
+				};
+				mViewPager.setInterval(4000);
+				mViewPager.setStopScrollWhenTouch(true);
+				mViewPager.setAdapter(fragmentStatePagerAdapter);
+				mViewPager.startAutoScroll(5000);
+				handler.sendEmptyMessageDelayed(1, 100);
+			}
+
+			@Override public void onError(Throwable e) {
+				TUtils.showShort(getActivity(), "服务器出问题了");
+				swipeRefresh(false);
+			}
+
+			@Override public void onNext(LatestNews latestNews) {
+				baseListItems.clear();
+				headpagerItems.clear();
+				BaseListItem todayNews = new BaseListItem();
+				todayNews.setViewType(0);
+				todayNews.setDate("今日热闻");
+				baseListItems.add(todayNews);
+				String date = DateUtils.printDate(mCalendar);
+				for (LatestNews.TopStoriesEntity topStory : latestNews.getTop_stories()) {
+					BaseListItem headbaseListItem =
+						new BaseListItem(topStory.getId(), topStory.getTitle(), topStory.getImage(), false, "");
+					headpagerItems.add(headbaseListItem);
 				}
-			});
+				for (LatestNews.StoriesEntity story : latestNews.getStories()) {
+					BaseListItem baseListItem =
+						new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, date);
+					baseListItems.add(baseListItem);
+				}
+			}
+		});
 	}
 
 	/**
 	 * 获取往日新闻
 	 */
 	private void getBeforeNews(String time) {
-		ApiBuilder.create(MyApi.class).before(time)
+		ApiBuilder.create(MyApi.class)
+			.before(time)
 			.filter(new Func1<BeforeNews, Boolean>() {
 				@Override public Boolean call(BeforeNews beforeNews) {
 					return NetUtils.isConnected(getActivity());
@@ -259,6 +264,12 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 	@Override public void onRefresh() {
 		getTodayNews();
 		mCalendar = Calendar.getInstance();
+	}
+
+	public void onEvent(FabClickEvent fabClickEvent) {
+		if (fabClickEvent.getFragmentId() == 1) {
+			mListView.smoothScrollToPosition(0);
+		}
 	}
 
 	/**

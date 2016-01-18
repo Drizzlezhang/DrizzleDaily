@@ -2,11 +2,10 @@ package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -19,21 +18,19 @@ import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
-import com.drizzle.drizzledaily.utils.DateUtils;
+import com.drizzle.drizzledaily.utils.FabClickEvent;
+import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.wang.avi.AVLoadingIndicatorView;
+import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -91,10 +88,32 @@ public class SearchFragment extends BaseFragment {
 				startActivity(intent);
 			}
 		});
+		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override public void onScrollStateChanged(AbsListView view, int scrollState) {
+				switch (scrollState) {
+					case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
+						EventBus.getDefault().post(new FabEvent(true));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					default:
+						break;
+				}
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			}
+		});
 	}
 
-	private void getLists(){
-		ApiBuilder.create(MyApi.class).before(id)
+	private void getLists() {
+		ApiBuilder.create(MyApi.class)
+			.before(id)
 			.filter(new Func1<BeforeNews, Boolean>() {
 				@Override public Boolean call(BeforeNews beforeNews) {
 					return NetUtils.isConnected(getActivity());
@@ -145,7 +164,9 @@ public class SearchFragment extends BaseFragment {
 		super.onHiddenChanged(hidden);
 	}
 
-	@Override public void onClickToolbar() {
-		mListView.smoothScrollToPosition(0);
+	public void onEvent(FabClickEvent fabClickEvent) {
+		if (fabClickEvent.getFragmentId() == 6) {
+			mListView.smoothScrollToPosition(0);
+		}
 	}
 }

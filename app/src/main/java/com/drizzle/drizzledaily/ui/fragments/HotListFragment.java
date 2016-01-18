@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
@@ -22,8 +23,12 @@ import com.drizzle.drizzledaily.api.model.HotNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
+import com.drizzle.drizzledaily.utils.DateUtils;
+import com.drizzle.drizzledaily.utils.FabClickEvent;
+import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -74,6 +79,27 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 				startActivity(intent);
 			}
 		});
+		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
+			@Override public void onScrollStateChanged(AbsListView view, int scrollState) {
+				switch (scrollState) {
+					case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
+						EventBus.getDefault().post(new FabEvent(true));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
+						EventBus.getDefault().post(new FabEvent(false));
+						break;
+					default:
+						break;
+				}
+			}
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+			}
+		});
 		adapter = new CommonAdapter<BaseListItem>(getActivity(), hotListItems, R.layout.base_list_item) {
 			@Override public void convert(ViewHolder helper, BaseListItem item) {
 				helper.setText(R.id.base_item_title, item.getTitle());
@@ -113,10 +139,6 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 				}
 			}
 		});
-	}
-
-	@Override public void onClickToolbar() {
-		mListView.smoothScrollToPosition(0);
 	}
 
 	/**
@@ -161,5 +183,11 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 					adapter.notifyDataSetChanged();
 				}
 			});
+	}
+
+	public void onEvent(FabClickEvent fabClickEvent) {
+		if (fabClickEvent.getFragmentId() == 2) {
+			mListView.smoothScrollToPosition(0);
+		}
 	}
 }

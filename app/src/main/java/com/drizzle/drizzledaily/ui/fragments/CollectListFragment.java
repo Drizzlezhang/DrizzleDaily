@@ -23,11 +23,13 @@ import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.ui.activities.SectionReadActivity;
+import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -216,9 +218,6 @@ public class CollectListFragment extends BaseFragment {
 		}
 	}
 
-	@Override public void onClickToolbar() {
-		listView.smoothScrollToPosition(0);
-	}
 
 	/**
 	 * fragment在show和hide时调用的方法
