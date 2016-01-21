@@ -39,7 +39,6 @@
 		android:layout_gravity="bottom|right"
 		android:layout_margin="30dp"
 		android:elevation="10dp"
-		app:backgroundTint="@color/bluecolorPrimaryDark"
 		android:src="@mipmap/totop"
 		/>
 </android.support.design.widget.CoordinatorLayout>

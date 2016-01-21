@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
@@ -187,7 +188,9 @@ public class GildeActivity extends AppCompatActivity {
 				animator.addListener(new AnimatorListenerAdapter() {
 					@Override public void onAnimationEnd(Animator animation) {
 						startActivity(new Intent(GildeActivity.this, MainActivity.class));
+						overridePendingTransition(0, R.anim.fade_in);
 						finish();
+
 					}
 				});
 				return null;

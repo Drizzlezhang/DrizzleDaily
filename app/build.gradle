@@ -57,6 +57,7 @@ dependencies {
     //bmob-sdk ：Bmob的android sdk包
     compile 'cn.bmob.android:bmob-sdk:3.4.3'
     compile 'de.greenrobot:eventbus:2.4.0'
+
 }
 
 

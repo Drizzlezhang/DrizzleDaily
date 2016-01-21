@@ -105,6 +105,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 		latestListFragment = new LatestListFragment();
 		fragmentTransaction = fragmentManager.beginTransaction();
 		fragmentTransaction.add(R.id.main_frg_container, latestListFragment, 1 + "").commit();
+		showUpFab();
 	}
 
 	private void initData() {

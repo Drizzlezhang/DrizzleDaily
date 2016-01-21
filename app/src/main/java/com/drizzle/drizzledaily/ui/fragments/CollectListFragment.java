@@ -23,6 +23,7 @@ import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.ui.activities.SectionReadActivity;
+import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -218,7 +219,6 @@ public class CollectListFragment extends BaseFragment {
 		}
 	}
 
-
 	/**
 	 * fragment在show和hide时调用的方法
 	 */
@@ -239,5 +239,9 @@ public class CollectListFragment extends BaseFragment {
 		} else {
 			centerText.setVisibility(View.GONE);
 		}
+	}
+
+	public void onEvent(FabClickEvent event) {
+		//TODO
 	}
 }

@@ -30,7 +30,7 @@ public class ApiBuilder {
 
 
 	public static <T> T create(Class<T> clazz) {
-		client.setConnectTimeout(8888, TimeUnit.MILLISECONDS);
+		client.setConnectTimeout(10*1000, TimeUnit.MILLISECONDS);
 		client.setRetryOnConnectionFailure(true);
 		return retrofit.create(clazz);
 	}
