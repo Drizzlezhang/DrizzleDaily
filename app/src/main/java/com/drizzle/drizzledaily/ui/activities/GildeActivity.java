@@ -188,7 +188,7 @@ public class GildeActivity extends AppCompatActivity {
 				animator.addListener(new AnimatorListenerAdapter() {
 					@Override public void onAnimationEnd(Animator animation) {
 						startActivity(new Intent(GildeActivity.this, MainActivity.class));
-						overridePendingTransition(0, R.anim.fade_in);
+						overridePendingTransition(0, android.R.anim.fade_in);
 						finish();
 
 					}

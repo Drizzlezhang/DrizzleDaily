@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -85,6 +86,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		//} else {
 		//    manageLatestJson(latestcache);
 		//}
+		swipeRefresh(true);
 		getTodayNews();
 		return view;
 	}
@@ -177,6 +179,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 				mViewPager.setAdapter(fragmentStatePagerAdapter);
 				mViewPager.startAutoScroll(5000);
 				handler.sendEmptyMessageDelayed(1, 100);
+				EventBus.getDefault().post(new FabEvent(true));
 			}
 
 			@Override public void onError(Throwable e) {
@@ -291,6 +294,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		mRefreshLayout.post(new Runnable() {
 			@Override public void run() {
 				if (refresh) {
+					Log.d("refresh", "true");
 					mRefreshLayout.setRefreshing(true);
 				} else {
 					mRefreshLayout.setRefreshing(false);
