@@ -1,7 +1,6 @@
 package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
-import android.graphics.pdf.PdfDocument;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,16 +25,13 @@ import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.LatestNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.ui.activities.MainActivity;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
-import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 
-import com.drizzle.drizzledaily.view.PageScrollingIndicator;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,10 +40,6 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
