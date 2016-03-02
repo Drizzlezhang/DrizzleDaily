@@ -2,7 +2,6 @@ package com.drizzle.drizzledaily.ui;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -11,7 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.bmob.v3.listener.SaveListener;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
@@ -26,15 +28,9 @@ import com.orhanobut.dialogplus.GridHolder;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import com.rengwuxian.materialedittext.MaterialEditText;
-
+import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.bmob.v3.listener.SaveListener;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * 注册界面

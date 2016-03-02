@@ -23,76 +23,69 @@ import butterknife.ButterKnife;
  */
 public class HeadPagerFragment extends Fragment {
 
-    private static String IMGKEY = "imgkey";
-    private static String TITLEKEY = "titlekey";
-    private static String IDKEY = "idkey";
+	private static String IMGKEY = "imgkey";
+	private static String TITLEKEY = "titlekey";
+	private static String IDKEY = "idkey";
 
-    @Bind(R.id.head_fragment_img)
-    ImageView headImg;
+	@Bind(R.id.head_fragment_img) ImageView headImg;
 
-    @Bind(R.id.head_fragment_title)
-    TextView headTitle;
+	@Bind(R.id.head_fragment_title) TextView headTitle;
 
-    private String imgUrl;
-    private String titleText;
-    private int id;
-    /**
-     * 获取单个fargment的标题，图片地址，文章id
-     *
-     * @param imageurl
-     * @param text
-     * @param pagerid
-     * @return
-     */
-    public static HeadPagerFragment newInstance(String imageurl, String text, int pagerid) {
-        Bundle args = new Bundle();
-        args.putString(IMGKEY, imageurl);
-        args.putString(TITLEKEY, text);
-        args.putInt(IDKEY, pagerid);
-        HeadPagerFragment headPagerFragment = new HeadPagerFragment();
-        headPagerFragment.setArguments(args);
-        return headPagerFragment;
-    }
+	private String imgUrl;
+	private String titleText;
+	private int id;
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            imgUrl = savedInstanceState.getString(IMGKEY);
-            titleText = savedInstanceState.getString(TITLEKEY);
-            id = savedInstanceState.getInt(IDKEY);
-        } else {
-            imgUrl = getArguments().getString(IMGKEY);
-            titleText = getArguments().getString(TITLEKEY);
-            id = getArguments().getInt(IDKEY);
-        }
-    }
+	/**
+	 * 获取单个fargment的标题，图片地址，文章id
+	 */
+	public static HeadPagerFragment newInstance(String imageurl, String text, int pagerid) {
+		Bundle args = new Bundle();
+		args.putString(IMGKEY, imageurl);
+		args.putString(TITLEKEY, text);
+		args.putInt(IDKEY, pagerid);
+		HeadPagerFragment headPagerFragment = new HeadPagerFragment();
+		headPagerFragment.setArguments(args);
+		return headPagerFragment;
+	}
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.header_pager_fragment, container, false);
-        ButterKnife.bind(this, view);
-        headTitle.setText(titleText);
-        Glide.with(HeadPagerFragment.this).load(imgUrl)
-                .centerCrop().error(R.mipmap.place_img)
-                .crossFade().into(headImg);
-        headImg.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), ReadActivity.class);
-                intent.putExtra(Config.READID, id);
-                startActivity(intent);
-            }
-        });
-        return view;
-    }
+	@Override public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null) {
+			imgUrl = savedInstanceState.getString(IMGKEY);
+			titleText = savedInstanceState.getString(TITLEKEY);
+			id = savedInstanceState.getInt(IDKEY);
+		} else {
+			imgUrl = getArguments().getString(IMGKEY);
+			titleText = getArguments().getString(TITLEKEY);
+			id = getArguments().getInt(IDKEY);
+		}
+	}
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putString(IMGKEY, imgUrl);
-        outState.putString(TITLEKEY, titleText);
-        outState.putInt(IDKEY, id);
-        super.onSaveInstanceState(outState);
-    }
+	@Nullable @Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		View view = inflater.inflate(R.layout.header_pager_fragment, container, false);
+		ButterKnife.bind(this, view);
+		headTitle.setText(titleText);
+		Glide.with(HeadPagerFragment.this)
+			.load(imgUrl)
+			.centerCrop()
+			.error(R.mipmap.place_img)
+			.crossFade()
+			.into(headImg);
+		headImg.setOnClickListener(new View.OnClickListener() {
+			@Override public void onClick(View v) {
+				Intent intent = new Intent(getActivity(), ReadActivity.class);
+				intent.putExtra(Config.READID, id);
+				startActivity(intent);
+			}
+		});
+		return view;
+	}
+
+	@Override public void onSaveInstanceState(Bundle outState) {
+		outState.putString(IMGKEY, imgUrl);
+		outState.putString(TITLEKEY, titleText);
+		outState.putInt(IDKEY, id);
+		super.onSaveInstanceState(outState);
+	}
 }

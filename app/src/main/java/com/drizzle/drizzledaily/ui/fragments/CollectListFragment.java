@@ -14,7 +14,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.UpdateListener;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.SwipeAdapter;
@@ -24,23 +27,15 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.ui.activities.SectionReadActivity;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
-import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
-import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.listener.UpdateListener;
 
 /**
  * 收藏夹列表

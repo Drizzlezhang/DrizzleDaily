@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.widget.NestedScrollView;
@@ -18,21 +16,20 @@ import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
-import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.Story;
-import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -42,24 +39,12 @@ import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.wang.avi.AVLoadingIndicatorView;
-
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import retrofit.http.Body;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Action1;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -85,7 +70,7 @@ public class ReadActivity extends BaseActivity {
 
 	@Bind(R.id.read_collapsing) CollapsingToolbarLayout collapsingToolbarLayout;
 
-	@Bind(R.id.read_progress) AVLoadingIndicatorView loadingIndicatorView;
+	@Bind(R.id.read_progress) ProgressBar mProgressBar;
 
 	@Bind(R.id.read_scroll) NestedScrollView mNestedScrollView;
 	private DialogPlus dialogPlus;
@@ -93,20 +78,6 @@ public class ReadActivity extends BaseActivity {
 	private Set<CollectBean> collectBeanSet;
 	private List<ShareBean> shareBeanList = new ArrayList<>();
 	private Bitmap shareBitmap;
-
-	private static final String APP_CACHE_DIRNAME = "/webcache"; // web缓存目录
-
-	private Handler handler = new Handler() {
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
-				case 0:
-
-					break;
-				default:
-					break;
-			}
-		}
-	};
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -183,7 +154,7 @@ public class ReadActivity extends BaseActivity {
 		} else {
 			initWebView(false);
 			TUtils.showShort(ReadActivity.this, "网络未连接");
-			loadingIndicatorView.setVisibility(View.GONE);
+			mProgressBar.setVisibility(View.GONE);
 		}
 	}
 
@@ -195,69 +166,57 @@ public class ReadActivity extends BaseActivity {
 	 * 处理readjson数据
 	 */
 	private void getAtrical(int managerReadId) {
-		ApiBuilder.create(MyApi.class).story(managerReadId)
-			.filter(new Func1<Story, Boolean>() {
-				@Override public Boolean call(Story story) {
-					return NetUtils.isConnected(ReadActivity.this);
+		ApiBuilder.create(MyApi.class).story(managerReadId).filter(new Func1<Story, Boolean>() {
+			@Override public Boolean call(Story story) {
+				return NetUtils.isConnected(ReadActivity.this);
+			}
+		}).subscribeOn(Schedulers.io()).observeOn(Schedulers.newThread()).map(new Func1<Story, Story>() {
+			@Override public Story call(Story story) {
+				ImgUrl = story.getImage();
+				try {
+					shareBitmap =
+						Glide.with(getApplicationContext()).load(ImgUrl).asBitmap().centerCrop().into(100, 100).get();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				} catch (ExecutionException e) {
+					e.printStackTrace();
 				}
-			})
-			.subscribeOn(Schedulers.io())
-			.observeOn(Schedulers.newThread())
-			.map(new Func1<Story, Story>() {
-				@Override public Story call(Story story) {
-					ImgUrl = story.getImage();
-					try {
-						shareBitmap = Glide.with(getApplicationContext())
-							.load(ImgUrl)
-							.asBitmap()
-							.centerCrop()
-							.into(100, 100)
-							.get();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} catch (ExecutionException e) {
-						e.printStackTrace();
-					}
-					return story;
-				}
-			})
-			.observeOn(Schedulers.io())
-			.map(new Func1<Story, Story>() {
-				@Override public Story call(Story story) {
-					String name = story.getTitle();
-					pagetltle = name;
-					body = story.getBody();
-					pageUrl = story.getShare_url();
-					cssadd = story.getCss().get(0);
-					return story;
-				}
-			})
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Observer<Story>() {
-				@Override public void onCompleted() {
-					loadingIndicatorView.setVisibility(View.GONE);
-				}
+				return story;
+			}
+		}).observeOn(Schedulers.io()).map(new Func1<Story, Story>() {
+			@Override public Story call(Story story) {
+				String name = story.getTitle();
+				pagetltle = name;
+				body = story.getBody();
+				pageUrl = story.getShare_url();
+				cssadd = story.getCss().get(0);
+				return story;
+			}
+		}).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Story>() {
+			@Override public void onCompleted() {
+				mProgressBar.setVisibility(View.GONE);
+			}
 
-				@Override public void onError(Throwable e) {
-					TUtils.showShort(ReadActivity.this, e.toString());
-					loadingIndicatorView.setVisibility(View.GONE);
-				}
+			@Override public void onError(Throwable e) {
+				TUtils.showShort(ReadActivity.this, e.toString());
+				mProgressBar.setVisibility(View.GONE);
+			}
 
-				@Override public void onNext(Story story) {
-					collapsingToolbarLayout.setTitle(pagetltle);
-					readImgres.setText(story.getImage_source());
-					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
-					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
-					html = html.replace("<div class=\"img-place-holder\">", "");
-					readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
-					Glide.with(getApplicationContext())
-						.load(ImgUrl)
-						.centerCrop()
-						.error(R.mipmap.place_img)
-						.crossFade()
-						.into(headImg);
-				}
-			});
+			@Override public void onNext(Story story) {
+				collapsingToolbarLayout.setTitle(pagetltle);
+				readImgres.setText(story.getImage_source());
+				String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
+				String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
+				html = html.replace("<div class=\"img-place-holder\">", "");
+				readWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+				Glide.with(getApplicationContext())
+					.load(ImgUrl)
+					.centerCrop()
+					.error(R.mipmap.place_img)
+					.crossFade()
+					.into(headImg);
+			}
+		});
 	}
 
 	@Override protected void onSaveInstanceState(Bundle outState) {

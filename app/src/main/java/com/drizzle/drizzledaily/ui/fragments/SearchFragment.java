@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
+import android.widget.ProgressBar;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
@@ -22,13 +24,9 @@ import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.wang.avi.AVLoadingIndicatorView;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -41,7 +39,7 @@ public class SearchFragment extends BaseFragment {
 
 	@Bind(R.id.search_list) ListView mListView;
 
-	@Bind(R.id.search_progress) AVLoadingIndicatorView loadingIndicatorView;
+	@Bind(R.id.search_progress) ProgressBar mProgressBar;
 
 	private CommonAdapter<BaseListItem> adapter;
 	private String id;
@@ -140,11 +138,11 @@ public class SearchFragment extends BaseFragment {
 
 				@Override public void onError(Throwable e) {
 					TUtils.showShort(getActivity(), "服务器出问题了");
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 
 				@Override public void onNext(BeforeNews beforeNews) {
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 			});
 	}
@@ -159,7 +157,7 @@ public class SearchFragment extends BaseFragment {
 	 */
 	@Override public void onHiddenChanged(boolean hidden) {
 		if (hidden == true) {
-			loadingIndicatorView.setVisibility(View.GONE);
+			mProgressBar.setVisibility(View.GONE);
 		}
 		super.onHiddenChanged(hidden);
 	}

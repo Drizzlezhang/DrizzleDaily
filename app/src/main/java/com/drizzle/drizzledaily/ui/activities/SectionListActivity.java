@@ -8,7 +8,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
+import android.widget.ProgressBar;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
@@ -19,12 +21,8 @@ import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.wang.avi.AVLoadingIndicatorView;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -44,7 +42,7 @@ public class SectionListActivity extends BaseActivity {
 
 	@Bind(R.id.section_list_listview) ListView mListView;
 
-	@Bind(R.id.section_list_progress) AVLoadingIndicatorView loadingIndicatorView;
+	@Bind(R.id.section_list_progress) ProgressBar mProgressBar;
 
 	private String title;
 
@@ -88,7 +86,8 @@ public class SectionListActivity extends BaseActivity {
 	}
 
 	private void getList() {
-		ApiBuilder.create(MyApi.class).sectionlist(sectionid)
+		ApiBuilder.create(MyApi.class)
+			.sectionlist(sectionid)
 			.filter(new Func1<SectionList, Boolean>() {
 				@Override public Boolean call(SectionList list) {
 					return NetUtils.isConnected(SectionListActivity.this);
@@ -116,12 +115,12 @@ public class SectionListActivity extends BaseActivity {
 
 				@Override public void onError(Throwable e) {
 					TUtils.showShort(SectionListActivity.this, "服务器出问题了");
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 
 				@Override public void onNext(SectionList list) {
 					mToolbar.setTitle(title);
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 			});
 	}
@@ -144,5 +143,4 @@ public class SectionListActivity extends BaseActivity {
 		outState.putInt(SECTIONID, sectionid);
 		super.onSaveInstanceState(outState);
 	}
-
 }

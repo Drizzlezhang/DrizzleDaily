@@ -13,7 +13,7 @@ import de.greenrobot.event.EventBus;
 /**
  * Created by drizzle on 15/12/21.
  */
-public class BaseFragment extends Fragment  {
+public class BaseFragment extends Fragment {
 
 	@Override public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

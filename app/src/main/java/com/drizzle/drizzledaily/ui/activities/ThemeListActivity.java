@@ -2,10 +2,7 @@ package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.view.ViewCompat;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -16,30 +13,21 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
-
+import android.widget.ProgressBar;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
-import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.ThemeList;
 import com.drizzle.drizzledaily.bean.BaseListItem;
-import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-
-import com.wang.avi.AVLoadingIndicatorView;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -58,7 +46,7 @@ public class ThemeListActivity extends BaseActivity {
 
 	@Bind(R.id.theme_toolbar_layout) CollapsingToolbarLayout collapsingToolbarLayout;
 
-	@Bind(R.id.theme_list_progress) AVLoadingIndicatorView loadingIndicatorView;
+	@Bind(R.id.theme_list_progress) ProgressBar mProgressBar;
 
 	@Bind(R.id.theme_list_scroll) NestedScrollView mNestedScrollView;
 	private int themeId;
@@ -119,11 +107,11 @@ public class ThemeListActivity extends BaseActivity {
 
 				@Override public void onError(Throwable e) {
 					TUtils.showShort(ThemeListActivity.this, "服务器出问题了");
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 
 				@Override public void onNext(ThemeList list) {
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 			});
 	}

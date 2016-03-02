@@ -12,12 +12,10 @@
         android:layout_margin="5dp"
         android:scrollbars="none"></ListView>
 
-    <com.wang.avi.AVLoadingIndicatorView
+    <ProgressBar
         android:id="@+id/search_progress"
         android:layout_width="60dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
-        app:indicator="LineScalePulseOutRapid"
-        app:indicator_color="@color/black"
         />
 </FrameLayout>

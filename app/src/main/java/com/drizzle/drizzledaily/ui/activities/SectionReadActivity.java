@@ -1,33 +1,25 @@
 package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.os.Parcelable;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.WindowManager;
 import android.webkit.WebView;
-
-import com.bumptech.glide.Glide;
+import android.widget.ProgressBar;
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
-import com.drizzle.drizzledaily.api.model.BeforeNews;
 import com.drizzle.drizzledaily.api.model.Story;
-import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.ShareBean;
 import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -37,20 +29,11 @@ import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnBackPressListener;
 import com.orhanobut.dialogplus.OnItemClickListener;
-import com.wang.avi.AVLoadingIndicatorView;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
@@ -64,7 +47,7 @@ public class SectionReadActivity extends BaseActivity {
 
 	@Bind(R.id.section_read_webview) WebView sectionWeb;
 
-	@Bind(R.id.section_read_progress) AVLoadingIndicatorView loadingIndicatorView;
+	@Bind(R.id.section_read_progress) ProgressBar mProgressBar;
 
 	private String body;
 	private int readid;
@@ -94,7 +77,7 @@ public class SectionReadActivity extends BaseActivity {
 			getAtrical(readid);
 		} else {
 			TUtils.showShort(SectionReadActivity.this, "网络未连接");
-			loadingIndicatorView.setVisibility(View.GONE);
+			mProgressBar.setVisibility(View.GONE);
 		}
 	}
 
@@ -159,12 +142,12 @@ public class SectionReadActivity extends BaseActivity {
 			.observeOn(AndroidSchedulers.mainThread())
 			.subscribe(new Observer<Story>() {
 				@Override public void onCompleted() {
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 
 				@Override public void onError(Throwable e) {
 					TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
-					loadingIndicatorView.setVisibility(View.GONE);
+					mProgressBar.setVisibility(View.GONE);
 				}
 
 				@Override public void onNext(Story story) {

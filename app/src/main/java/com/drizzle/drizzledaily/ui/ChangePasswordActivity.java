@@ -2,25 +2,22 @@ package com.drizzle.drizzledaily.ui;
 
 import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.listener.UpdateListener;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.ui.activities.BaseActivity;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.rengwuxian.materialedittext.MaterialEditText;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.listener.UpdateListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ChangePasswordActivity extends BaseActivity {

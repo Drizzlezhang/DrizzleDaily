@@ -2,18 +2,16 @@ package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
@@ -23,7 +21,6 @@ import com.drizzle.drizzledaily.api.model.HotNews;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
-import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
@@ -31,13 +28,6 @@ import com.drizzle.drizzledaily.utils.TUtils;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import retrofit.Callback;
-import retrofit.Response;
-import retrofit.Retrofit;
-import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
@@ -145,44 +135,37 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 	 * 请求数据并存入list
 	 */
 	private void getLists() {
-		ApiBuilder.create(MyApi.class).hot()
-			.filter(new Func1<HotNews, Boolean>() {
-				@Override public Boolean call(HotNews hotNews) {
-					return NetUtils.isConnected(getActivity());
+		ApiBuilder.create(MyApi.class).hot().filter(new Func1<HotNews, Boolean>() {
+			@Override public Boolean call(HotNews hotNews) {
+				return NetUtils.isConnected(getActivity());
+			}
+		}).doOnSubscribe(new Action0() {
+			@Override public void call() {
+				swipeRefresh(true);
+			}
+		}).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).map(new Func1<HotNews, HotNews>() {
+			@Override public HotNews call(HotNews hotNews) {
+				for (HotNews.RecentEntity recent : hotNews.getRecent()) {
+					BaseListItem baseListItem =
+						new BaseListItem(recent.getNews_id(), recent.getTitle(), recent.getThumbnail(), false, "");
+					hotListItems.add(baseListItem);
 				}
-			})
-			.doOnSubscribe(new Action0() {
-				@Override public void call() {
-					swipeRefresh(true);
-				}
-			})
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribeOn(Schedulers.io())
-			.map(new Func1<HotNews, HotNews>() {
-				@Override public HotNews call(HotNews hotNews) {
-					for (HotNews.RecentEntity recent : hotNews.getRecent()) {
-						BaseListItem baseListItem =
-							new BaseListItem(recent.getNews_id(), recent.getTitle(), recent.getThumbnail(), false, "");
-						hotListItems.add(baseListItem);
-					}
-					return hotNews;
-				}
-			})
-			.subscribeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Observer<HotNews>() {
-				@Override public void onCompleted() {
-					swipeRefresh(false);
-				}
+				return hotNews;
+			}
+		}).subscribeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<HotNews>() {
+			@Override public void onCompleted() {
+				swipeRefresh(false);
+			}
 
-				@Override public void onError(Throwable e) {
-					TUtils.showShort(getActivity(), "服务器出问题了");
-					swipeRefresh(false);
-				}
+			@Override public void onError(Throwable e) {
+				TUtils.showShort(getActivity(), "服务器出问题了");
+				swipeRefresh(false);
+			}
 
-				@Override public void onNext(HotNews hotNews) {
-					adapter.notifyDataSetChanged();
-				}
-			});
+			@Override public void onNext(HotNews hotNews) {
+				adapter.notifyDataSetChanged();
+			}
+		});
 	}
 
 	public void onEvent(FabClickEvent fabClickEvent) {
