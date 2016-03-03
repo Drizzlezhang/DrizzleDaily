@@ -24,7 +24,10 @@ import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +55,14 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 		View view = inflater.inflate(R.layout.hot_list_fragment, container, false);
 		ButterKnife.bind(this, view);
 		initViews();
-		//String hotcachejson = PerferUtils.getString(HOTCACHENAME);
-		//if (!hotcachejson.equals("")) {
-		//	manageHotJson(hotcachejson);
-		//}
+		String hotcachejson = PerferUtils.getString(HOTCACHENAME);
+		if (!hotcachejson.equals("")) {
+			Gson gson = new Gson();
+			List<BaseListItem> baseListItemList = gson.fromJson(hotcachejson, new TypeToken<List<BaseListItem>>() {
+			}.getType());
+			hotListItems.addAll(baseListItemList);
+			adapter.notifyDataSetChanged();
+		}
 		getLists();
 		return view;
 	}
@@ -145,11 +152,14 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 			}
 		}).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).map(new Func1<HotNews, HotNews>() {
 			@Override public HotNews call(HotNews hotNews) {
+				hotListItems.clear();
 				for (HotNews.RecentEntity recent : hotNews.getRecent()) {
 					BaseListItem baseListItem =
 						new BaseListItem(recent.getNews_id(), recent.getTitle(), recent.getThumbnail(), false, "");
 					hotListItems.add(baseListItem);
 				}
+				Gson gson = new Gson();
+				PerferUtils.saveSth(HOTCACHENAME, gson.toJson(hotListItems));
 				return hotNews;
 			}
 		}).subscribeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<HotNews>() {

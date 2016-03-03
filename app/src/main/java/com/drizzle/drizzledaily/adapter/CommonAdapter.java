@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.google.gson.Gson;
 import java.util.List;
 
 /**
@@ -23,6 +24,11 @@ public abstract class CommonAdapter<T> extends BaseAdapter {
 		this.mContext = mContext;
 		this.mDatas = mDatas;
 		this.mItemLayoutId = mItemLayoutId;
+	}
+
+	public String getJson() {
+		Gson gson = new Gson();
+		return gson.toJson(mDatas);
 	}
 
 	@Override public int getCount() {

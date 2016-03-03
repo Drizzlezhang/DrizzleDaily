@@ -4,7 +4,7 @@
       xmlns:tools="http://schemas.android.com/tools">
       <item android:id="@+id/action_share"
             android:title="分享"
-            android:icon="@drawable/abc_ic_menu_share_mtrl_alpha"
+            android:icon="@drawable/smoke"
             android:orderInCategory="100"
             app:showAsAction="always"/>
       <item android:id="@+id/action_collect"

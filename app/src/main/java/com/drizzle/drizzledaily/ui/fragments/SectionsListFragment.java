@@ -23,7 +23,10 @@ import com.drizzle.drizzledaily.ui.activities.SectionListActivity;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,12 +54,14 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 		View view = inflater.inflate(R.layout.sections_list_fragment, container, false);
 		ButterKnife.bind(this, view);
 		initViews();
-		//String sectioncachejson = PerferUtils.getString(SECTIONCACHE);
-		//if (sectioncachejson.equals("")) {
-		//    //TODO
-		//} else {
-		//    manageSectionList(sectioncachejson);
-		//}
+		String sectionCache = PerferUtils.getString(SECTIONCACHE);
+		if (!sectionCache.equals("")) {
+			Gson gson = new Gson();
+			List<BaseListItem> baseListItemList = gson.fromJson(sectionCache, new TypeToken<List<BaseListItem>>() {
+			}.getType());
+			sectionsItems.addAll(baseListItemList);
+			adapter.notifyDataSetChanged();
+		}
 		getLists();
 		return view;
 	}
@@ -152,6 +157,8 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 							data.getDescription());
 					sectionsItems.add(baseListItem);
 				}
+				Gson gson = new Gson();
+				PerferUtils.saveSth(SECTIONCACHE, gson.toJson(sectionsItems));
 				return sections;
 			}
 		}).subscribeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Sections>() {

@@ -21,12 +21,16 @@ import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.DatePicker;
 import android.widget.TextView;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import cn.bmob.v3.BmobUser;
+import cn.bmob.v3.update.BmobUpdateAgent;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.bean.ShareBean;
+import com.drizzle.drizzledaily.ui.UserActivity;
 import com.drizzle.drizzledaily.ui.fragments.AboutDeveloperFragment;
 import com.drizzle.drizzledaily.ui.fragments.CollectListFragment;
 import com.drizzle.drizzledaily.ui.fragments.HotListFragment;
@@ -34,7 +38,6 @@ import com.drizzle.drizzledaily.ui.fragments.LatestListFragment;
 import com.drizzle.drizzledaily.ui.fragments.SearchFragment;
 import com.drizzle.drizzledaily.ui.fragments.SectionsListFragment;
 import com.drizzle.drizzledaily.ui.fragments.ThemeListFragment;
-import com.drizzle.drizzledaily.ui.UserActivity;
 import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
@@ -42,15 +45,10 @@ import com.drizzle.drizzledaily.utils.TUtils;
 import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.OnItemClickListener;
 import de.greenrobot.event.EventBus;
+import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import cn.bmob.v3.BmobUser;
-import cn.bmob.v3.update.BmobUpdateAgent;
-import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * 主界面，管理多个列表fragment

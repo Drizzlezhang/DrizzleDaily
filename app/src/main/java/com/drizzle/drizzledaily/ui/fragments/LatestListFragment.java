@@ -16,7 +16,9 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.LatestAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
@@ -30,16 +32,14 @@ import com.drizzle.drizzledaily.utils.DateUtils;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
-import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action0;
@@ -62,6 +62,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 	private LatestAdapter latestAdapter;
 	private FragmentStatePagerAdapter fragmentStatePagerAdapter;
 	private static final String LATESTCACHENAME = "latestcache";
+	private static final String HEADCACHENAME = "headcachename";
 
 	@Nullable @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -72,12 +73,14 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		mListView.addHeaderView(headview);
 		mCalendar = Calendar.getInstance();
 		initViews();
-		//String latestcache = PerferUtils.getString(LATESTCACHENAME);
-		//if (latestcache.equals("")) {
-		//    //TODO
-		//} else {
-		//    manageLatestJson(latestcache);
-		//}
+		String latestcache = PerferUtils.getString(LATESTCACHENAME);
+		if (!latestcache.equals("")) {
+			Gson gson = new Gson();
+			List<BaseListItem> baseListItemList = gson.fromJson(latestcache, new TypeToken<List<BaseListItem>>() {
+			}.getType());
+			baseListItems.addAll(baseListItemList);
+			latestAdapter.notifyDataSetChanged();
+		}
 		swipeRefresh(true);
 		getTodayNews();
 		return view;
@@ -192,11 +195,14 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 						new BaseListItem(topStory.getId(), topStory.getTitle(), topStory.getImage(), false, "");
 					headpagerItems.add(headbaseListItem);
 				}
+				Gson gson = new Gson();
+				PerferUtils.saveSth(HEADCACHENAME, gson.toJson(headpagerItems));
 				for (LatestNews.StoriesEntity story : latestNews.getStories()) {
 					BaseListItem baseListItem =
 						new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, date);
 					baseListItems.add(baseListItem);
 				}
+				PerferUtils.saveSth(LATESTCACHENAME, gson.toJson(baseListItems));
 			}
 		});
 	}

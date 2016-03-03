@@ -23,7 +23,10 @@ import com.drizzle.drizzledaily.ui.activities.ThemeListActivity;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
 import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,12 +53,14 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 		View view = inflater.inflate(R.layout.theme_list_fragment, container, false);
 		ButterKnife.bind(this, view);
 		initViews();
-		//String themecachejson = PerferUtils.getString(THEMECACHE);
-		//if (themecachejson.equals("")) {
-		//	//TODO
-		//} else {
-		//	manageThemeJson(themecachejson);
-		//}
+		String themeCache = PerferUtils.getString(THEMECACHE);
+		if (!themeCache.equals("")) {
+			Gson gson = new Gson();
+			List<BaseListItem> baseListItemList = gson.fromJson(themeCache, new TypeToken<List<BaseListItem>>() {
+			}.getType());
+			themeItems.addAll(baseListItemList);
+			adapter.notifyDataSetChanged();
+		}
 		getLists();
 		return view;
 	}
@@ -151,6 +156,8 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 							others.getDescription());
 					themeItems.add(baseListItem);
 				}
+				Gson gson = new Gson();
+				PerferUtils.saveSth(THEMECACHE, gson.toJson(themeItems));
 				return themes;
 			}
 		}).subscribeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Themes>() {
