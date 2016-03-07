@@ -119,14 +119,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	private void initViews() {
 		mToolbar.setTitle("知乎日报");
 		setSupportActionBar(mToolbar);
-		//获取控件的高度
-		int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-		int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-		mToolbar.measure(w, h);
-		int height = mToolbar.getMeasuredHeight();
-		int width = mToolbar.getMeasuredWidth();
-		mToolbar.setTranslationY(-height);
-		mToolbar.animate().translationY(0).setDuration(600).setStartDelay(600);
+		////获取控件的高度
+		//int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		//int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		//mToolbar.measure(w, h);
+		//int height = mToolbar.getMeasuredHeight();
+		//int width = mToolbar.getMeasuredWidth();
+		//mToolbar.setTranslationY(-height);
+		//mToolbar.animate().translationY(0).setDuration(600).setStartDelay(600);
 		nameText = (TextView) findViewById(R.id.drawer_name1);
 		mainTouxiang = (CircleImageView) findViewById(R.id.drawer_touxiang1);
 		mainTouxiang.setOnClickListener(new View.OnClickListener() {
