@@ -4,15 +4,18 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -20,7 +23,7 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.UpdateListener;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.SwipeAdapter;
+import com.drizzle.drizzledaily.adapter.SwipeRecyclerAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.MyUser;
 import com.drizzle.drizzledaily.model.Config;
@@ -31,17 +34,19 @@ import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import jp.wasabeef.recyclerview.animators.FadeInLeftAnimator;
 
 /**
  * 收藏夹列表
  */
 public class CollectListFragment extends BaseFragment {
-	@Bind(R.id.collect_listview) ListView listView;
+	@Bind(R.id.collect_listview) RecyclerView mRecyclerView;
 
 	@Bind(R.id.upload_fab) FloatingActionButton uploadfloatingActionButton;
 
@@ -50,20 +55,48 @@ public class CollectListFragment extends BaseFragment {
 	@Bind(R.id.collect_center_text) TextView centerText;
 
 	private List<CollectBean> collectBeanList = new ArrayList<CollectBean>();
-	private SwipeAdapter adapter;
+	private SwipeRecyclerAdapter adapter;
 	private ProgressDialog progressDialog;
+	final Gson gson = new Gson();
 
 	@Override public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_collect_list, container, false);
 		ButterKnife.bind(this, view);
-		handler.sendEmptyMessage(1);
+		initData();
 		initViews();
 		return view;
 	}
 
+	private void initData() {
+		final SharedPreferences sharedPreferences =
+			getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
+		String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
+		List<CollectBean> collectBeans = gson.fromJson(collectcache, new TypeToken<List<CollectBean>>() {
+		}.getType());
+		collectBeanList.clear();
+		collectBeanList.addAll(collectBeans);
+		Collections.sort(collectBeanList);
+		isTextVisible();
+	}
+
 	private void initViews() {
+		mRecyclerView.setItemAnimator(new FadeInLeftAnimator());
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRecyclerView.addItemDecoration(
+			new HorizontalDividerItemDecoration.Builder(getActivity()).size(1).color(Color.GRAY).build());
+		adapter = new SwipeRecyclerAdapter(getActivity(), collectBeanList);
+		adapter.setOnDeleteClick(new SwipeRecyclerAdapter.CallDeleteBack() {
+			@Override public void onDeleteBtnclick(int position) {
+				Log.d("position", "" + position);
+				adapter.notifyItemRemoved(position);
+				collectBeanList.remove(new CollectBean(collectBeanList.get(position).getId(), "", 1, 0));
+				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanList));
+				isTextVisible();
+				mHandler.sendEmptyMessageDelayed(1,100);
+			}
+		});
 		//根据收藏文章的type决定跳转的阅读页面activity
-		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				CollectBean bean = collectBeanList.get(position);
 				int type = bean.getType();
@@ -80,6 +113,8 @@ public class CollectListFragment extends BaseFragment {
 				}
 			}
 		});
+		mRecyclerView.setAdapter(adapter);
+		isTextVisible();
 		uploadfloatingActionButton.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
 				uploadCollects();
@@ -96,30 +131,11 @@ public class CollectListFragment extends BaseFragment {
 		progressDialog.setCancelable(true);
 	}
 
-	/**
-	 * 将adapter的点击事件写到handler中实现重复删除
-	 */
-	private Handler handler = new Handler() {
+	private Handler mHandler = new Handler(){
 		@Override public void handleMessage(Message msg) {
-			switch (msg.what) {
+			switch (msg.what){
 				case 1:
-					final SharedPreferences sharedPreferences =
-						getActivity().getSharedPreferences(Config.CACHE_DATA, Activity.MODE_PRIVATE);
-					String collectcache = sharedPreferences.getString(Config.COLLECTCACHE, "[]");
-					final Gson gson = new Gson();
-					collectBeanList = gson.fromJson(collectcache, new TypeToken<List<CollectBean>>() {
-					}.getType());
-					Collections.sort(collectBeanList);
-					adapter = new SwipeAdapter(getActivity(), collectBeanList);
-					adapter.setOnDeleteClick(new SwipeAdapter.CallDeleteBack() {
-						@Override public void onDeleteBtnclick(int pageid) {
-							collectBeanList.remove(new CollectBean(pageid, "", 1, 0));
-							PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanList));
-							handler.sendEmptyMessage(1);
-						}
-					});
-					listView.setAdapter(adapter);
-					isTextVisible();
+					adapter.notifyDataSetChanged();
 					break;
 				default:
 					break;
@@ -201,9 +217,10 @@ public class CollectListFragment extends BaseFragment {
 						//数据合并转换为json存储到本地
 						cloudcollectset.addAll(oldcollectset);
 						PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(cloudcollectset));
-						handler.sendEmptyMessage(1);
+						adapter.notifyDataSetChanged();
 						TUtils.showShort(getActivity(), "同步成功");
 						progressDialog.dismiss();
+						isTextVisible();
 					}
 
 					@Override public void onNegative(MaterialDialog dialog) {
@@ -219,7 +236,9 @@ public class CollectListFragment extends BaseFragment {
 	 */
 	@Override public void onHiddenChanged(boolean hidden) {
 		if (hidden == false) {
-			handler.sendEmptyMessage(1);
+			initData();
+			adapter.notifyDataSetChanged();
+			isTextVisible();
 		}
 		super.onHiddenChanged(hidden);
 	}
