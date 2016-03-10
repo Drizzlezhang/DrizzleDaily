@@ -15,17 +15,15 @@
 		app:popupTheme="@style/AppTheme.PopupOverlay"
 		/>
 
-	<ListView
+	<android.support.v7.widget.RecyclerView
 		android:id="@+id/section_list_listview"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
-		android:layout_marginLeft="5dp"
-		android:layout_marginRight="5dp"
 		android:layout_marginTop="@dimen/abc_action_bar_default_height_material"
-		android:scrollbars="none"
+		android:scrollbars="vertical"
 		>
 
-	</ListView>
+	</android.support.v7.widget.RecyclerView>
 
 	<ProgressBar
 		android:id="@+id/section_list_progress"

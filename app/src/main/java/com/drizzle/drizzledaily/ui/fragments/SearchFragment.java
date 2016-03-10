@@ -2,18 +2,17 @@ package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.CommonAdapter;
-import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.adapter.ListRecyclerAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.BeforeNews;
@@ -21,12 +20,12 @@ import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.activities.ReadActivity;
 import com.drizzle.drizzledaily.utils.FabClickEvent;
-import com.drizzle.drizzledaily.utils.FabEvent;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import de.greenrobot.event.EventBus;
 import java.util.ArrayList;
 import java.util.List;
+import jp.wasabeef.recyclerview.adapters.SlideInLeftAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -37,11 +36,11 @@ import rx.schedulers.Schedulers;
  */
 public class SearchFragment extends BaseFragment {
 
-	@Bind(R.id.search_list) ListView mListView;
+	@Bind(R.id.search_list) RecyclerView mRecyclerView;
 
 	@Bind(R.id.search_progress) ProgressBar mProgressBar;
 
-	private CommonAdapter<BaseListItem> adapter;
+	private ListRecyclerAdapter adapter;
 	private String id;
 	private List<BaseListItem> baseListItems = new ArrayList<>();
 	private static final String TIMEID = "timeid";
@@ -72,39 +71,15 @@ public class SearchFragment extends BaseFragment {
 	}
 
 	private void initViews() {
-		adapter = new CommonAdapter<BaseListItem>(getActivity(), baseListItems, R.layout.base_list_item) {
-			@Override public void convert(ViewHolder helper, BaseListItem item) {
-				helper.setText(R.id.base_item_title, item.getTitle());
-				helper.setImg(R.id.base_item_img, item.getImgUrl());
-			}
-		};
-		mListView.setAdapter(adapter);
-		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		adapter = new ListRecyclerAdapter(getActivity(), baseListItems);
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+		mRecyclerView.setItemAnimator(new SlideInDownAnimator());
+		mRecyclerView.setAdapter(new SlideInLeftAnimationAdapter(adapter));
+		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(getActivity(), ReadActivity.class);
 				intent.putExtra(Config.READID, baseListItems.get(position).getId());
 				startActivity(intent);
-			}
-		});
-		mListView.setOnScrollListener(new AbsListView.OnScrollListener() {
-			@Override public void onScrollStateChanged(AbsListView view, int scrollState) {
-				switch (scrollState) {
-					case AbsListView.OnScrollListener.SCROLL_STATE_IDLE://静止状态
-						EventBus.getDefault().post(new FabEvent(true));
-						break;
-					case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
-						EventBus.getDefault().post(new FabEvent(false));
-						break;
-					case AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL:
-						EventBus.getDefault().post(new FabEvent(false));
-						break;
-					default:
-						break;
-				}
-			}
-
-			@Override
-			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
 			}
 		});
 	}
@@ -164,7 +139,7 @@ public class SearchFragment extends BaseFragment {
 
 	public void onEvent(FabClickEvent fabClickEvent) {
 		if (fabClickEvent.getFragmentId() == 6) {
-			mListView.smoothScrollToPosition(0);
+			mRecyclerView.smoothScrollToPosition(0);
 		}
 	}
 }

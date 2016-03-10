@@ -1,16 +1,14 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:app="http://schemas.android.com/apk/res-auto"
              xmlns:tools="http://schemas.android.com/tools"
              android:layout_width="match_parent"
              android:layout_height="match_parent"
              tools:context=".ui.fragments.SearchFragment">
 
-    <ListView
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/search_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="5dp"
-        android:scrollbars="none"></ListView>
+       ></android.support.v7.widget.RecyclerView>
 
     <ProgressBar
         android:id="@+id/search_progress"

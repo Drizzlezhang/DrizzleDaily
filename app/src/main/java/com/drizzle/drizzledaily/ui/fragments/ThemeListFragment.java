@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.GridListAdapter;
+import com.drizzle.drizzledaily.adapter.GridRecyclerAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.Themes;
@@ -44,7 +44,7 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 
 	@Bind(R.id.theme_grid) RecyclerView mRecyclerView;
 	private List<BaseListItem> themeItems = new ArrayList<>();
-	private GridListAdapter adapter;
+	private GridRecyclerAdapter adapter;
 	private static String THEMECACHE = "themelistcache";
 
 	@Nullable @Override
@@ -68,7 +68,7 @@ public class ThemeListFragment extends BaseFragment implements SwipeRefreshLayou
 		mRefreshLayout.setOnRefreshListener(this);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 		mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-		adapter = new GridListAdapter(themeItems, getActivity());
+		adapter = new GridRecyclerAdapter(themeItems, getActivity());
 		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(getActivity(), ThemeListActivity.class);

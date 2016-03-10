@@ -39,6 +39,7 @@ dependencies {
 	compile 'io.reactivex:rxjava:1.0.14'
 	compile 'de.greenrobot:eventbus:2.4.0'
 	compile 'jp.wasabeef:recyclerview-animators:2.2.1'
+	compile 'com.yqritc:recyclerview-flexibledivider:1.2.9'
 
 	compile('com.github.afollestad.material-dialogs:commons:0.8.5.6@aar') {
 		transitive = true

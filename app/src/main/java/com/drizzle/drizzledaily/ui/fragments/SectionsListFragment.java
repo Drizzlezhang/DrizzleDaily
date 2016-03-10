@@ -14,7 +14,7 @@ import android.widget.AdapterView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.GridListAdapter;
+import com.drizzle.drizzledaily.adapter.GridRecyclerAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.Sections;
@@ -46,7 +46,7 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 	private static String SECTIONCACHE = "sectionlistcache";
 
 	private List<BaseListItem> sectionsItems = new ArrayList<>();
-	private GridListAdapter adapter;
+	private GridRecyclerAdapter adapter;
 
 	@Nullable @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +69,7 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 		mRefreshLayout.setOnRefreshListener(this);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 		mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
-		adapter = new GridListAdapter(sectionsItems, getActivity());
+		adapter = new GridRecyclerAdapter(sectionsItems, getActivity());
 		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(getActivity(), SectionListActivity.class);

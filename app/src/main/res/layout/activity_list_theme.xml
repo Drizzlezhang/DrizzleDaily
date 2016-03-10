@@ -49,26 +49,13 @@
 		</android.support.design.widget.CollapsingToolbarLayout>
 	</android.support.design.widget.AppBarLayout>
 
-	<android.support.v4.widget.NestedScrollView
-		android:id="@+id/theme_list_scroll"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:scrollbars="vertical"
-		app:layout_behavior="@string/appbar_scrolling_view_behavior"
-		>
-
-		<FrameLayout
-			android:layout_width="match_parent"
-			android:layout_height="match_parent"
-			>
-
-			<ListView
+			<android.support.v7.widget.RecyclerView
 				android:id="@+id/theme_list"
 				android:layout_width="match_parent"
 				android:layout_height="match_parent"
-				android:layout_margin="5dp"
-				android:scrollbars="none"
-				></ListView>
+				app:layout_behavior="@string/appbar_scrolling_view_behavior"
+				android:scrollbars="vertical"
+				></android.support.v7.widget.RecyclerView>
 
 			<ProgressBar
 				android:id="@+id/theme_list_progress"
@@ -76,6 +63,4 @@
 				android:layout_height="40dp"
 				android:layout_gravity="center"
 				/>
-		</FrameLayout>
-	</android.support.v4.widget.NestedScrollView>
 </android.support.design.widget.CoordinatorLayout>

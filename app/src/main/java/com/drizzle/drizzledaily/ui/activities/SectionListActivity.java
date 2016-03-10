@@ -1,19 +1,20 @@
 package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.CommonAdapter;
-import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.adapter.SimpleRecyclerAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.SectionList;
@@ -21,8 +22,11 @@ import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import java.util.ArrayList;
 import java.util.List;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -36,11 +40,11 @@ public class SectionListActivity extends BaseActivity {
 	private int sectionid;
 	private static final String SECTIONID = "sectionid";
 	private List<BaseListItem> sectionList = new ArrayList<>();
-	private CommonAdapter<BaseListItem> adapter;
+	private SimpleRecyclerAdapter adapter;
 
 	@Bind(R.id.section_list_toolbar) Toolbar mToolbar;
 
-	@Bind(R.id.section_list_listview) ListView mListView;
+	@Bind(R.id.section_list_listview) RecyclerView mRecyclerView;
 
 	@Bind(R.id.section_list_progress) ProgressBar mProgressBar;
 
@@ -66,23 +70,22 @@ public class SectionListActivity extends BaseActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		mToolbar.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
-				mListView.smoothScrollToPosition(0);
+				mRecyclerView.smoothScrollToPosition(0);
 			}
 		});
-		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		adapter = new SimpleRecyclerAdapter(this,sectionList);
+		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(SectionListActivity.this, ReadActivity.class);
 				intent.putExtra(Config.READID, sectionList.get(position).getId());
 				startActivity(intent);
 			}
 		});
-		adapter = new CommonAdapter<BaseListItem>(getApplicationContext(), sectionList, R.layout.base_list_item) {
-			@Override public void convert(ViewHolder helper, BaseListItem item) {
-				helper.setText(R.id.base_item_title, item.getTitle());
-				helper.setImg(R.id.base_item_img, item.getImgUrl());
-			}
-		};
-		mListView.setAdapter(adapter);
+		mRecyclerView.setItemAnimator(new SlideInDownAnimator());
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+		mRecyclerView.addItemDecoration(
+			new HorizontalDividerItemDecoration.Builder(this).color(Color.GRAY).size(1).build());
+		mRecyclerView.setAdapter(new SlideInBottomAnimationAdapter(adapter));
 	}
 
 	private void getList() {

@@ -1,33 +1,34 @@
 package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.widget.NestedScrollView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.CommonAdapter;
-import com.drizzle.drizzledaily.adapter.ViewHolder;
+import com.drizzle.drizzledaily.adapter.SimpleRecyclerAdapter;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.ThemeList;
 import com.drizzle.drizzledaily.bean.BaseListItem;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
+import com.yqritc.recyclerviewflexibledivider.HorizontalDividerItemDecoration;
 import java.util.ArrayList;
 import java.util.List;
+import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
+import jp.wasabeef.recyclerview.animators.SlideInDownAnimator;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
@@ -40,7 +41,7 @@ public class ThemeListActivity extends BaseActivity {
 
 	private Toolbar mToolbar;
 
-	@Bind(R.id.theme_list) ListView mListView;
+	@Bind(R.id.theme_list) RecyclerView mRecyclerView;
 
 	@Bind(R.id.theme_list_headimg) ImageView mImageView;
 
@@ -48,12 +49,11 @@ public class ThemeListActivity extends BaseActivity {
 
 	@Bind(R.id.theme_list_progress) ProgressBar mProgressBar;
 
-	@Bind(R.id.theme_list_scroll) NestedScrollView mNestedScrollView;
 	private int themeId;
 	private String imgUrl;
 	private String title;
 	private List<BaseListItem> themeList = new ArrayList<>();
-	private CommonAdapter<BaseListItem> adapter;
+	private SimpleRecyclerAdapter adapter;
 	private static final String THEMEID = "themeid";
 
 	@Override protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +70,8 @@ public class ThemeListActivity extends BaseActivity {
 	}
 
 	private void getLists() {
-		ApiBuilder.create(MyApi.class).themelist(themeId)
+		ApiBuilder.create(MyApi.class)
+			.themelist(themeId)
 			.subscribeOn(Schedulers.io())
 			.filter(new Func1<ThemeList, Boolean>() {
 				@Override public Boolean call(ThemeList themeList) {
@@ -95,14 +96,12 @@ public class ThemeListActivity extends BaseActivity {
 				@Override public void onCompleted() {
 					collapsingToolbarLayout.setTitle(title);
 					adapter.notifyDataSetChanged();
-					setListViewHeightBasedOnChildren(mListView);
 					Glide.with(getApplicationContext())
 						.load(imgUrl)
 						.centerCrop()
 						.error(R.mipmap.place_img)
 						.crossFade()
 						.into(mImageView);
-
 				}
 
 				@Override public void onError(Throwable e) {
@@ -123,47 +122,27 @@ public class ThemeListActivity extends BaseActivity {
 		getSupportActionBar().setHomeButtonEnabled(true);
 		mToolbar.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
-				mNestedScrollView.smoothScrollTo(0, 0);
+				mRecyclerView.smoothScrollToPosition(0);
 			}
 		});
-		mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		adapter = new SimpleRecyclerAdapter(this, themeList);
+		mRecyclerView.setItemAnimator(new SlideInDownAnimator());
+		mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+		mRecyclerView.addItemDecoration(
+			new HorizontalDividerItemDecoration.Builder(this).color(Color.GRAY).size(1).build());
+		mRecyclerView.setAdapter(new SlideInBottomAnimationAdapter(adapter));
+		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(ThemeListActivity.this, SectionReadActivity.class);
 				intent.putExtra("readid", themeList.get(position).getId());
 				startActivity(intent);
 			}
 		});
-		adapter = new CommonAdapter<BaseListItem>(ThemeListActivity.this, themeList, R.layout.simple_list_item) {
-			@Override public void convert(ViewHolder helper, BaseListItem item) {
-				helper.setText(R.id.simple_item_title, item.getTitle());
-			}
-		};
-		mListView.setAdapter(adapter);
 	}
-
 
 	@Override protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(THEMEID, themeId);
 		super.onSaveInstanceState(outState);
-	}
-
-	/**
-	 * 测量listview高度，解决和scrollview冲突问题
-	 */
-	public static void setListViewHeightBasedOnChildren(ListView listView) {
-		ListAdapter listAdapter = listView.getAdapter();
-		if (listAdapter == null) {
-			return;
-		}
-		int totalHeight = 0;
-		for (int i = 0; i < listAdapter.getCount(); i++) {
-			View listItem = listAdapter.getView(i, null, listView);
-			listItem.measure(0, 0);
-			totalHeight += listItem.getMeasuredHeight();
-		}
-		ViewGroup.LayoutParams params = listView.getLayoutParams();
-		params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-		listView.setLayoutParams(params);
 	}
 
 	@Override public boolean onCreateOptionsMenu(Menu menu) {
