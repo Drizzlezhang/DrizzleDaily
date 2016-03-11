@@ -47,7 +47,7 @@ import rx.schedulers.Schedulers;
  */
 public class LatestListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 	@Bind(R.id.latest_list_refresh) SwipeRefreshLayout mRefreshLayout;
-	
+
 	@Bind(R.id.latest_list) RecyclerView mRecyclerView;
 
 	private Calendar mCalendar;

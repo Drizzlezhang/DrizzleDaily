@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,7 +68,7 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 	private void initViews() {
 		mRefreshLayout.setOnRefreshListener(this);
 		mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-		mRecyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+		mRecyclerView.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
 		adapter = new GridRecyclerAdapter(sectionsItems, getActivity());
 		adapter.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
