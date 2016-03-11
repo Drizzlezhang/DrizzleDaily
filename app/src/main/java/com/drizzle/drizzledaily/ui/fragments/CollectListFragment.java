@@ -11,7 +11,6 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +78,19 @@ public class CollectListFragment extends BaseFragment {
 		isTextVisible();
 	}
 
+	private Handler mHandler = new Handler() {
+		@Override public void handleMessage(Message msg) {
+			switch (msg.what) {
+				case 1:
+					adapter.notifyDataSetChanged();
+					isTextVisible();
+					break;
+				default:
+					break;
+			}
+		}
+	};
+
 	private void initViews() {
 		mRecyclerView.setItemAnimator(new FadeInLeftAnimator());
 		mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -87,12 +99,11 @@ public class CollectListFragment extends BaseFragment {
 		adapter = new SwipeRecyclerAdapter(getActivity(), collectBeanList);
 		adapter.setOnDeleteClick(new SwipeRecyclerAdapter.CallDeleteBack() {
 			@Override public void onDeleteBtnclick(int position) {
-				Log.d("position", "" + position);
 				adapter.notifyItemRemoved(position);
 				collectBeanList.remove(new CollectBean(collectBeanList.get(position).getId(), "", 1, 0));
 				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanList));
-				isTextVisible();
-				mHandler.sendEmptyMessageDelayed(1,100);
+
+				mHandler.sendEmptyMessageDelayed(1, 100);
 			}
 		});
 		//根据收藏文章的type决定跳转的阅读页面activity
@@ -130,18 +141,6 @@ public class CollectListFragment extends BaseFragment {
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setCancelable(true);
 	}
-
-	private Handler mHandler = new Handler(){
-		@Override public void handleMessage(Message msg) {
-			switch (msg.what){
-				case 1:
-					adapter.notifyDataSetChanged();
-					break;
-				default:
-					break;
-			}
-		}
-	};
 
 	/**
 	 * 将本地收藏夹上传到云,并覆盖
