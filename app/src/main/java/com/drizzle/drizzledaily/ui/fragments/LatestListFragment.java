@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -48,15 +47,13 @@ import rx.schedulers.Schedulers;
  */
 public class LatestListFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
 	@Bind(R.id.latest_list_refresh) SwipeRefreshLayout mRefreshLayout;
-
-	//自动轮播viewpager
+	
 	@Bind(R.id.latest_list) RecyclerView mRecyclerView;
 
 	private Calendar mCalendar;
 	private List<BaseListItem> baseListItems = new ArrayList<>();
 	private List<BaseListItem> headpagerItems = new ArrayList<>();
 	private LatestRecyclerAdapter latestAdapter;
-	private FragmentStatePagerAdapter fragmentStatePagerAdapter;
 	private static final String LATESTCACHENAME = "latestcache";
 	private static final String HEADCACHENAME = "headcachename";
 
