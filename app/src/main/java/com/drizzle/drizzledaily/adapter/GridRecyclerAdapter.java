@@ -46,7 +46,7 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<GridRecyclerAdapte
 
 	@Override public void onBindViewHolder(GridViewHolder holder, final int position) {
 		ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();//得到item的LayoutParams布局参数
-		params.height = (int) (700 + Math.random() * 100);//把随机的高度赋予itemView布局
+		params.height = (int) (800 + Math.random() * 300);//把随机的高度赋予itemView布局
 		holder.itemView.setLayoutParams(params);//把params设置给itemView布局
 		holder.gridItemTitle.setText(mBaseListItemList.get(position).getTitle());
 		holder.gridItemDescribe.setText(mBaseListItemList.get(position).getDescribe());

@@ -126,7 +126,7 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 		}).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<LatestNews>() {
 			@Override public void onCompleted() {
 				latestAdapter.notifyDataSetChanged();
-				mRefreshLayout.setRefreshing(false);
+				swipeRefresh(false);
 				EventBus.getDefault().post(new FabEvent(true));
 			}
 
