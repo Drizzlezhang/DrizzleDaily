@@ -11,7 +11,6 @@ import android.os.Message;
 import android.os.PersistableBundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -30,6 +29,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.update.BmobUpdateAgent;
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.adapter.CommonAdapter;
 import com.drizzle.drizzledaily.adapter.ViewHolder;
@@ -493,9 +494,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 			|| ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_CONTACTS)
 			|| ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 			|| ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-			Snackbar.make(mToolbar, "运行程序需要部分权限,是否授权", Snackbar.LENGTH_LONG)
-				.setAction("OK", new View.OnClickListener() {
-					@Override public void onClick(View v) {
+			new MaterialDialog.Builder(this).title("权限授权")
+				.content("运行程序需要部分权限,是否授权")
+				.positiveText("确定")
+				.onPositive(new MaterialDialog.SingleButtonCallback() {
+					@Override public void onClick(MaterialDialog dialog, DialogAction which) {
 						ActivityCompat.requestPermissions(MainActivity.this, PERMISSION_LIST, PERMISSION_REQUEST);
 					}
 				})
