@@ -1,8 +1,11 @@
 package com.drizzle.drizzledaily.adapter;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -19,23 +22,31 @@ import java.util.List;
 /**
  * Created by drizzle on 16/3/10.
  */
-public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdapter.SimpleViewHolder> {
+public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdapter.SimpleViewHolder>
+	implements ItemTouchHelperAdapter {
 	private Context mContext;
 	private List<CollectBean> collectBeanList;
 	private AdapterView.OnItemClickListener mOnItemClickListener;
+	private OnStartDragListener mOnStartDragListener;
 
 	public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
 		this.mOnItemClickListener = onItemClickListener;
 	}
 
-	CallDeleteBack callDeleteBack = null;
-
-	public interface CallDeleteBack {
-		void onDeleteBtnclick(int position);
+	public void setOnStartDragListener(OnStartDragListener onStartDragListener) {
+		this.mOnStartDragListener = onStartDragListener;
 	}
 
-	public void setOnDeleteClick(CallDeleteBack deleteClick) {
-		callDeleteBack = deleteClick;
+	CallChangeBack mCallChangeBack = null;
+
+	public interface CallChangeBack {
+		void onDeleteBtnclick(int position);
+
+		void onItemMove(int from, int to);
+	}
+
+	public void setOnDeleteClick(CallChangeBack callChangeBack) {
+		mCallChangeBack = callChangeBack;
 	}
 
 	public SwipeRecyclerAdapter(Context context, List<CollectBean> collectBeanList) {
@@ -43,16 +54,24 @@ public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdap
 		this.collectBeanList = collectBeanList;
 	}
 
-	@Override public void onBindViewHolder(SimpleViewHolder viewHolder, final int position) {
+	@Override public void onBindViewHolder(final SimpleViewHolder viewHolder, final int position) {
 		viewHolder.swipeTitle.setText(collectBeanList.get(position).getTitle());
 		viewHolder.itemLayout.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
 				if (mOnItemClickListener != null) mOnItemClickListener.onItemClick(null, null, position, 0);
 			}
 		});
+		viewHolder.itemLayout.setOnTouchListener(new View.OnTouchListener() {
+			@Override public boolean onTouch(View v, MotionEvent event) {
+				if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+					mOnStartDragListener.onStartDrag(viewHolder);
+				}
+				return false;
+			}
+		});
 		viewHolder.buttonDelete.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
-				callDeleteBack.onDeleteBtnclick(position);
+				mCallChangeBack.onDeleteBtnclick(position);
 			}
 		});
 	}
@@ -70,7 +89,12 @@ public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdap
 		return R.id.swipe;
 	}
 
-	public static class SimpleViewHolder extends RecyclerView.ViewHolder {
+	@Override public boolean onItemMove(int from, int to) {
+		mCallChangeBack.onItemMove(from, to);
+		return true;
+	}
+
+	public static class SimpleViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
 		@Bind(R.id.swipe_item_layout) LinearLayout itemLayout;
 		@Bind(R.id.collect_item_title) TextView swipeTitle;
 		@Bind(R.id.delete_collect_item) Button buttonDelete;
@@ -78,6 +102,14 @@ public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdap
 		public SimpleViewHolder(View itemView) {
 			super(itemView);
 			ButterKnife.bind(this, itemView);
+		}
+
+		@Override public void onItemClear() {
+			itemLayout.setBackgroundColor(0);
+		}
+
+		@Override public void onItemSelected() {
+			itemLayout.setBackgroundColor(Color.LTGRAY);
 		}
 	}
 }

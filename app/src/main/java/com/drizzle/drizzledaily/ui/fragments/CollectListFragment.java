@@ -11,6 +11,7 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.UpdateListener;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
+import com.drizzle.drizzledaily.adapter.OnStartDragListener;
+import com.drizzle.drizzledaily.adapter.SimpleCallback;
 import com.drizzle.drizzledaily.adapter.SwipeRecyclerAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.MyUser;
@@ -57,6 +60,7 @@ public class CollectListFragment extends BaseFragment {
 	private SwipeRecyclerAdapter adapter;
 	private ProgressDialog progressDialog;
 	final Gson gson = new Gson();
+	private ItemTouchHelper mItemTouchHelper;
 
 	@Override public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_collect_list, container, false);
@@ -74,7 +78,8 @@ public class CollectListFragment extends BaseFragment {
 		}.getType());
 		collectBeanList.clear();
 		collectBeanList.addAll(collectBeans);
-		Collections.sort(collectBeanList);
+		//为了实现拖动不再排序
+		//	Collections.sort(collectBeanList);
 		isTextVisible();
 	}
 
@@ -97,12 +102,18 @@ public class CollectListFragment extends BaseFragment {
 		mRecyclerView.addItemDecoration(
 			new HorizontalDividerItemDecoration.Builder(getActivity()).size(1).color(Color.GRAY).build());
 		adapter = new SwipeRecyclerAdapter(getActivity(), collectBeanList);
-		adapter.setOnDeleteClick(new SwipeRecyclerAdapter.CallDeleteBack() {
+		adapter.setOnDeleteClick(new SwipeRecyclerAdapter.CallChangeBack() {
 			@Override public void onDeleteBtnclick(int position) {
 				adapter.notifyItemRemoved(position);
 				collectBeanList.remove(new CollectBean(collectBeanList.get(position).getId(), "", 1, 0));
 				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanList));
+				mHandler.sendEmptyMessageDelayed(1, 100);
+			}
 
+			@Override public void onItemMove(int from, int to) {
+				Collections.swap(collectBeanList, from, to);
+				adapter.notifyItemMoved(from, to);
+				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanList));
 				mHandler.sendEmptyMessageDelayed(1, 100);
 			}
 		});
@@ -125,6 +136,14 @@ public class CollectListFragment extends BaseFragment {
 			}
 		});
 		mRecyclerView.setAdapter(adapter);
+		ItemTouchHelper.Callback callback = new SimpleCallback(adapter);
+		mItemTouchHelper = new ItemTouchHelper(callback);
+		mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+		adapter.setOnStartDragListener(new OnStartDragListener() {
+			@Override public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+				mItemTouchHelper.startDrag(viewHolder);
+			}
+		});
 		isTextVisible();
 		uploadfloatingActionButton.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
