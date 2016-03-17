@@ -14,17 +14,6 @@
 		android:scaleType="centerCrop"
 		/>
 
-	<!--<TextView-->
-	<!--android:layout_width="wrap_content"-->
-	<!--android:layout_height="wrap_content"-->
-	<!--android:layout_alignParentBottom="true"-->
-	<!--android:layout_centerHorizontal="true"-->
-	<!--android:layout_marginBottom="80dp"-->
-	<!--android:text="知乎日报"-->
-	<!--android:textColor="@color/white"-->
-	<!--android:textSize="30sp"-->
-	<!--/>-->
-
 	<com.hanks.htextview.HTextView
 		android:id="@+id/htext"
 		android:layout_width="match_parent"

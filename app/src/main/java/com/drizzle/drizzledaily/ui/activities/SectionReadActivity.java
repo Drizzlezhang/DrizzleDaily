@@ -2,7 +2,7 @@ package com.drizzle.drizzledaily.ui.activities;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Parcelable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,7 +23,6 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -132,37 +131,33 @@ public class SectionReadActivity extends BaseActivity {
 	 * 处理readjson数据
 	 */
 	private void getAtrical(int managerReadId) {
-		ApiBuilder.create(MyApi.class).story(managerReadId)
-			.filter(new Func1<Story, Boolean>() {
-				@Override public Boolean call(Story story) {
-					return NetUtils.isConnected(SectionReadActivity.this);
-				}
-			})
-			.subscribeOn(Schedulers.io())
-			.observeOn(AndroidSchedulers.mainThread())
-			.subscribe(new Observer<Story>() {
-				@Override public void onCompleted() {
-					mProgressBar.setVisibility(View.GONE);
-				}
+		ApiBuilder.create(MyApi.class).story(managerReadId).filter(new Func1<Story, Boolean>() {
+			@Override public Boolean call(Story story) {
+				return NetUtils.isConnected(SectionReadActivity.this);
+			}
+		}).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Story>() {
+			@Override public void onCompleted() {
+				mProgressBar.setVisibility(View.GONE);
+			}
 
-				@Override public void onError(Throwable e) {
-					TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
-					mProgressBar.setVisibility(View.GONE);
-				}
+			@Override public void onError(Throwable e) {
+				TUtils.showShort(SectionReadActivity.this, "服务器出问题了");
+				mProgressBar.setVisibility(View.GONE);
+			}
 
-				@Override public void onNext(Story story) {
-					String name = story.getTitle();
-					mToolbar.setTitle(name);
-					pagetitle = name;
-					body = story.getBody();
-					pageUrl = story.getShare_url();
-					cssadd = story.getCss().get(0);
-					String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
-					String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
-					html = html.replace("<div class=\"img-place-holder\">", "");
-					sectionWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
-				}
-			});
+			@Override public void onNext(Story story) {
+				String name = story.getTitle();
+				mToolbar.setTitle(name);
+				pagetitle = name;
+				body = story.getBody();
+				pageUrl = story.getShare_url();
+				cssadd = story.getCss().get(0);
+				String css = "<link rel=\"stylesheet\" href=\"" + cssadd + "type=\"text/css\">";
+				String html = "<html><head>" + css + "</head><body>" + body + "</body></html>";
+				html = html.replace("<div class=\"img-place-holder\">", "");
+				sectionWeb.loadDataWithBaseURL("x-data://base", html, "text/html", "UTF-8", null);
+			}
+		});
 	}
 
 	@Override protected void onSaveInstanceState(Bundle outState) {
@@ -188,18 +183,13 @@ public class SectionReadActivity extends BaseActivity {
 				collectBeanSet.add(bean);
 				final Gson gson = new Gson();
 				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
-				new SnackBar.Builder(this).withOnClickListener(new SnackBar.OnMessageClickListener() {
-					@Override public void onMessageClick(Parcelable token) {
+				Snackbar.make(mToolbar, "已收藏到本地文件夹。", Snackbar.LENGTH_LONG).setAction("取消", new View.OnClickListener() {
+					@Override public void onClick(View v) {
 						collectBeanSet.remove(bean);
 						PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
 						TUtils.showShort(SectionReadActivity.this, "已取消收藏");
 					}
-				})
-					.withMessage("已收藏到本地文件夹。")
-					.withActionMessage("取消")
-					.withTextColorId(R.color.colorAccent)
-					.withDuration(SnackBar.LONG_SNACK)
-					.show();
+				}).show();
 				break;
 			case R.id.action_share:
 				dialogPlus.show();

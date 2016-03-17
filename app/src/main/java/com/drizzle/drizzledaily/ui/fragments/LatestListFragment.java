@@ -115,49 +115,56 @@ public class LatestListFragment extends BaseFragment implements SwipeRefreshLayo
 	 * 获取当天新闻
 	 */
 	private void getTodayNews() {
-		ApiBuilder.create(MyApi.class).latest().filter(new Func1<LatestNews, Boolean>() {
-			@Override public Boolean call(LatestNews latestNews) {
-				return NetUtils.isConnected(getActivity());
-			}
-		}).doOnSubscribe(new Action0() {
-			@Override public void call() {
-				swipeRefresh(true);
-			}
-		}).observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).subscribe(new Observer<LatestNews>() {
-			@Override public void onCompleted() {
-				latestAdapter.notifyDataSetChanged();
-				swipeRefresh(false);
-				EventBus.getDefault().post(new FabEvent(true));
-			}
-
-			@Override public void onError(Throwable e) {
-				TUtils.showShort(getActivity(), "服务器出问题了");
-				swipeRefresh(false);
-			}
-
-			@Override public void onNext(LatestNews latestNews) {
-				baseListItems.clear();
-				headpagerItems.clear();
-				BaseListItem todayNews = new BaseListItem();
-				todayNews.setViewType(0);
-				todayNews.setDate("今日热闻");
-				baseListItems.add(todayNews);
-				String date = DateUtils.printDate(mCalendar);
-				for (LatestNews.TopStoriesEntity topStory : latestNews.getTop_stories()) {
-					BaseListItem headbaseListItem =
-						new BaseListItem(topStory.getId(), topStory.getTitle(), topStory.getImage(), false, "");
-					headpagerItems.add(headbaseListItem);
+		ApiBuilder.create(MyApi.class)
+			.latest()
+			.filter(new Func1<LatestNews, Boolean>() {
+				@Override public Boolean call(LatestNews latestNews) {
+					return NetUtils.isConnected(getActivity());
 				}
-				Gson gson = new Gson();
-				PerferUtils.saveSth(HEADCACHENAME, gson.toJson(headpagerItems));
-				for (LatestNews.StoriesEntity story : latestNews.getStories()) {
-					BaseListItem baseListItem =
-						new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, date);
-					baseListItems.add(baseListItem);
+			})
+			.doOnSubscribe(new Action0() {
+				@Override public void call() {
+					swipeRefresh(true);
 				}
-				PerferUtils.saveSth(LATESTCACHENAME, gson.toJson(baseListItems));
-			}
-		});
+			})
+			.
+				observeOn(AndroidSchedulers.mainThread())
+			.subscribeOn(Schedulers.io())
+			.subscribe(new Observer<LatestNews>() {
+				@Override public void onCompleted() {
+					latestAdapter.notifyDataSetChanged();
+					swipeRefresh(false);
+					EventBus.getDefault().post(new FabEvent(true));
+				}
+
+				@Override public void onError(Throwable e) {
+					TUtils.showShort(getActivity(), "服务器出问题了");
+					swipeRefresh(false);
+				}
+
+				@Override public void onNext(LatestNews latestNews) {
+					baseListItems.clear();
+					headpagerItems.clear();
+					BaseListItem todayNews = new BaseListItem();
+					todayNews.setViewType(0);
+					todayNews.setDate("今日热闻");
+					baseListItems.add(todayNews);
+					String date = DateUtils.printDate(mCalendar);
+					for (LatestNews.TopStoriesEntity topStory : latestNews.getTop_stories()) {
+						BaseListItem headbaseListItem =
+							new BaseListItem(topStory.getId(), topStory.getTitle(), topStory.getImage(), false, "");
+						headpagerItems.add(headbaseListItem);
+					}
+					Gson gson = new Gson();
+					PerferUtils.saveSth(HEADCACHENAME, gson.toJson(headpagerItems));
+					for (LatestNews.StoriesEntity story : latestNews.getStories()) {
+						BaseListItem baseListItem =
+							new BaseListItem(story.getId(), story.getTitle(), story.getImages().get(0), false, date);
+						baseListItems.add(baseListItem);
+					}
+					PerferUtils.saveSth(LATESTCACHENAME, gson.toJson(baseListItems));
+				}
+			});
 	}
 
 	/**

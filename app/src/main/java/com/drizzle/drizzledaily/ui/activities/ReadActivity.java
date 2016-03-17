@@ -6,8 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.CollapsingToolbarLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -33,7 +33,6 @@ import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
-import com.github.mrengineer13.snackbar.SnackBar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.orhanobut.dialogplus.DialogPlus;
@@ -242,18 +241,13 @@ public class ReadActivity extends BaseActivity {
 				collectBeanSet.add(bean);
 				final Gson gson = new Gson();
 				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
-				new SnackBar.Builder(this).withOnClickListener(new SnackBar.OnMessageClickListener() {
-					@Override public void onMessageClick(Parcelable token) {
+				Snackbar.make(mToolbar,"已收藏到本地文件夹。",Snackbar.LENGTH_LONG).setAction("取消", new View.OnClickListener() {
+					@Override public void onClick(View v) {
 						collectBeanSet.remove(bean);
 						PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
 						TUtils.showShort(ReadActivity.this, "已取消收藏");
 					}
-				})
-					.withMessage("已收藏到本地文件夹。")
-					.withActionMessage("取消")
-					.withTextColorId(R.color.colorAccent)
-					.withDuration(SnackBar.LONG_SNACK)
-					.show();
+				}).show();
 				break;
 			case R.id.action_share:
 				dialogPlus.show();

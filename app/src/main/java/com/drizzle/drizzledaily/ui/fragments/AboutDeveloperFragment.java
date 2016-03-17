@@ -5,7 +5,6 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,17 +12,9 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
-
-import com.afollestad.materialdialogs.MaterialDialog;
-import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.model.Config;
-import com.drizzle.drizzledaily.utils.TUtils;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import im.fir.sdk.FIR;
-import im.fir.sdk.callback.VersionCheckCallback;
-import im.fir.sdk.version.AppVersion;
+import com.drizzle.drizzledaily.R;
 
 /**
  * 关于开发者页面，意见反馈
@@ -47,7 +38,7 @@ public class AboutDeveloperFragment extends android.support.v4.app.Fragment {
 		});
 		checkVersion.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
-				checkVersion();
+				//checkVersion();
 			}
 		});
 		return view;
@@ -112,46 +103,46 @@ public class AboutDeveloperFragment extends android.support.v4.app.Fragment {
 	/**
 	 * 检测更新，通过比较versioncode大小比较
 	 */
-	private void checkVersion() {
-		FIR.checkForUpdateInFIR(Config.FIRTOKEN, new VersionCheckCallback() {
-			@Override public void onSuccess(final AppVersion appVersion, boolean b) {
-				if (appVersion.getVersionCode() > getVersionCode()) {
-					String versionname = appVersion.getVersionName();
-					new MaterialDialog.Builder(getActivity()).title("有新版本  v" + versionname)
-						.content("点击确定进行更新。")
-						.positiveText("确定")
-						.negativeText("取消")
-						.callback(new MaterialDialog.ButtonCallback() {
-							@Override public void onPositive(MaterialDialog dialog) {
-								String updateUrl = appVersion.getUpdateUrl();
-								startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl)));
-							}
-
-							@Override public void onNegative(MaterialDialog dialog) {
-								super.onNegative(dialog);
-							}
-						})
-						.show();
-				} else {
-					TUtils.showShort(getActivity(), "当前为最新版本");
-				}
-			}
-
-			@Override public void onFail(String s, int i) {
-				Log.d("checkversion", "fail");
-			}
-
-			@Override public void onError(Exception e) {
-				Log.d("checkversion", "error");
-			}
-
-			@Override public void onStart() {
-				Log.d("checkversion", "start");
-			}
-
-			@Override public void onFinish() {
-				Log.d("checkversion", "finish");
-			}
-		});
-	}
+	//private void checkVersion() {
+	//	FIR.checkForUpdateInFIR(Config.FIRTOKEN, new VersionCheckCallback() {
+	//		@Override public void onSuccess(final AppVersion appVersion, boolean b) {
+	//			if (appVersion.getVersionCode() > getVersionCode()) {
+	//				String versionname = appVersion.getVersionName();
+	//				new MaterialDialog.Builder(getActivity()).title("有新版本  v" + versionname)
+	//					.content("点击确定进行更新。")
+	//					.positiveText("确定")
+	//					.negativeText("取消")
+	//					.callback(new MaterialDialog.ButtonCallback() {
+	//						@Override public void onPositive(MaterialDialog dialog) {
+	//							String updateUrl = appVersion.getUpdateUrl();
+	//							startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(updateUrl)));
+	//						}
+	//
+	//						@Override public void onNegative(MaterialDialog dialog) {
+	//							super.onNegative(dialog);
+	//						}
+	//					})
+	//					.show();
+	//			} else {
+	//				TUtils.showShort(getActivity(), "当前为最新版本");
+	//			}
+	//		}
+	//
+	//		@Override public void onFail(String s, int i) {
+	//			Log.d("checkversion", "fail");
+	//		}
+	//
+	//		@Override public void onError(Exception e) {
+	//			Log.d("checkversion", "error");
+	//		}
+	//
+	//		@Override public void onStart() {
+	//			Log.d("checkversion", "start");
+	//		}
+	//
+	//		@Override public void onFinish() {
+	//			Log.d("checkversion", "finish");
+	//		}
+	//	});
+	//}
 }

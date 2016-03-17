@@ -11,12 +11,12 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.SystemClock;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.ImageView;
-
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.drizzle.drizzledaily.R;
@@ -31,18 +31,13 @@ import com.hanks.htextview.HTextView;
 import com.squareup.okhttp.Call;
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
-
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.concurrent.TimeUnit;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import butterknife.Bind;
-import butterknife.ButterKnife;
 import retrofit.Callback;
 import retrofit.Response;
 import retrofit.Retrofit;
@@ -190,21 +185,19 @@ public class GildeActivity extends AppCompatActivity {
 						startActivity(new Intent(GildeActivity.this, MainActivity.class));
 						overridePendingTransition(0, android.R.anim.fade_in);
 						finish();
-
 					}
 				});
 				return null;
 			}
 		}).delay(888, TimeUnit.MILLISECONDS).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Void>() {
 			@Override public void call(Void aLong) {
-				hText.animateText("DrizzleDaily");
+				hText.animateText("知乎日报");
 			}
 		});
 	}
 
 	/**
 	 * 下载文件方法
-	 * @param url
 	 */
 	private void downFile(String url) {
 		OkHttpClient mOkHttpClient = new OkHttpClient();
