@@ -18,9 +18,15 @@ import cn.trinea.android.view.autoscrollviewpager.AutoScrollViewPager;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.BaseListItem;
+import com.drizzle.drizzledaily.model.Config;
 import com.drizzle.drizzledaily.ui.fragments.HeadPagerFragment;
+import com.drizzle.drizzledaily.utils.CheckUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by drizzle on 16/3/10.
@@ -32,6 +38,8 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 	private List<BaseListItem> headListItemList = new ArrayList<>();
 	private FragmentStatePagerAdapter fragmentStatePagerAdapter;
 	private FragmentManager mFragmentManager;
+	private Gson gson;
+	private List<Integer> alreadyList;
 
 	private AdapterView.OnItemClickListener mOnItemClickListener;
 
@@ -52,16 +60,42 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 		this.headListItemList = headListItemList;
 		this.mFragmentManager = fragmentManager;
 		mLayoutInflater = LayoutInflater.from(mContext);
+		gson = new Gson();
+		alreadyList = new ArrayList<>();
 	}
 
 	@Override public int getItemCount() {
 		return baseListItemList.size() + 1;
 	}
 
-	@Override public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+	@Override public void onBindViewHolder(final RecyclerView.ViewHolder holder, final int position) {
 		if (holder instanceof LatestDateHolder) {
 			((LatestDateHolder) holder).dateText.setText(baseListItemList.get(position - 1).getDate());
 		} else if (holder instanceof LatestItemHolder) {
+			final int itemId = baseListItemList.get(position - 1).getId();
+			if (CheckUtils.checkIsAlreadyClick(itemId) || alreadyList.contains(itemId)) {
+				((LatestItemHolder) holder).itemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
+				((LatestItemHolder) holder).itemCard.setOnClickListener(new View.OnClickListener() {
+					@Override public void onClick(View v) {
+						mOnItemClickListener.onItemClick(null, null, position, 0);
+					}
+				});
+			} else {
+				((LatestItemHolder) holder).itemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
+				((LatestItemHolder) holder).itemCard.setOnClickListener(new View.OnClickListener() {
+					@Override public void onClick(View v) {
+						mOnItemClickListener.onItemClick(null, null, position, 0);
+						((LatestItemHolder) holder).itemTitle.setTextColor(
+							mContext.getResources().getColor(R.color.textgrey));
+						String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);
+						Set<Integer> alreadySet = gson.fromJson(alreadyclick, new TypeToken<Set<Integer>>() {
+						}.getType());
+						alreadySet.add(itemId);
+						alreadyList.add(itemId);
+						PerferUtils.saveSth(Config.ALREADY_CLICK, gson.toJson(alreadySet));
+					}
+				});
+			}
 			Glide.with(mContext)
 				.load(baseListItemList.get(position - 1).getImgUrl())
 				.centerCrop()
@@ -69,11 +103,6 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 				.crossFade()
 				.into(((LatestItemHolder) holder).itemImg);
 			((LatestItemHolder) holder).itemTitle.setText(baseListItemList.get(position - 1).getTitle());
-			((LatestItemHolder) holder).itemCard.setOnClickListener(new View.OnClickListener() {
-				@Override public void onClick(View v) {
-					mOnItemClickListener.onItemClick(null, null, position, 0);
-				}
-			});
 		} else {
 			fragmentStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager) {
 				@Override public Fragment getItem(int position) {

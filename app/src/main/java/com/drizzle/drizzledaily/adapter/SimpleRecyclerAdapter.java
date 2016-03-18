@@ -2,7 +2,6 @@ package com.drizzle.drizzledaily.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +17,7 @@ import com.drizzle.drizzledaily.utils.CheckUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -29,8 +29,8 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 	private LayoutInflater mLayoutInflater;
 	private List<BaseListItem> mBaseListItemList;
 	private AdapterView.OnItemClickListener mOnItemClickListener;
-	private int itemId;
 	private Gson gson;
+	private List<Integer> alreadyList;
 
 	public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
 		this.mOnItemClickListener = onItemClickListener;
@@ -41,11 +41,12 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 		mBaseListItemList = baseListItemList;
 		mLayoutInflater = LayoutInflater.from(mContext);
 		gson = new Gson();
+		alreadyList = new ArrayList<>();
 	}
 
 	@Override public void onBindViewHolder(final SimpleRecyclerHolder holder, final int position) {
-		itemId= mBaseListItemList.get(position).getId();
-		if (CheckUtils.checkIsAlreadyClick(itemId)) {
+		final int itemId = mBaseListItemList.get(position).getId();
+		if (CheckUtils.checkIsAlreadyClick(itemId) || alreadyList.contains(itemId)) {
 			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
 			holder.mItemLayout.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
@@ -55,17 +56,18 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 				}
 			});
 		} else {
+			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 			holder.mItemLayout.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					if (mOnItemClickListener != null) {
-						holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
 						mOnItemClickListener.onItemClick(null, null, position, 0);
+						holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
 						String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);
 						Set<Integer> alreadySet = gson.fromJson(alreadyclick, new TypeToken<Set<Integer>>() {
 						}.getType());
 						alreadySet.add(itemId);
+						alreadyList.add(itemId);
 						PerferUtils.saveSth(Config.ALREADY_CLICK, gson.toJson(alreadySet));
-						Log.d("already",gson.toJson(alreadySet));
 					}
 				}
 			});

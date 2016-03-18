@@ -14,7 +14,14 @@ import butterknife.ButterKnife;
 import com.bumptech.glide.Glide;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.BaseListItem;
+import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.utils.CheckUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by drizzle on 16/3/10.
@@ -23,6 +30,8 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 	private Context mContext;
 	private LayoutInflater mLayoutInflater;
 	private List<BaseListItem> mBaseListItemList;
+	private Gson gson;
+	private List<Integer> alreadyList;
 
 	private AdapterView.OnItemClickListener mOnItemClickListener;
 
@@ -34,6 +43,8 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 		mContext = context;
 		mLayoutInflater = LayoutInflater.from(mContext);
 		mBaseListItemList = baseListItemList;
+		gson = new Gson();
+		alreadyList = new ArrayList<>();
 	}
 
 	@Override public ListRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -44,16 +55,36 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 		return mBaseListItemList.size();
 	}
 
-	@Override public void onBindViewHolder(ListRecyclerViewHolder holder, final int position) {
+	@Override public void onBindViewHolder(final ListRecyclerViewHolder holder, final int position) {
+		final int itemId = mBaseListItemList.get(position).getId();
+		if (CheckUtils.checkIsAlreadyClick(itemId) || alreadyList.contains(itemId)) {
+			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
+			holder.mItemCard.setOnClickListener(new View.OnClickListener() {
+				@Override public void onClick(View v) {
+					if (mOnItemClickListener != null) {
+						mOnItemClickListener.onItemClick(null, null, position, 0);
+					}
+				}
+			});
+		} else {
+			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
+			holder.mItemCard.setOnClickListener(new View.OnClickListener() {
+				@Override public void onClick(View v) {
+					if (mOnItemClickListener != null) {
+						mOnItemClickListener.onItemClick(null, null, position, 0);
+						holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
+						String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);
+						Set<Integer> alreadySet = gson.fromJson(alreadyclick, new TypeToken<Set<Integer>>() {
+						}.getType());
+						alreadySet.add(itemId);
+						alreadyList.add(itemId);
+						PerferUtils.saveSth(Config.ALREADY_CLICK, gson.toJson(alreadySet));
+					}
+				}
+			});
+		}
 		holder.mItemTitle.setText(mBaseListItemList.get(position).getTitle());
 		holder.mItemDate.setText(mBaseListItemList.get(position).getDate());
-		holder.mItemCard.setOnClickListener(new View.OnClickListener() {
-			@Override public void onClick(View v) {
-				if (mOnItemClickListener != null) {
-					mOnItemClickListener.onItemClick(null, null, position, 0);
-				}
-			}
-		});
 		Glide.with(mContext)
 			.load(mBaseListItemList.get(position).getImgUrl())
 			.centerCrop()
