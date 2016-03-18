@@ -23,8 +23,6 @@ import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.listener.UpdateListener;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.drizzle.drizzledaily.R;
-import com.drizzle.drizzledaily.adapter.OnStartDragListener;
-import com.drizzle.drizzledaily.adapter.SimpleCallback;
 import com.drizzle.drizzledaily.adapter.SwipeRecyclerAdapter;
 import com.drizzle.drizzledaily.bean.CollectBean;
 import com.drizzle.drizzledaily.bean.MyUser;
@@ -136,14 +134,15 @@ public class CollectListFragment extends BaseFragment {
 			}
 		});
 		mRecyclerView.setAdapter(adapter);
-		ItemTouchHelper.Callback callback = new SimpleCallback(adapter);
-		mItemTouchHelper = new ItemTouchHelper(callback);
-		mItemTouchHelper.attachToRecyclerView(mRecyclerView);
-		adapter.setOnStartDragListener(new OnStartDragListener() {
-			@Override public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-				mItemTouchHelper.startDrag(viewHolder);
-			}
-		});
+		//TODO:ItemTouchListener先留着
+		//ItemTouchHelper.Callback callback = new SimpleCallback(adapter);
+		//mItemTouchHelper = new ItemTouchHelper(callback);
+		//mItemTouchHelper.attachToRecyclerView(mRecyclerView);
+		//adapter.setOnStartDragListener(new OnStartDragListener() {
+		//	@Override public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+		//		mItemTouchHelper.startDrag(viewHolder);
+		//	}
+		//});
 		isTextVisible();
 		uploadfloatingActionButton.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
