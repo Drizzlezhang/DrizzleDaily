@@ -2,6 +2,7 @@ package com.drizzle.drizzledaily.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,7 +13,13 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.bean.BaseListItem;
+import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.utils.CheckUtils;
+import com.drizzle.drizzledaily.utils.PerferUtils;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by drizzle on 16/3/10.
@@ -22,6 +29,8 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 	private LayoutInflater mLayoutInflater;
 	private List<BaseListItem> mBaseListItemList;
 	private AdapterView.OnItemClickListener mOnItemClickListener;
+	private int itemId;
+	private Gson gson;
 
 	public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
 		this.mOnItemClickListener = onItemClickListener;
@@ -31,18 +40,38 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 		mContext = context;
 		mBaseListItemList = baseListItemList;
 		mLayoutInflater = LayoutInflater.from(mContext);
+		gson = new Gson();
 	}
 
-	@Override public void onBindViewHolder(SimpleRecyclerHolder holder, final int position) {
+	@Override public void onBindViewHolder(final SimpleRecyclerHolder holder, final int position) {
+		itemId= mBaseListItemList.get(position).getId();
+		if (CheckUtils.checkIsAlreadyClick(itemId)) {
+			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
+			holder.mItemLayout.setOnClickListener(new View.OnClickListener() {
+				@Override public void onClick(View v) {
+					if (mOnItemClickListener != null) {
+						mOnItemClickListener.onItemClick(null, null, position, 0);
+					}
+				}
+			});
+		} else {
+			holder.mItemLayout.setOnClickListener(new View.OnClickListener() {
+				@Override public void onClick(View v) {
+					if (mOnItemClickListener != null) {
+						holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
+						mOnItemClickListener.onItemClick(null, null, position, 0);
+						String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);
+						Set<Integer> alreadySet = gson.fromJson(alreadyclick, new TypeToken<Set<Integer>>() {
+						}.getType());
+						alreadySet.add(itemId);
+						PerferUtils.saveSth(Config.ALREADY_CLICK, gson.toJson(alreadySet));
+						Log.d("already",gson.toJson(alreadySet));
+					}
+				}
+			});
+		}
 		holder.mItemTitle.setText(mBaseListItemList.get(position).getTitle());
 		holder.mItemDate.setText(mBaseListItemList.get(position).getDate());
-		holder.mItemLayout.setOnClickListener(new View.OnClickListener() {
-			@Override public void onClick(View v) {
-				if (mOnItemClickListener != null) {
-					mOnItemClickListener.onItemClick(null, null, position, 0);
-				}
-			}
-		});
 	}
 
 	@Override public int getItemCount() {

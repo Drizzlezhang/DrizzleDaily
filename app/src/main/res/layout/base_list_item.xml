@@ -11,6 +11,7 @@
 	app:cardMaxElevation="10dp"
 	app:cardUseCompatPadding="true"
 	app:cardPreventCornerOverlap="true"
+	android:background="@drawable/item_press"
 	>
 
 		<ImageView

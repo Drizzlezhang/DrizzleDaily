@@ -4,6 +4,7 @@
 	android:layout_height="wrap_content"
 	android:id="@+id/simple_item_layout"
 	android:padding="5dp"
+	android:background="@drawable/item_press"
 	>
 		<TextView
 			android:layout_width="match_parent"

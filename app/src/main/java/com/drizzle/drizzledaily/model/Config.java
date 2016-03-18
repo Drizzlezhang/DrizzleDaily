@@ -14,6 +14,8 @@ public class Config {
 	 */
 	public static final String COLLECTCACHE = "collectcache";
 	public static final String COLLECTVERSION = "collectversion";
+
+	public static final String ALREADY_CLICK = "already_click";
 	/**
 	 * 存放的文章,图片唯一id
 	 */
