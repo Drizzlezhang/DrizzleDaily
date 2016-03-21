@@ -56,7 +56,6 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 				}
 			});
 		} else {
-			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 			holder.mItemLayout.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					if (mOnItemClickListener != null) {
@@ -71,6 +70,7 @@ public class SimpleRecyclerAdapter extends RecyclerView.Adapter<SimpleRecyclerAd
 					}
 				}
 			});
+			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 		}
 		holder.mItemTitle.setText(mBaseListItemList.get(position).getTitle());
 		holder.mItemDate.setText(mBaseListItemList.get(position).getDate());

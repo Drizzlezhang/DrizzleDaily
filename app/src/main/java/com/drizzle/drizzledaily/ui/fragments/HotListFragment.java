@@ -116,11 +116,12 @@ public class HotListFragment extends BaseFragment implements SwipeRefreshLayout.
 	 * 请求数据并存入list
 	 */
 	private void getLists() {
-		ApiBuilder.create(MyApi.class).hot().filter(new Func1<HotNews, Boolean>() {
-			@Override public Boolean call(HotNews hotNews) {
-				return NetUtils.isConnected(getActivity());
-			}
-		}).doOnSubscribe(new Action0() {
+		ApiBuilder.create(MyApi.class).hot().
+			filter(new Func1<HotNews, Boolean>() {
+				@Override public Boolean call(HotNews hotNews) {
+					return NetUtils.isConnected(getActivity());
+				}
+			}).doOnSubscribe(new Action0() {
 			@Override public void call() {
 				swipeRefresh(true);
 			}

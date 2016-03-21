@@ -67,7 +67,6 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 				}
 			});
 		} else {
-			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 			holder.mItemCard.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					if (mOnItemClickListener != null) {
@@ -82,6 +81,7 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 					}
 				}
 			});
+			holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 		}
 		holder.mItemTitle.setText(mBaseListItemList.get(position).getTitle());
 		holder.mItemDate.setText(mBaseListItemList.get(position).getDate());

@@ -81,7 +81,6 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 					}
 				});
 			} else {
-				((LatestItemHolder) holder).itemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 				((LatestItemHolder) holder).itemCard.setOnClickListener(new View.OnClickListener() {
 					@Override public void onClick(View v) {
 						mOnItemClickListener.onItemClick(null, null, position, 0);
@@ -95,6 +94,8 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 						PerferUtils.saveSth(Config.ALREADY_CLICK, gson.toJson(alreadySet));
 					}
 				});
+				((LatestItemHolder) holder).itemTitle.setTextColor(
+					mContext.getResources().getColor(R.color.textblack));
 			}
 			Glide.with(mContext)
 				.load(baseListItemList.get(position - 1).getImgUrl())
