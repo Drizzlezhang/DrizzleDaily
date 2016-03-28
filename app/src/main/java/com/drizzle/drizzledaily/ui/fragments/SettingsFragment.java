@@ -26,14 +26,13 @@ import cn.bmob.v3.listener.SaveListener;
  * 设置fragment
  */
 public class SettingsFragment extends PreferenceFragment {
-	private String[] strings;
 	public static final String STARTIMGCACHEURL = Config.START_PHOTO_FOLDER + "/startimg.jpg";
 	private ProgressDialog progressDialog;
 
 	@Override public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		addPreferencesFromResource(R.xml.preferences);
-		strings = new String[] { "原装色", "火焰红", "冷酷蓝", "高级黑", "热烈橙", "生命绿", "高贵紫", "香蕉黄" };
+		String[] strings = new String[] { "原装色", "火焰红", "冷酷蓝", "高级黑", "热烈橙", "生命绿", "高贵紫", "香蕉黄" };
 		progressDialog = new ProgressDialog(getActivity());
 		progressDialog.setMessage("请稍等...");
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);

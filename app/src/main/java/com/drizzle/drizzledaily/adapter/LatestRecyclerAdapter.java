@@ -108,10 +108,8 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 			fragmentStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager) {
 				@Override public Fragment getItem(int position) {
 					BaseListItem baseListItem = headListItemList.get(position);
-					HeadPagerFragment pagerFragment =
-						HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(),
-							baseListItem.getId());
-					return pagerFragment;
+					return HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(),
+						baseListItem.getId());
 				}
 
 				@Override public int getCount() {

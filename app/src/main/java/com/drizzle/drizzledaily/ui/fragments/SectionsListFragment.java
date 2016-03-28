@@ -88,7 +88,7 @@ public class SectionsListFragment extends BaseFragment implements SwipeRefreshLa
 	 * 在页面切换时停止活动view
 	 */
 	@Override public void onHiddenChanged(boolean hidden) {
-		if (hidden == true) {
+		if (hidden) {
 			if (mRefreshLayout.isRefreshing()) {
 				mRefreshLayout.setRefreshing(false);
 			}

@@ -33,17 +33,15 @@ public class Imageutils {
 		// resize the bit map
 		matrix.postScale(scaleWidth, scaleHeight);
 		// matrix.postRotate(45);
-		Bitmap resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 		//bitmap.recycle();
-		return resizedBitmap;
+		return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 	}
 
 	/**
 	 * 从存储路径获取bitmap
 	 */
 	public static Bitmap getBitmapFromFile(String filePath) {
-		Bitmap bitmap = BitmapFactory.decodeFile(filePath);
-		return bitmap;
+		return BitmapFactory.decodeFile(filePath);
 	}
 
 	/**

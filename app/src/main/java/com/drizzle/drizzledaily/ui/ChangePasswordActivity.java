@@ -33,7 +33,6 @@ public class ChangePasswordActivity extends BaseActivity {
 
 	@Bind(R.id.change_password) Button changePasswordBtn;
 
-	private String oldPassword, newPassword, newPasswordAgain;
 	private int[] touxiangs = new int[] {
 		R.mipmap.touxiang1, R.mipmap.touxiang2, R.mipmap.touxiang3, R.mipmap.touxiang4, R.mipmap.touxiang5,
 		R.mipmap.touxiang6, R.mipmap.touxiang
@@ -67,9 +66,9 @@ public class ChangePasswordActivity extends BaseActivity {
 	@OnClick(R.id.change_password) public void changePassword() {
 		progressDialog.show();
 		progressDialog.dismiss();
-		oldPassword = changeOldPassword.getText().toString();
-		newPassword = changeNewPassword.getText().toString();
-		newPasswordAgain = changeNewPasswordAgain.getText().toString();
+		String oldPassword = changeOldPassword.getText().toString();
+		String newPassword = changeNewPassword.getText().toString();
+		String newPasswordAgain = changeNewPasswordAgain.getText().toString();
 		if (TextUtils.isEmpty(oldPassword) || TextUtils.isEmpty(newPassword) || TextUtils.isEmpty(newPasswordAgain)) {
 			TUtils.showShort(ChangePasswordActivity.this, "有密码未填上");
 			progressDialog.dismiss();

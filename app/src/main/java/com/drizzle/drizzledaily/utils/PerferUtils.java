@@ -33,18 +33,15 @@ public class PerferUtils {
 	}
 
 	public static String getString(String key) {
-		String s = getSharedPerference(Config.CACHE_DATA).getString(key, "");
-		return s;
+		return getSharedPerference(Config.CACHE_DATA).getString(key, "");
 	}
 
 	public static String getStringList(String key) {
-		String s = getSharedPerference(Config.CACHE_DATA).getString(key, "[]");
-		return s;
+		return getSharedPerference(Config.CACHE_DATA).getString(key, "[]");
 	}
 
 	public static int getInt(String key) {
-		int i = getSharedPerference(Config.CACHE_DATA).getInt(key, 0);
-		return i;
+		return getSharedPerference(Config.CACHE_DATA).getInt(key, 0);
 	}
 
 }

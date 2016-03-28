@@ -92,8 +92,7 @@ public class AboutDeveloperFragment extends android.support.v4.app.Fragment {
 		try {
 			PackageManager manager = getActivity().getPackageManager();
 			PackageInfo info = manager.getPackageInfo(getActivity().getPackageName(), 0);
-			int code = info.versionCode;
-			return code;
+			return info.versionCode;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return 0;

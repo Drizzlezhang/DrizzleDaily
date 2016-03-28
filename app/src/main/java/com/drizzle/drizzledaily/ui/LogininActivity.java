@@ -39,8 +39,6 @@ public class LogininActivity extends BaseActivity {
 
 	@Bind(R.id.loginin_touxiang) CircleImageView touxiang;
 
-	private String name, password;
-
 	private ProgressDialog progressDialog;
 
 	public static LogininActivity instance;
@@ -68,8 +66,8 @@ public class LogininActivity extends BaseActivity {
 		switch (view.getId()) {
 			case R.id.loginin_btn:
 				progressDialog.show();
-				name = loginInputName.getText().toString();
-				password = loginInputPassword.getText().toString();
+				String name = loginInputName.getText().toString();
+				String password = loginInputPassword.getText().toString();
 				if (TextUtils.isEmpty(name) || TextUtils.isEmpty(password)) {
 					TUtils.showShort(LogininActivity.this, "用户名或密码未完善");
 					progressDialog.dismiss();

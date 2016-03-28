@@ -239,10 +239,12 @@ public class GildeActivity extends AppCompatActivity {
 			try {
 				if (is != null) is.close();
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 			try {
 				if (fos != null) fos.close();
 			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}

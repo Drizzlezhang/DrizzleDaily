@@ -92,7 +92,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 	private ThemeListFragment themeListFragment;
 	private SectionsListFragment sectionsListFragment;
 	private CollectListFragment collectListFragment;
-	private SearchFragment searchFragment;
 	private AboutDeveloperFragment developerFragment;
 
 	private static String[] PERMISSION_LIST = new String[] {
@@ -385,7 +384,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 			String titleTime = DateUtils.printDate(c);
 			c = DateUtils.getAfterDay(c);
 			String time = DateUtils.printCalendar(c);
-			searchFragment = SearchFragment.newInstance(time);
+			SearchFragment searchFragment = SearchFragment.newInstance(time);
 			hideFragment(fragmentID);
 			if (searchFragment.isAdded()) {
 				fragmentTransaction.show(getSupportFragmentManager().findFragmentByTag(6 + "")).commit();

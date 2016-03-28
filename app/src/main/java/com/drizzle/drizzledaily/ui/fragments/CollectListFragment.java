@@ -252,7 +252,7 @@ public class CollectListFragment extends BaseFragment {
 	 * fragment在show和hide时调用的方法
 	 */
 	@Override public void onHiddenChanged(boolean hidden) {
-		if (hidden == false) {
+		if (!hidden) {
 			initData();
 			adapter.notifyDataSetChanged();
 			isTextVisible();

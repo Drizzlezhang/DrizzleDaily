@@ -131,7 +131,7 @@ public class SearchFragment extends BaseFragment {
 	 * 在页面切换时停止活动view
 	 */
 	@Override public void onHiddenChanged(boolean hidden) {
-		if (hidden == true) {
+		if (hidden) {
 			mProgressBar.setVisibility(View.GONE);
 		}
 		super.onHiddenChanged(hidden);

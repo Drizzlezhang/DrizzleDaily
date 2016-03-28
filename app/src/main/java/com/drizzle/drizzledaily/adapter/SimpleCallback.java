@@ -37,7 +37,6 @@ public class SimpleCallback extends ItemTouchHelper.Callback {
 	}
 
 	@Override public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-		return;
 	}
 
 	@Override public void onSelectedChanged(RecyclerView.ViewHolder viewHolder, int actionState) {

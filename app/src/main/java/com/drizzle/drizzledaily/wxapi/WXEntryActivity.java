@@ -19,13 +19,11 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
  */
 public class WXEntryActivity extends AppCompatActivity implements IWXAPIEventHandler {
 
-	private IWXAPI api;
-
 	@Override protected void onCreate(Bundle savedInstanceState) {
 		SharedPreferences preferences = getSharedPreferences(Config.SKIN_NUMBER, Activity.MODE_PRIVATE);
 		int themeid = preferences.getInt(Config.SKIN_NUMBER, 0);
 		ThemeUtils.onActivityCreateSetTheme(this, themeid);
-		api = WXAPIFactory.createWXAPI(this, Config.WXAPPID, false);
+		IWXAPI api = WXAPIFactory.createWXAPI(this, Config.WXAPPID, false);
 		api.handleIntent(getIntent(), this);
 		super.onCreate(savedInstanceState);
 	}

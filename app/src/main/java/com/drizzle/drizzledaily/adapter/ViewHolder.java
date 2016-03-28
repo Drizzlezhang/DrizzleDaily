@@ -17,11 +17,10 @@ import com.drizzle.drizzledaily.R;
 public class ViewHolder {
 	private final SparseArray<View> mViews;
 	private View mConvertView;
-	private int position;
 	private Context context;
 
 	private ViewHolder(Context context, ViewGroup parent, int layoutId, int position) {
-		this.position = position;
+		int position1 = position;
 		this.mViews = new SparseArray<View>();
 		this.context = context;
 		mConvertView = LayoutInflater.from(context).inflate(layoutId, parent, false);

@@ -15,10 +15,6 @@ public class CheckUtils {
 		String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);
 		Set<Integer> alreadySet = gson.fromJson(alreadyclick, new TypeToken<Set<Integer>>() {
 		}.getType());
-		if (alreadySet.contains(id)) {
-			return true;
-		} else {
-			return false;
-		}
+		return alreadySet.contains(id);
 	}
 }

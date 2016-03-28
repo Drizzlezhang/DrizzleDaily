@@ -22,17 +22,15 @@ import java.util.List;
  */
 public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdapter.SimpleViewHolder>
 	implements ItemTouchHelperAdapter {
-	private Context mContext;
 	private List<CollectBean> collectBeanList;
 	private AdapterView.OnItemClickListener mOnItemClickListener;
-	private OnStartDragListener mOnStartDragListener;
 
 	public void setOnItemClickListener(AdapterView.OnItemClickListener onItemClickListener) {
 		this.mOnItemClickListener = onItemClickListener;
 	}
 
 	public void setOnStartDragListener(OnStartDragListener onStartDragListener) {
-		this.mOnStartDragListener = onStartDragListener;
+		OnStartDragListener onStartDragListener1 = onStartDragListener;
 	}
 
 	CallChangeBack mCallChangeBack = null;
@@ -48,7 +46,7 @@ public class SwipeRecyclerAdapter extends RecyclerSwipeAdapter<SwipeRecyclerAdap
 	}
 
 	public SwipeRecyclerAdapter(Context context, List<CollectBean> collectBeanList) {
-		mContext = context;
+		Context context1 = context;
 		this.collectBeanList = collectBeanList;
 	}
 

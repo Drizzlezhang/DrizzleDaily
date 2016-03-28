@@ -184,8 +184,7 @@ public class ReadActivity extends BaseActivity {
 			}
 		}).observeOn(Schedulers.io()).map(new Func1<Story, Story>() {
 			@Override public Story call(Story story) {
-				String name = story.getTitle();
-				pagetltle = name;
+				pagetltle = story.getTitle();
 				body = story.getBody();
 				pageUrl = story.getShare_url();
 				cssadd = story.getCss().get(0);

@@ -58,10 +58,8 @@ public class UserActivity extends BaseActivity {
 	private CommonAdapter<ShareBean> adapter;
 	private List<ShareBean> touxiangList = new ArrayList<>();
 	private List<ShareBean> yuetouxianglist = new ArrayList<>();
-	private CommonAdapter<ShareBean> yueadapter;
 	private DialogPlus yuedialogPlus;
 	private DialogPlus dialogPlus;
-	private ProgressDialog progressDialog;
 
 	private int loginType = 1;//登录状态，1为未登录，2为登录
 
@@ -133,7 +131,7 @@ public class UserActivity extends BaseActivity {
 			.setCancelable(true)
 			.setPadding(20, 20, 20, 20)
 			.create();
-		progressDialog = new ProgressDialog(this);
+		ProgressDialog progressDialog = new ProgressDialog(this);
 		progressDialog.setMessage("请稍等...");
 		progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
 		progressDialog.setCancelable(true);
@@ -192,12 +190,13 @@ public class UserActivity extends BaseActivity {
 		ShareBean bean2 = new ShareBean(R.mipmap.touxiang8, "这个不认识");
 		yuetouxianglist.add(bean1);
 		yuetouxianglist.add(bean2);
-		yueadapter = new CommonAdapter<ShareBean>(this, yuetouxianglist, R.layout.share_list_item) {
-			@Override public void convert(ViewHolder helper, ShareBean item) {
-				helper.setText(R.id.share_item_text, item.getText());
-				helper.setImgByid(R.id.share_item_img, item.getImgId());
-			}
-		};
+		CommonAdapter<ShareBean> yueadapter =
+			new CommonAdapter<ShareBean>(this, yuetouxianglist, R.layout.share_list_item) {
+				@Override public void convert(ViewHolder helper, ShareBean item) {
+					helper.setText(R.id.share_item_text, item.getText());
+					helper.setImgByid(R.id.share_item_img, item.getImgId());
+				}
+			};
 		yuedialogPlus = DialogPlus.newDialog(UserActivity.this)
 			.setAdapter(yueadapter)
 			.setOnItemClickListener(new OnItemClickListener() {

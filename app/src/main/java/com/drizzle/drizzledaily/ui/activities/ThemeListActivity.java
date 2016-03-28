@@ -39,8 +39,6 @@ import rx.schedulers.Schedulers;
  */
 public class ThemeListActivity extends BaseActivity {
 
-	private Toolbar mToolbar;
-
 	@Bind(R.id.theme_list) RecyclerView mRecyclerView;
 
 	@Bind(R.id.theme_list_headimg) ImageView mImageView;
@@ -116,11 +114,11 @@ public class ThemeListActivity extends BaseActivity {
 	}
 
 	private void initViews() {
-		mToolbar = (Toolbar) findViewById(R.id.theme_list_toolbar);
-		setSupportActionBar(mToolbar);
+		Toolbar toolbar = (Toolbar) findViewById(R.id.theme_list_toolbar);
+		setSupportActionBar(toolbar);
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		mToolbar.setOnClickListener(new View.OnClickListener() {
+		toolbar.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
 				mRecyclerView.smoothScrollToPosition(0);
 			}
