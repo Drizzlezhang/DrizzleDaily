@@ -94,8 +94,7 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 						PerferUtils.saveSth(Config.ALREADY_CLICK, gson.toJson(alreadySet));
 					}
 				});
-				((LatestItemHolder) holder).itemTitle.setTextColor(
-					mContext.getResources().getColor(R.color.textblack));
+				((LatestItemHolder) holder).itemTitle.setTextColor(mContext.getResources().getColor(R.color.textblack));
 			}
 			Glide.with(mContext)
 				.load(baseListItemList.get(position - 1).getImgUrl())
@@ -105,21 +104,25 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 				.into(((LatestItemHolder) holder).itemImg);
 			((LatestItemHolder) holder).itemTitle.setText(baseListItemList.get(position - 1).getTitle());
 		} else {
-			fragmentStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager) {
-				@Override public Fragment getItem(int position) {
-					BaseListItem baseListItem = headListItemList.get(position);
-					return HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(),
-						baseListItem.getId());
-				}
+			if (fragmentStatePagerAdapter == null) {
+				fragmentStatePagerAdapter = new FragmentStatePagerAdapter(mFragmentManager) {
+					@Override public Fragment getItem(int position) {
+						BaseListItem baseListItem = headListItemList.get(position);
+						return HeadPagerFragment.newInstance(baseListItem.getImgUrl(), baseListItem.getTitle(),
+							baseListItem.getId());
+					}
 
-				@Override public int getCount() {
-					return headListItemList.size();
-				}
-			};
-			((LatestPagerHolder) holder).itemViewPager.setInterval(3000);
-			((LatestPagerHolder) holder).itemViewPager.setStopScrollWhenTouch(true);
-			((LatestPagerHolder) holder).itemViewPager.setAdapter(fragmentStatePagerAdapter);
-			((LatestPagerHolder) holder).itemViewPager.startAutoScroll(5000);
+					@Override public int getCount() {
+						return headListItemList.size();
+					}
+				};
+				((LatestPagerHolder) holder).itemViewPager.setInterval(3000);
+				((LatestPagerHolder) holder).itemViewPager.setStopScrollWhenTouch(true);
+				((LatestPagerHolder) holder).itemViewPager.setAdapter(fragmentStatePagerAdapter);
+				((LatestPagerHolder) holder).itemViewPager.startAutoScroll(5000);
+			} else {
+				fragmentStatePagerAdapter.notifyDataSetChanged();
+			}
 		}
 	}
 
