@@ -6,7 +6,7 @@ android {
 
 	defaultConfig {
 		applicationId "com.drizzle.drizzledaily"
-		minSdkVersion 16
+		minSdkVersion 21
 		targetSdkVersion 23
 		versionCode 14
 		versionName "2.2.0"
