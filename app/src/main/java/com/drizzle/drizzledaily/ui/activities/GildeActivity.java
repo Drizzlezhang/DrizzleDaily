@@ -23,7 +23,7 @@ import com.drizzle.drizzledaily.R;
 import com.drizzle.drizzledaily.api.ApiBuilder;
 import com.drizzle.drizzledaily.api.MyApi;
 import com.drizzle.drizzledaily.api.model.StartImg;
-import com.drizzle.drizzledaily.model.Config;
+import com.drizzle.drizzledaily.model.MyApplication;
 import com.drizzle.drizzledaily.utils.NetUtils;
 import com.drizzle.drizzledaily.utils.PerferUtils;
 import com.drizzle.drizzledaily.utils.TUtils;
@@ -140,11 +140,11 @@ public class GildeActivity extends AppCompatActivity {
 	 * 引导页动画效果
 	 */
 	private void playAnim() {
-		File filefolder = new File(Config.START_PHOTO_FOLDER);
+		File filefolder = MyApplication.getContext().getExternalFilesDir("image");
 		if (!filefolder.exists()) {
 			filefolder.mkdirs();
 		}
-		final File file = new File(Config.START_PHOTO_FOLDER, "startimg.jpg");
+		final File file = new File(filefolder, "startimg.jpg");
 		Observable.just(file).map(new Func1<File, Boolean>() {
 			@Override public Boolean call(File file) {
 				return file.exists();
@@ -209,7 +209,8 @@ public class GildeActivity extends AppCompatActivity {
 			}
 
 			@Override public void onResponse(com.squareup.okhttp.Response response) throws IOException {
-				saveFile(response, Config.START_PHOTO_FOLDER, "startimg.jpg");
+				Log.d("path",MyApplication.getContext().getExternalFilesDir("image").getPath());
+				saveFile(response, MyApplication.getContext().getExternalFilesDir("image").getPath(), "startimg.jpg");
 			}
 		});
 	}
