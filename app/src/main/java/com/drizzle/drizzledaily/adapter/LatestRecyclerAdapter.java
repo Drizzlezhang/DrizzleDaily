@@ -77,13 +77,13 @@ public class LatestRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
 				((LatestItemHolder) holder).itemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
 				((LatestItemHolder) holder).itemCard.setOnClickListener(new View.OnClickListener() {
 					@Override public void onClick(View v) {
-						mOnItemClickListener.onItemClick(null, null, position, 0);
+						mOnItemClickListener.onItemClick(null, holder.itemView, position, 0);
 					}
 				});
 			} else {
 				((LatestItemHolder) holder).itemCard.setOnClickListener(new View.OnClickListener() {
 					@Override public void onClick(View v) {
-						mOnItemClickListener.onItemClick(null, null, position, 0);
+						mOnItemClickListener.onItemClick(null, holder.itemView, position, 0);
 						((LatestItemHolder) holder).itemTitle.setTextColor(
 							mContext.getResources().getColor(R.color.textgrey));
 						String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);

@@ -2,6 +2,9 @@ package com.drizzle.drizzledaily.ui.fragments;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -79,7 +82,9 @@ public class SearchFragment extends BaseFragment {
 			@Override public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Intent intent = new Intent(getActivity(), ReadActivity.class);
 				intent.putExtra(Config.READID, baseListItems.get(position).getId());
-				startActivity(intent);
+				ActivityOptionsCompat optionsCompat = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),
+					new Pair<View, String>(view.findViewById(R.id.base_item_img), getString(R.string.translation_img)));
+				ActivityCompat.startActivity(getActivity(), intent, optionsCompat.toBundle());
 			}
 		});
 	}

@@ -62,7 +62,7 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 			holder.mItemCard.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					if (mOnItemClickListener != null) {
-						mOnItemClickListener.onItemClick(null, null, position, 0);
+						mOnItemClickListener.onItemClick(null, holder.itemView, position, 0);
 					}
 				}
 			});
@@ -70,7 +70,7 @@ public class ListRecyclerAdapter extends RecyclerView.Adapter<ListRecyclerAdapte
 			holder.mItemCard.setOnClickListener(new View.OnClickListener() {
 				@Override public void onClick(View v) {
 					if (mOnItemClickListener != null) {
-						mOnItemClickListener.onItemClick(null, null, position, 0);
+						mOnItemClickListener.onItemClick(null, holder.itemView, position, 0);
 						holder.mItemTitle.setTextColor(mContext.getResources().getColor(R.color.textgrey));
 						String alreadyclick = PerferUtils.getStringList(Config.ALREADY_CLICK);
 						Set<Integer> alreadySet = gson.fromJson(alreadyclick, new TypeToken<Set<Integer>>() {

@@ -232,7 +232,7 @@ public class ReadActivity extends BaseActivity {
 		int id = item.getItemId();
 		switch (id) {
 			case android.R.id.home:
-				finish();
+				finishAfterTransition();
 				break;
 			case R.id.action_collect:
 				int savetime = (int) System.currentTimeMillis();
@@ -240,7 +240,7 @@ public class ReadActivity extends BaseActivity {
 				collectBeanSet.add(bean);
 				final Gson gson = new Gson();
 				PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
-				Snackbar.make(mToolbar,"已收藏到本地文件夹。",Snackbar.LENGTH_LONG).setAction("取消", new View.OnClickListener() {
+				Snackbar.make(mToolbar, "已收藏到本地文件夹。", Snackbar.LENGTH_LONG).setAction("取消", new View.OnClickListener() {
 					@Override public void onClick(View v) {
 						collectBeanSet.remove(bean);
 						PerferUtils.saveSth(Config.COLLECTCACHE, gson.toJson(collectBeanSet));
@@ -255,5 +255,10 @@ public class ReadActivity extends BaseActivity {
 				break;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override public void onBackPressed() {
+		super.onBackPressed();
+		finishAfterTransition();
 	}
 }

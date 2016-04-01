@@ -44,7 +44,7 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<GridRecyclerAdapte
 		return new GridViewHolder(mLayoutInflater.inflate(R.layout.base_grid_item, parent, false));
 	}
 
-	@Override public void onBindViewHolder(GridViewHolder holder, final int position) {
+	@Override public void onBindViewHolder(final GridViewHolder holder, final int position) {
 		ViewGroup.LayoutParams params = holder.itemView.getLayoutParams();//得到item的LayoutParams布局参数
 		params.height = (int) (800 + Math.random() * 300);//把随机的高度赋予itemView布局
 		holder.itemView.setLayoutParams(params);//把params设置给itemView布局
@@ -59,7 +59,7 @@ public class GridRecyclerAdapter extends RecyclerView.Adapter<GridRecyclerAdapte
 		holder.mCardView.setOnClickListener(new View.OnClickListener() {
 			@Override public void onClick(View v) {
 				if (mOnItemClickListener != null) {
-					mOnItemClickListener.onItemClick(null, null, position, 0);
+					mOnItemClickListener.onItemClick(null, holder.itemView, position, 0);
 				}
 			}
 		});

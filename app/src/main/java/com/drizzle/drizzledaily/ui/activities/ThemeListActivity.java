@@ -151,9 +151,14 @@ public class ThemeListActivity extends BaseActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == android.R.id.home) {
-			finish();
+			finishAfterTransition();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override public void onBackPressed() {
+		super.onBackPressed();
+		finishAfterTransition();
 	}
 }

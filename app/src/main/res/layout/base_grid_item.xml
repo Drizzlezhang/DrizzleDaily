@@ -22,6 +22,7 @@
 		android:layout_marginRight="10dp"
 		android:layout_marginTop="10dp"
 		android:scaleType="centerCrop"
+		android:transitionName="@string/translation_img"
 		/>
 
 	<TextView
@@ -35,6 +36,7 @@
 		android:layout_marginRight="20dp"
 		android:textColor="@color/white"
 		android:textSize="18sp"
+		android:transitionName="@string/translation_title"
 		/>
 
 	<TextView

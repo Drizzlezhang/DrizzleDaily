@@ -19,6 +19,7 @@
 			android:layout_height="80dp"
 			android:layout_margin="10dp"
 			android:scaleType="centerCrop"
+			android:transitionName="@string/translation_img"
 			/>
 
 		<TextView
