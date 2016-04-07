@@ -10,6 +10,7 @@
 	app:cardMaxElevation="10dp"
 	app:cardUseCompatPadding="true"
 	app:cardPreventCornerOverlap="true"
+	android:stateListAnimator="@anim/item_raise"
 	android:foreground="?android:attr/selectableItemBackground"
 	>
 
