@@ -8,7 +8,7 @@
             app:showAsAction="never"/>
       <item android:id="@+id/action_share"
             android:title="分享应用"
-            android:icon="@drawable/smoke"
+            android:icon="@drawable/ic_share_black_24dp"
             android:orderInCategory="100"
             app:showAsAction="ifRoom"/>
 </menu>
